@@ -301,10 +301,9 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
     <article
       className={cn(
         "group rounded-[20px] border backdrop-blur-md transition overflow-hidden",
-        "border-violet-400/20",
-        "bg-gradient-to-br from-violet-500/15 via-violet-500/5 to-transparent",
-        "shadow-[0_15px_40px_rgba(139,92,246,0.15)] dark:shadow-[0_15px_40px_rgba(139,92,246,0.1)]",
-        "hover:border-violet-300/40",
+        "border-slate-200 dark:border-slate-800",
+        "bg-white dark:bg-slate-900",
+        "hover:border-slate-300 dark:hover:border-slate-700",
         className,
       )}
     >
@@ -319,7 +318,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
       <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-4">
         {/* Key Metrics */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="text-center p-2 rounded-xl border border-blue-400/20 bg-gradient-to-br from-blue-500/15 via-blue-500/5 to-transparent">
+          <div className="text-center p-2 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="text-sm sm:text-lg font-medium text-sky-600 dark:text-sky-400">
               {forecastData.totalProducts}
             </div>
@@ -327,7 +326,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
               {t("Total Products")}
             </div>
           </div>
-          <div className="text-center p-2 rounded-xl border border-amber-400/20 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent">
+          <div className="text-center p-2 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="text-sm sm:text-lg font-medium text-amber-600 dark:text-amber-400">
               {forecastData.lowStockProducts}
             </div>
@@ -335,7 +334,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
               {t("Low Stock")}
             </div>
           </div>
-          <div className="text-center p-2 rounded-xl border border-rose-400/20 bg-gradient-to-br from-rose-500/15 via-rose-500/5 to-transparent">
+          <div className="text-center p-2 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="text-sm sm:text-base font-medium text-rose-600 dark:text-rose-400">
               {forecastData.outOfStockProducts}
             </div>
@@ -356,7 +355,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
               forecastData.reorderSuggestions.map((suggestion, index) => (
                 <div
                   key={index}
-                  className="flex items-start justify-between gap-3 p-2 rounded-xl border border-gray-300/30 bg-gradient-to-r from-gray-100/50 to-transparent dark:border-white/10 dark:from-white/5 backdrop-blur-md"
+                  className="flex items-start justify-between gap-3 p-2 rounded-xl border border-slate-200 bg-white backdrop-blur-md dark:border-slate-700 dark:bg-slate-900"
                 >
                   <div className="flex-1 min-w-0">
                     <DenseCatalogProductCell
@@ -419,7 +418,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
             {forecastData.demandForecast.map((forecast, index) => (
               <div
                 key={index}
-                className="space-y-2 p-2 rounded-xl border border-gray-300/20 bg-gradient-to-r from-gray-100/30 to-transparent dark:border-white/10 dark:from-white/5"
+                className="space-y-2 p-2 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
               >
                 <div className="flex justify-between items-center gap-2">
                   {forecast.categoryId ? (
