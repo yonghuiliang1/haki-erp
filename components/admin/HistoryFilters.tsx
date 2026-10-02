@@ -17,6 +17,7 @@ import { DismissibleFilterChips } from "@/components/shared";
 import type { FilterChipGroup } from "@/components/shared";
 import { PaginationType } from "@/components/shared/PaginationSelector";
 import { ImportStatusBadge, ImportTypeBadge } from "@/lib/ui/semantic-badges";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface HistoryFiltersProps {
   searchTerm: string;
@@ -37,6 +38,7 @@ export default function HistoryFilters({
   setSelectedStatuses,
   setPagination,
 }: HistoryFiltersProps) {
+  const t = useT();
   const handleResetFilters = useCallback(() => {
     setSelectedImportTypes([]);
     setSelectedStatuses([]);
@@ -46,7 +48,7 @@ export default function HistoryFilters({
   const filterChipGroups = useMemo((): FilterChipGroup[] => {
     return [
       {
-        label: "Type",
+        label: t("Type"),
         values: selectedImportTypes,
         onClear: () => setSelectedImportTypes([]),
         renderBadge: (value) => (
@@ -54,7 +56,7 @@ export default function HistoryFilters({
         ),
       },
       {
-        label: "Status",
+        label: t("Status"),
         values: selectedStatuses,
         onClear: () => setSelectedStatuses([]),
         renderBadge: (value) => (
@@ -67,6 +69,7 @@ export default function HistoryFilters({
     selectedStatuses,
     setSelectedImportTypes,
     setSelectedStatuses,
+    t,
   ]);
 
   return (
@@ -75,7 +78,7 @@ export default function HistoryFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by file name or type..."
+            placeholder={t("Search by file name or type...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}

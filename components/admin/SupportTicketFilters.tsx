@@ -33,6 +33,7 @@ import {
   TicketStatusBadge,
 } from "@/lib/ui/semantic-badges";
 import { FILTER_CHIP_COLLAPSED_CLASS } from "@/lib/ui/filter-chip-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 const VIEW_OPTIONS: { value: SupportTicketViewFilter; label: string }[] = [
   { value: "all", label: "All tickets" },
@@ -63,6 +64,7 @@ export default function SupportTicketFilters({
   onViewFilterChange,
   setPagination,
 }: SupportTicketFiltersProps) {
+  const t = useT();
   const handleResetFilters = useCallback(() => {
     setSelectedStatuses([]);
     setSelectedPriorities([]);
@@ -79,10 +81,11 @@ export default function SupportTicketFilters({
     const groups: FilterChipGroup[] = [];
 
     if (onViewFilterChange && viewFilter !== "all") {
-      const viewLabel =
-        VIEW_OPTIONS.find((o) => o.value === viewFilter)?.label ?? viewFilter;
+      const viewLabel = t(
+        VIEW_OPTIONS.find((o) => o.value === viewFilter)?.label ?? viewFilter,
+      );
       groups.push({
-        label: "View",
+        label: t("View"),
         values: [viewFilter],
         onClear: () => onViewFilterChange("all"),
         renderBadge: () => (
@@ -93,7 +96,7 @@ export default function SupportTicketFilters({
 
     groups.push(
       {
-        label: "Status",
+        label: t("Status"),
         values: selectedStatuses,
         onClear: () => setSelectedStatuses([]),
         renderBadge: (value) => (
@@ -101,7 +104,7 @@ export default function SupportTicketFilters({
         ),
       },
       {
-        label: "Priority",
+        label: t("Priority"),
         values: selectedPriorities,
         onClear: () => setSelectedPriorities([]),
         renderBadge: (value) => (
@@ -118,6 +121,7 @@ export default function SupportTicketFilters({
     selectedPriorities,
     setSelectedStatuses,
     setSelectedPriorities,
+    t,
   ]);
 
   return (
@@ -126,7 +130,7 @@ export default function SupportTicketFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by subject or description..."
+            placeholder={t("Search by subject or description...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -150,8 +154,10 @@ export default function SupportTicketFilters({
                 aria-hidden
               >
                 <span>
-                  {VIEW_OPTIONS.find((o) => o.value === viewFilter)?.label ??
-                    "View"}
+                  {t(
+                    VIEW_OPTIONS.find((o) => o.value === viewFilter)?.label ??
+                      "View",
+                  )}
                 </span>
                 <ChevronDown className="h-4 w-4 opacity-70" />
               </div>
@@ -166,7 +172,7 @@ export default function SupportTicketFilters({
                 }
               >
                 <SelectTrigger className="h-10 w-[180px] rounded-[28px] border border-violet-400/30 dark:border-violet-400/30 bg-white/10 dark:bg-white/5 text-gray-700 dark:text-white">
-                  <SelectValue placeholder="View" />
+                  <SelectValue placeholder={t("View")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-violet-400/20">
                   {VIEW_OPTIONS.map((opt) => (
@@ -175,7 +181,7 @@ export default function SupportTicketFilters({
                       value={opt.value}
                       className="cursor-pointer"
                     >
-                      {opt.label}
+                      {t(opt.label)}
                     </SelectItem>
                   ))}
                 </SelectContent>

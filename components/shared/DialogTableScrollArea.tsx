@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Horizontal scroll for wide tables inside dialogs.
  * Uses ring + shadow-sm on the frame (see DIALOG_TABLE_FRAME_*); large box-shadows clip under overflow.
@@ -5,6 +7,7 @@
 
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type DialogTableScrollAreaProps = {
   children: ReactNode;
@@ -16,11 +19,12 @@ export function DialogTableScrollArea({
   children,
   frameClassName,
 }: DialogTableScrollAreaProps) {
+  const t = useT();
   return (
     <div
       className="min-w-0 max-w-full overflow-x-auto"
       role="region"
-      aria-label="Scrollable table"
+      aria-label={t("Scrollable table")}
     >
       <div
         className={cn(

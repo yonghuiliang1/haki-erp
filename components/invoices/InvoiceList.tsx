@@ -62,6 +62,7 @@ import {
 } from "@/lib/invoices/invoice-list-filters";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const formatCurrency = formatStableCurrency;
 
@@ -109,6 +110,7 @@ const InvoiceList = React.memo(
     const pathname = usePathname();
     const { user } = useAuth();
     const role = user?.role;
+    const t = useT();
 
     const { searchTerm, setSearchTerm, pagination, setPagination } =
       useTypedListSearch();
@@ -246,8 +248,8 @@ const InvoiceList = React.memo(
           _source: self ? "personal" : "client",
           // REQ-0159 — Client rows: buyer clientName first (never store owner)
           _displayName: self
-            ? (user.name ?? "You")
-            : (inv.clientName ?? inv.customerDisplay ?? "Client"),
+            ? (user.name ?? t("You"))
+            : (inv.clientName ?? inv.customerDisplay ?? t("Client")),
         });
       });
       client.forEach((inv) => {
@@ -280,13 +282,13 @@ const InvoiceList = React.memo(
                 existing.clientName ??
                 inv.customerDisplay ??
                 existing._displayName ??
-                "Client",
+                t("Client"),
             });
           }
         }
       });
       return Array.from(byId.values());
-    }, [dataSource, user, invoicesQueryDefault.data, invoicesQueryClient.data]);
+    }, [dataSource, user, invoicesQueryDefault.data, invoicesQueryClient.data, t]);
 
     const effectiveDetailBase =
       dataSource === "clientInvoices"
@@ -323,16 +325,16 @@ const InvoiceList = React.memo(
 
     const columns = useMemo(
       () =>
-        createInvoiceColumns(handleEditInvoice, effectiveDetailBase, {
-          showSourceBadge: dataSource === "adminCombined",
-          showIssuedBy: isClientInvoicesPage,
-        }),
-      [
-        handleEditInvoice,
-        effectiveDetailBase,
-        dataSource,
-        isClientInvoicesPage,
-      ],
+        createInvoiceColumns(
+          handleEditInvoice,
+          effectiveDetailBase,
+          {
+            showSourceBadge: dataSource === "adminCombined",
+            showIssuedBy: isClientInvoicesPage,
+          },
+          t,
+        ),
+      [handleEditInvoice, effectiveDetailBase, dataSource, isClientInvoicesPage, t],
     );
 
     const isSearchDebouncing = searchTerm !== debouncedSearchTerm;
@@ -387,25 +389,35 @@ const InvoiceList = React.memo(
           tone="emerald"
           title={
             isAdminCombined
-              ? "Store Invoices Management (self + client)"
+              ? t("Store Invoices Management (self + client)")
               : isClientInvoices
-                ? "Client Invoices"
+                ? t("Client Invoices")
                 : isClientInvoicesPage
-                  ? "My Invoices"
+                  ? t("My Invoices")
                   : isSupplierInvoicesPage
-                    ? "Invoices (Your Products)"
-                    : "Invoice Management"
+                    ? t("Invoices (Your Products)")
+                    : t("Invoice Management")
           }
           description={
             isAdminCombined
-              ? "Invoices for your orders and for client orders. Filter by invoice type, status, and search."
+              ? t(
+                  "Invoices for your orders and for client orders. Filter by invoice type, status, and search.",
+                )
               : isClientInvoices
-                ? "Invoices for orders placed by clients that include your products. View details, send, and track payment."
+                ? t(
+                    "Invoices for orders placed by clients that include your products. View details, send, and track payment.",
+                  )
                 : isClientInvoicesPage
-                  ? "Your invoices, payment status, and order history. View details and track what you owe or have paid."
+                  ? t(
+                      "Your invoices, payment status, and order history. View details and track what you owe or have paid.",
+                    )
                   : isSupplierInvoicesPage
-                    ? "Invoices for orders that contain your products. View status, amounts, and payment (read-only)."
-                    : "Manage invoices, track payment status, monitor due dates, and handle billing. View invoice history, update statuses, and send invoices to clients."
+                    ? t(
+                        "Invoices for orders that contain your products. View status, amounts, and payment (read-only).",
+                      )
+                    : t(
+                        "Manage invoices, track payment status, monitor due dates, and handle billing. View invoice history, update statuses, and send invoices to clients.",
+                      )
           }
         />
 
@@ -413,18 +425,18 @@ const InvoiceList = React.memo(
         {isUserInvoicesPage && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
             <StatisticsCard
-              title="Total Value"
+              title={t("Total Value")}
               value={formatCurrency(
                 invoicesPageStats?.totalInventoryValue ?? 0,
               )}
-              description="Total inventory value"
+              description={t("Total inventory value")}
               icon={DollarSign}
               variant="violet"
               valueLoading={dashboardCardsLoading}
               badgeValuesLoading={dashboardCardsLoading}
               badges={[
                 {
-                  label: "Orders",
+                  label: t("Orders"),
                   value: formatCurrency(
                     invoicesPageStats?.orderAnalytics
                       ?.totalRevenueExcludingCancelled ??
@@ -433,19 +445,19 @@ const InvoiceList = React.memo(
                   ),
                 },
                 {
-                  label: "Invoices",
+                  label: t("Invoices"),
                   value: formatCurrency(
                     invoicesPageStats?.revenue?.fromInvoices ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     invoicesPageStats?.invoiceAnalytics?.outstandingAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: formatCurrency(
                     invoicesPageStats?.orderAnalytics?.cancelledOrderAmount ??
                       0,
@@ -454,45 +466,45 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Total Revenue"
+              title={t("Total Revenue")}
               value={formatCurrency(
                 invoicesPageStats?.orderAnalytics
                   ?.totalRevenueExcludingCancelled ??
                   invoicesPageStats?.revenue?.fromOrders ??
                   0,
               )}
-              description="Profits (excl. cancelled)"
+              description={t("Profits (excl. cancelled)")}
               icon={DollarSign}
               variant="emerald"
               valueLoading={dashboardCardsLoading}
               badgeValuesLoading={dashboardCardsLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatCurrency(
                     invoicesPageStats?.orderAnalytics?.paidOrderAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatCurrency(
                     invoicesPageStats?.orderAnalytics?.partialOrderAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     invoicesPageStats?.invoiceAnalytics?.outstandingAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatCurrency(
                     invoicesPageStats?.orderAnalytics?.refundedAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatCurrency(
                     invoicesPageStats?.orderAnalytics?.pendingOrderAmount ?? 0,
                   ),
@@ -500,13 +512,13 @@ const InvoiceList = React.memo(
                 ...(invoicesPageStats?.selfOthersBreakdown
                   ? [
                       {
-                        label: "Self",
+                        label: t("Self"),
                         value: formatCurrency(
                           invoicesPageStats?.selfOthersBreakdown.revenueSelf,
                         ),
                       },
                       {
-                        label: "Others",
+                        label: t("Others"),
                         value: formatCurrency(
                           invoicesPageStats?.selfOthersBreakdown.revenueOthers,
                         ),
@@ -516,9 +528,9 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Total Orders"
+              title={t("Total Orders")}
               value={invoicesPageStats?.counts.orders}
-              description="Total orders placed (self + client)"
+              description={t("Total orders placed (self + client)")}
               icon={ShoppingCart}
               variant="blue"
               valueLoading={dashboardCardsLoading}
@@ -538,9 +550,9 @@ const InvoiceList = React.memo(
               })}
             />
             <StatisticsCard
-              title="Invoices"
+              title={t("Invoices")}
               value={invoicesPageStats?.counts.invoices}
-              description="Total invoices (store-wide)"
+              description={t("Total invoices (store-wide)")}
               icon={FileText}
               variant="sky"
               valueLoading={dashboardCardsLoading}
@@ -581,32 +593,32 @@ const InvoiceList = React.memo(
         {isClientInvoicesPage && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
             <StatisticsCard
-              title="Total Orders"
+              title={t("Total Orders")}
               value={clientPortalDashboard?.totalOrders}
-              description="Your order history"
+              description={t("Your order history")}
               icon={ShoppingCart}
               variant="violet"
               valueLoading={clientPortalCardsLoading}
               badgeValuesLoading={clientPortalCardsLoading}
               badges={[
                 {
-                  label: "Orders",
+                  label: t("Orders"),
                   value: formatCurrency(clientPortalDashboard?.totalSpent ?? 0),
                 },
                 {
-                  label: "Invoices",
+                  label: t("Invoices"),
                   value: formatCurrency(
                     clientPortalDashboard?.totalInvoiceAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     clientPortalDashboard?.outstandingAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.cancelled ?? 0,
                   ),
@@ -614,40 +626,40 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Awaiting Payment"
+              title={t("Awaiting Payment")}
               value={clientPortalDashboard?.ordersAwaitingPayment ?? 0}
-              description="Orders awaiting payment"
+              description={t("Orders awaiting payment")}
               icon={Clock}
               variant="amber"
               valueLoading={clientPortalCardsLoading}
               badgeValuesLoading={clientPortalCardsLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.paid ?? 0,
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.partial ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.due ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.refund ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.pending ?? 0,
                   ),
@@ -655,46 +667,46 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Total Spent"
+              title={t("Total Spent")}
               value={formatCurrency(clientPortalDashboard?.totalSpent ?? 0)}
-              description="Total order value"
+              description={t("Total order value")}
               icon={DollarSign}
               variant="emerald"
               valueLoading={clientPortalCardsLoading}
               badgeValuesLoading={clientPortalCardsLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.paid ?? 0,
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.partial ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.due ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.refund ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.pending ?? 0,
                   ),
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: formatCurrency(
                     clientPortalDashboard?.paymentBreakdown?.cancelled ?? 0,
                   ),
@@ -702,9 +714,9 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Invoices"
+              title={t("Invoices")}
               value={clientPortalDashboard?.invoiceBreakdown?.total ?? 0}
-              description="Total invoices"
+              description={t("Total invoices")}
               icon={FileText}
               variant="sky"
               valueLoading={clientPortalCardsLoading}
@@ -727,56 +739,56 @@ const InvoiceList = React.memo(
         {isSupplierInvoicesPage && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
             <StatisticsCard
-              title="Total Products"
+              title={t("Total Products")}
               value={supplierPortal?.totalProducts ?? 0}
-              description="Products in your catalog"
+              description={t("Products in your catalog")}
               icon={Package}
               variant="rose"
               valueLoading={supplierPortalCardsLoading}
               badgeValuesLoading={supplierPortalCardsLoading}
               badges={[
                 {
-                  label: "Available",
+                  label: t("Available"),
                   value: supplierPortal?.productStatusCounts?.available ?? 0,
                 },
                 {
-                  label: "Stock low",
+                  label: t("Stock low"),
                   value: supplierPortal?.productStatusCounts?.stockLow ?? 0,
                 },
                 {
-                  label: "Stock out",
+                  label: t("Stock out"),
                   value: supplierPortal?.productStatusCounts?.stockOut ?? 0,
                 },
                 {
-                  label: "Product value",
+                  label: t("Product value"),
                   value: formatCurrency(supplierPortal?.productValue ?? 0),
                 },
                 {
-                  label: "Orders",
+                  label: t("Orders"),
                   value: formatCurrency(
                     supplierPortal?.valueBreakdown?.orders ?? 0,
                   ),
                 },
                 {
-                  label: "Invoices",
+                  label: t("Invoices"),
                   value: formatCurrency(
                     supplierPortal?.valueBreakdown?.invoices ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     supplierPortal?.valueBreakdown?.due ?? 0,
                   ),
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: formatCurrency(
                     supplierPortal?.valueBreakdown?.cancelled ?? 0,
                   ),
                 },
                 {
-                  label: "Refunded",
+                  label: t("Refunded"),
                   value: formatCurrency(
                     supplierPortal?.valueBreakdown?.refunded ?? 0,
                   ),
@@ -784,9 +796,9 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Total Orders"
+              title={t("Total Orders")}
               value={supplierPortal?.totalOrders ?? 0}
-              description="Orders containing your products"
+              description={t("Orders containing your products")}
               icon={ShoppingCart}
               variant="emerald"
               valueLoading={supplierPortalCardsLoading}
@@ -802,51 +814,51 @@ const InvoiceList = React.memo(
               })}
             />
             <StatisticsCard
-              title="Total Revenue"
+              title={t("Total Revenue")}
               value={formatCurrency(supplierPortal?.totalRevenue ?? 0)}
-              description="Revenue from your products (excl. cancelled)"
+              description={t("Revenue from your products (excl. cancelled)")}
               icon={DollarSign}
               variant="amber"
               valueLoading={supplierPortalCardsLoading}
               badgeValuesLoading={supplierPortalCardsLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatCurrency(
                     supplierPortal?.revenueBreakdown?.paid ?? 0,
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatCurrency(
                     supplierPortal?.revenueBreakdown?.partial ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     supplierPortal?.revenueBreakdown?.due ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatCurrency(
                     supplierPortal?.revenueBreakdown?.refund ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatCurrency(
                     supplierPortal?.revenueBreakdown?.pending ?? 0,
                   ),
                 },
-                { label: "Avg/Order", value: formatCurrency(supplierAvgOrder) },
+                { label: t("Avg/Order"), value: formatCurrency(supplierAvgOrder) },
               ]}
             />
             <StatisticsCard
-              title="Total Invoices"
+              title={t("Total Invoices")}
               value={supplierPortal?.totalInvoices ?? 0}
-              description="Invoices created by product owner"
+              description={t("Invoices created by product owner")}
               icon={FileText}
               variant="sky"
               valueLoading={supplierPortalCardsLoading}
@@ -867,9 +879,9 @@ const InvoiceList = React.memo(
         {isAdminCombined && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 pb-6 items-stretch">
             <StatisticsCard
-              title="Invoices"
+              title={t("Invoices")}
               value={dashboard?.counts?.invoices ?? 0}
-              description="Total invoices (store-wide)"
+              description={t("Total invoices (store-wide)")}
               icon={FileText}
               variant="sky"
               valueLoading={dashboardCardsLoading}
@@ -899,44 +911,44 @@ const InvoiceList = React.memo(
               })}
             />
             <StatisticsCard
-              title="Total Revenue"
+              title={t("Total Revenue")}
               value={formatCurrency(
                 dashboard?.orderAnalytics?.totalRevenueExcludingCancelled ??
                   dashboard?.revenue?.fromOrders ??
                   0,
               )}
-              description="Revenue (excl. cancelled)"
+              description={t("Revenue (excl. cancelled)")}
               icon={CreditCard}
               variant="amber"
               valueLoading={dashboardCardsLoading}
               badgeValuesLoading={dashboardCardsLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatCurrency(
                     dashboard?.orderAnalytics?.paidOrderAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatCurrency(
                     dashboard?.orderAnalytics?.partialOrderAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     dashboard?.invoiceAnalytics?.outstandingAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatCurrency(
                     dashboard?.orderAnalytics?.refundedAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatCurrency(
                     dashboard?.orderAnalytics?.pendingOrderAmount ?? 0,
                   ),
@@ -944,13 +956,13 @@ const InvoiceList = React.memo(
                 ...(dashboard?.selfOthersBreakdown
                   ? [
                       {
-                        label: "Self",
+                        label: t("Self"),
                         value: formatCurrency(
                           dashboard.selfOthersBreakdown.revenueSelf,
                         ),
                       },
                       {
-                        label: "Others",
+                        label: t("Others"),
                         value: formatCurrency(
                           dashboard.selfOthersBreakdown.revenueOthers,
                         ),
@@ -960,19 +972,19 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Total Value"
+              title={t("Total Value")}
               value={formatCurrency(
                 (dashboard as { totalInventoryValue?: number })
                   .totalInventoryValue ?? 0,
               )}
-              description="Total inventory value"
+              description={t("Total inventory value")}
               icon={DollarSign}
               variant="violet"
               valueLoading={dashboardCardsLoading}
               badgeValuesLoading={dashboardCardsLoading}
               badges={[
                 {
-                  label: "Orders",
+                  label: t("Orders"),
                   value: formatCurrency(
                     dashboard?.orderAnalytics?.totalRevenueExcludingCancelled ??
                       dashboard?.revenue?.fromOrders ??
@@ -980,17 +992,17 @@ const InvoiceList = React.memo(
                   ),
                 },
                 {
-                  label: "Invoices",
+                  label: t("Invoices"),
                   value: formatCurrency(dashboard?.revenue?.fromInvoices ?? 0),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatCurrency(
                     dashboard?.invoiceAnalytics?.outstandingAmount ?? 0,
                   ),
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: formatCurrency(
                     dashboard?.orderAnalytics?.cancelledOrderAmount ?? 0,
                   ),
@@ -998,9 +1010,9 @@ const InvoiceList = React.memo(
               ]}
             />
             <StatisticsCard
-              title="Total Orders"
+              title={t("Total Orders")}
               value={dashboard?.counts?.orders ?? 0}
-              description="Total orders placed (self + client)"
+              description={t("Total orders placed (self + client)")}
               icon={ShoppingCart}
               variant="blue"
               valueLoading={dashboardCardsLoading}

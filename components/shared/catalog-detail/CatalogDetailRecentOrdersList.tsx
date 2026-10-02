@@ -21,6 +21,7 @@ import { ProductThumb } from "@/components/products/ProductOptionRow";
 import { CARD_EMPTY_MESSAGE_CLASS } from "@/lib/ui/card-empty-styles";
 import type { CatalogDetailRecentOrderItem } from "@/types/catalog-detail-lists";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CatalogDetailRecentOrdersListProps = {
   orders: CatalogDetailRecentOrderItem[];
@@ -54,6 +55,7 @@ export function CatalogDetailRecentOrdersList({
   hideProductMeta = false,
   className,
 }: CatalogDetailRecentOrdersListProps) {
+  const t = useT();
   if (loading) {
     return (
       <div className={cn("mt-4 space-y-2", className)}>
@@ -66,7 +68,7 @@ export function CatalogDetailRecentOrdersList({
   if (orders.length === 0) {
     return (
       <p className={cn(CARD_EMPTY_MESSAGE_CLASS, "mt-4", className)}>
-        {emptyMessage}
+        {t(emptyMessage)}
       </p>
     );
   }
@@ -77,7 +79,7 @@ export function CatalogDetailRecentOrdersList({
         const buyerLabel =
           order.placedBy?.name?.trim() ||
           order.placedBy?.email ||
-          "Unknown buyer";
+          t("Unknown buyer");
         const category = order.category;
         const categoryNode =
           category != null && categoryHref != null ? (
@@ -182,7 +184,7 @@ export function CatalogDetailRecentOrdersList({
                           ·
                         </span>
                         <Hash className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                        <span className="shrink-0 text-xs">SKU:</span>
+                        <span className="shrink-0 text-xs">{t("SKU")}:</span>
                         <CopyableText value={order.productSku}>
                           <span className="font-mono text-xs">
                             {order.productSku}
@@ -203,7 +205,7 @@ export function CatalogDetailRecentOrdersList({
                     </span>
                     <Package className="h-3.5 w-3.5 shrink-0" aria-hidden />
                     <span>
-                      Qty:{" "}
+                      {t("Qty")}:{" "}
                       <span className="text-gray-700 dark:text-gray-300">
                         {order.quantity}
                       </span>{" "}
@@ -227,7 +229,7 @@ export function CatalogDetailRecentOrdersList({
                     ) : null}
                     <Package className="h-3.5 w-3.5 shrink-0" aria-hidden />
                     <span>
-                      Qty:{" "}
+                      {t("Qty")}:{" "}
                       <span className="text-gray-700 dark:text-gray-300">
                         {order.quantity}
                       </span>{" "}
@@ -245,12 +247,12 @@ export function CatalogDetailRecentOrdersList({
                     {order.owner && (
                       <span className="inline-flex items-center gap-1.5 min-w-0 font-normal">
                         <User className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                        Owner:{" "}
+                        {t("Owner:")}{" "}
                         <AvatarInlineLink
                           seed={order.owner.id}
                           image={order.owner.image}
                           label={
-                            order.owner.name ?? order.owner.email ?? "Owner"
+                            order.owner.name ?? order.owner.email ?? t("Owner")
                           }
                           href={ownerProductsHref(order.owner.id)}
                           size={20}
@@ -266,7 +268,7 @@ export function CatalogDetailRecentOrdersList({
                     {order.placedBy && (
                       <span className="inline-flex items-center gap-1.5 min-w-0 font-normal">
                         <User className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                        Buyer:{" "}
+                        {t("Buyer:")}{" "}
                         {isAdminRole ? (
                           <AvatarInlineLink
                             seed={order.placedBy.id}

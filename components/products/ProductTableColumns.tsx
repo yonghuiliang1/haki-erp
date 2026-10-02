@@ -30,6 +30,13 @@ import { getDisplayCommittedQuantity } from "@/lib/products/enrich-product-commi
 import { cn } from "@/lib/utils";
 import { ArrowUpDown } from "lucide-react";
 import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
+import { useT } from "@/lib/i18n/locale-context";
+
+/** Inline translated text for non-component render fns (table header/cell). */
+function T({ k, vars }: { k: string; vars?: Record<string, string | number> }) {
+  const t = useT();
+  return <>{t(k, vars)}</>;
+}
 
 /** Base path for detail links (e.g. "" or "/admin") so product/category/supplier links stay in admin when on admin page. */
 function detailHref(base: string, segment: string, id: string): string {
@@ -43,6 +50,7 @@ type SortableHeaderProps = {
 };
 
 const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -58,9 +66,9 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
           className={`flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white ${
             isSorted && "text-primary"
           }`}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
@@ -68,12 +76,12 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
         {/* Ascending Sorting */}
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         {/* Descending Sorting */}
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -115,7 +123,7 @@ export function createProductColumns(
             ) : (
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-700">
                 <span className="text-[10px] text-gray-500 dark:text-gray-300">
-                  No Img
+                  <T k="No Img" />
                 </span>
               </div>
             )}
@@ -178,7 +186,7 @@ export function createProductColumns(
               {reserved > 0 ? (
                 // REQ-0139 — same muted tone as SKU under product name
                 <span className="text-xs text-muted-foreground">
-                  {reserved} reserved
+                  <T k="{count} reserved" vars={{ count: reserved }} />
                 </span>
               ) : null}
             </div>
@@ -231,7 +239,7 @@ export function createProductColumns(
         return (
           <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
             <span className="text-xs">
-              Created:{" "}
+              <T k="Created:" />{" "}
               {createdAt ? (
                 <ClientDate
                   date={createdAt}
@@ -243,7 +251,7 @@ export function createProductColumns(
               )}
             </span>
             <span className={cn("text-xs", expireClass)}>
-              Expire:{" "}
+              <T k="Expire:" />{" "}
               {expirationDate ? (
                 <ClientDate
                   date={expirationDate}
@@ -260,7 +268,7 @@ export function createProductColumns(
     },
     {
       accessorKey: "category",
-      header: "Category",
+      header: () => <T k="Category" />,
       cell: ({ row }) => {
         const product = row.original;
         const categoryName =
@@ -277,14 +285,18 @@ export function createProductColumns(
             </Link>
           );
         }
-        return <span>{categoryName}</span>;
+        return (
+          <span>
+            {categoryName === "Unknown" ? <T k="Unknown" /> : categoryName}
+          </span>
+        );
       },
     },
     ...(forSupplier
       ? [
           {
             id: "productOwner",
-            header: "Product Owner",
+            header: () => <T k="Product Owner" />,
             cell: ({ row }) => {
               const product = row.original;
               const name = product.productOwnerName ?? product.userId ?? "—";
@@ -304,7 +316,7 @@ export function createProductColumns(
       : [
           {
             accessorKey: "supplier",
-            header: "Supplier",
+            header: () => <T k="Supplier" />,
             cell: ({ row }) => {
               const product = row.original;
               const supplierName =
@@ -326,13 +338,17 @@ export function createProductColumns(
                   />
                 );
               }
-              return <span>{supplierName}</span>;
+              return (
+                <span>
+                  {supplierName === "Unknown" ? <T k="Unknown" /> : supplierName}
+                </span>
+              );
             },
           } as ColumnDef<Product>,
         ]),
     {
       id: "actions",
-      header: "Actions",
+      header: () => <T k="Actions" />,
       cell: ({ row }) => {
         return <ProductsDropDown row={row} detailBase={detailBase} />;
       },

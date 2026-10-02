@@ -73,6 +73,7 @@ import {
   getOrderCancelConfirmDescription,
   getOrderRefundConfirmDescription,
 } from "@/lib/orders/order-destructive-copy";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderDetailPageProps = {
   initialOrder?: Order;
@@ -88,6 +89,7 @@ export default function OrderDetailPage({
   const router = useRouter();
   const pathname = usePathname() ?? "";
   const { user, isCheckingAuth } = useAuth();
+  const t = useT();
   // REQ-0209 — back list follows current route shell (not role): /orders vs /admin/orders
   const ordersListPath = useMemo(
     () => (pathname.startsWith("/admin") ? "/admin/orders" : "/orders"),
@@ -178,19 +180,19 @@ export default function OrderDetailPage({
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2">
           <GlassCard variant="rose" className="max-w-md text-center">
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-              Order Not Found
+              {t("Order Not Found")}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               {error instanceof Error
                 ? error.message
-                : "Failed to load order details"}
+                : t("Failed to load order details")}
             </p>
             <Button
               onClick={() => router.push("/")}
               className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t("Back to Home")}
             </Button>
           </GlassCard>
         </div>
@@ -204,17 +206,17 @@ export default function OrderDetailPage({
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2">
           <GlassCard variant="rose" className="max-w-md text-center">
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-              Order Not Found
+              {t("Order Not Found")}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              The order you are looking for does not exist or was removed.
+              {t("The order you are looking for does not exist or was removed.")}
             </p>
             <Button
               onClick={() => router.push("/")}
               className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t("Back to Home")}
             </Button>
           </GlassCard>
         </div>
@@ -301,7 +303,7 @@ export default function OrderDetailPage({
             <div className="flex flex-col gap-2 sm:gap-4 min-w-0">
             <GlassCard variant="orange">
               <SectionCardHeader
-                title="Order Information"
+                title={t("Order Information")}
                 icon={FileText}
                 tone="orange"
                 className="mb-4"
@@ -316,28 +318,28 @@ export default function OrderDetailPage({
                   <>
                     <DetailInfoRow
                       icon={FileText}
-                      label="Order #:"
+                      label={t("Order #:")}
                       tone="orange"
                     >
                       <CopyableText value={order.orderNumber}>
                         {order.orderNumber}
                       </CopyableText>
                     </DetailInfoRow>
-                    <DetailInfoRow icon={Hash} label="Order ID:" tone="violet">
+                    <DetailInfoRow icon={Hash} label={t("Order ID:")} tone="violet">
                       <CopyableText value={order.id}>
                         <span className="font-mono text-xs">{order.id}</span>
                       </CopyableText>
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={Package}
-                      label="Order Status:"
+                      label={t("Order Status:")}
                       tone="sky"
                     >
                       <OrderStatusBadge status={order.status} />
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={CreditCard}
-                      label="Payment Status:"
+                      label={t("Payment Status:")}
                       tone="emerald"
                     >
                       <PaymentStatusBadge status={order.paymentStatus} />
@@ -346,7 +348,7 @@ export default function OrderDetailPage({
                     {order.invoiceForOrder && (
                       <DetailInfoRow
                         icon={FileText}
-                        label="Invoice:"
+                        label={t("Invoice:")}
                         tone="violet"
                       >
                         <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
@@ -366,11 +368,11 @@ export default function OrderDetailPage({
                           </CopyableText>
                           {order.invoiceForOrder.amountDue != null && (
                             <span className="text-xs text-gray-600 dark:text-gray-300 font-normal">
-                              · $
-                              {Number(order.invoiceForOrder.amountDue).toFixed(
-                                2,
-                              )}{" "}
-                              due
+                              {t("· ${amount} due", {
+                                amount: Number(
+                                  order.invoiceForOrder.amountDue,
+                                ).toFixed(2),
+                              })}
                             </span>
                           )}
                         </span>
@@ -379,11 +381,12 @@ export default function OrderDetailPage({
                     {order.paymentStatus === "partial" && (
                       <DetailInfoRow
                         icon={CreditCard}
-                        label="Payment:"
+                        label={t("Payment:")}
                         tone="amber"
                       >
-                        Partial payment — total{" "}
-                        {formatStableCurrency(order.total)}
+                        {t("Partial payment — total {amount}", {
+                          amount: formatStableCurrency(order.total),
+                        })}
                         {order.invoiceForOrder && (
                           <>
                             {" · "}
@@ -395,7 +398,7 @@ export default function OrderDetailPage({
                               }
                               className="text-sky-600 dark:text-sky-400 hover:underline"
                             >
-                              View invoice for payment breakdown
+                              {t("View invoice for payment breakdown")}
                             </Link>
                           </>
                         )}
@@ -404,7 +407,7 @@ export default function OrderDetailPage({
                     {order.stripePaymentIntentId && (
                       <DetailInfoRow
                         icon={CreditCard}
-                        label="Stripe:"
+                        label={t("Stripe:")}
                         tone="blue"
                       >
                         <CopyableText value={order.stripePaymentIntentId}>
@@ -419,7 +422,7 @@ export default function OrderDetailPage({
                 <DetailInfoRowGroup>
                   <DetailInfoRow
                     icon={Calendar}
-                    label="Created:"
+                    label={t("Created:")}
                     tone="orange"
                     loading={dataLoading && !createdAt}
                   >
@@ -430,7 +433,7 @@ export default function OrderDetailPage({
                   {(dataLoading || updatedAt) && (
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Updated:"
+                      label={t("Updated:")}
                       tone="amber"
                       loading={dataLoading && !updatedAt}
                     >
@@ -444,7 +447,7 @@ export default function OrderDetailPage({
                   (order?.paymentStatus === "paid" && order?.paidAt)) && (
                   <DetailInfoRow
                     icon={CircleDollarSign}
-                    label="Paid:"
+                    label={t("Paid:")}
                     tone="emerald"
                     loading={dataLoading}
                   >
@@ -459,7 +462,7 @@ export default function OrderDetailPage({
                 {(dataLoading || shippedAt) && (
                   <DetailInfoRow
                     icon={Truck}
-                    label="Shipped:"
+                    label={t("Shipped:")}
                     tone="sky"
                     loading={dataLoading}
                   >
@@ -471,7 +474,7 @@ export default function OrderDetailPage({
                 {(dataLoading || deliveredAt) && (
                   <DetailInfoRow
                     icon={Package}
-                    label="Delivered:"
+                    label={t("Delivered:")}
                     tone="emerald"
                     loading={dataLoading}
                   >
@@ -483,7 +486,7 @@ export default function OrderDetailPage({
                 {(dataLoading || cancelledAt) && (
                   <DetailInfoRow
                     icon={Ban}
-                    label="Cancelled:"
+                    label={t("Cancelled:")}
                     tone="rose"
                     loading={dataLoading}
                   >
@@ -495,7 +498,7 @@ export default function OrderDetailPage({
                 {(dataLoading || estimatedDelivery) && (
                   <DetailInfoRow
                     icon={Calendar}
-                    label="Estimated Delivery:"
+                    label={t("Estimated Delivery:")}
                     tone="violet"
                     loading={dataLoading}
                   >
@@ -508,7 +511,7 @@ export default function OrderDetailPage({
                   </DetailInfoRow>
                 )}
                 {!dataLoading && order?.trackingNumber && (
-                  <DetailInfoRow icon={Truck} label="Tracking:" tone="blue">
+                  <DetailInfoRow icon={Truck} label={t("Tracking:")} tone="blue">
                     <span className="inline-flex flex-wrap items-center gap-2 min-w-0">
                       <CarrierGlassBadge carrier={order.trackingCarrier} />
                       <CopyableText value={order.trackingNumber}>
@@ -531,7 +534,7 @@ export default function OrderDetailPage({
                   </DetailInfoRow>
                 )}
                 <AuditUserDetailRow
-                  label="Created by:"
+                  label={t("Created by:")}
                   tone="violet"
                   user={order?.creator}
                   loading={dataLoading && !order?.creator}
@@ -545,7 +548,7 @@ export default function OrderDetailPage({
                   }
                 />
                 <AuditUserDetailRow
-                  label="Updated by:"
+                  label={t("Updated by:")}
                   tone="blue"
                   user={order?.updater}
                   loading={dataLoading && !order?.updater}
@@ -559,7 +562,7 @@ export default function OrderDetailPage({
                   }
                 />
                 {!dataLoading && order?.notes && (
-                  <DetailInfoRow icon={StickyNote} label="Notes:" tone="teal">
+                  <DetailInfoRow icon={StickyNote} label={t("Notes:")} tone="teal">
                     {order.notes}
                   </DetailInfoRow>
                 )}
@@ -585,7 +588,7 @@ export default function OrderDetailPage({
               {(dataLoading || order?.billingAddress) && (
                 <GlassCard variant="blue">
                   <SectionCardHeader
-                    title="Billing Address"
+                    title={t("Billing Address")}
                     icon={CreditCard}
                     tone="blue"
                     className="mb-3"
@@ -624,10 +627,10 @@ export default function OrderDetailPage({
             <AlertDialogWrapper
               open={cancelDialogOpen}
               onOpenChange={setCancelDialogOpen}
-              title="Cancel Order"
+              title={t("Cancel Order")}
               description={getOrderCancelConfirmDescription(order)}
-              actionLabel="Cancel Order"
-              actionLoadingLabel="Cancelling..."
+              actionLabel={t("Cancel Order")}
+              actionLoadingLabel={t("Cancelling...")}
               isLoading={isCancelling}
               onAction={handleConfirmCancelOrder}
               onCancel={() => setCancelDialogOpen(false)}
@@ -638,10 +641,10 @@ export default function OrderDetailPage({
             <AlertDialogWrapper
               open={refundDialogOpen}
               onOpenChange={setRefundDialogOpen}
-              title="Process Refund"
+              title={t("Process Refund")}
               description={getOrderRefundConfirmDescription(order)}
-              actionLabel="Process Refund"
-              actionLoadingLabel="Processing..."
+              actionLabel={t("Process Refund")}
+              actionLoadingLabel={t("Processing...")}
               isLoading={isRefunding}
               onAction={handleConfirmRefundOrder}
               onCancel={() => setRefundDialogOpen(false)}

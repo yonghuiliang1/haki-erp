@@ -63,6 +63,7 @@ import {
 import { Supplier } from "@/types";
 import { createSupplierColumns } from "./SupplierTableColumns";
 import { Plus, Truck, X, FileText, StickyNote } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 const SUPPLIER_DIALOG_CONTENT_CLASS = `${DIALOG_EDGE_SCROLL_SHELL} poppins border-emerald-400/30 dark:border-emerald-400/30 shadow-[0_30px_80px_rgba(16,185,129,0.35)] dark:shadow-[0_30px_80px_rgba(16,185,129,0.25)]`;
 
@@ -81,6 +82,7 @@ export default function AddSupplierDialog({
   editingSupplier: externalEditingSupplier,
   onEditSupplier,
 }: AddSupplierDialogProps = {}) {
+  const t = useT();
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Use controlled or internal state
@@ -165,8 +167,8 @@ export default function AddSupplierDialog({
   const handleAddSupplier = async () => {
     if (supplierName.trim() === "") {
       toast({
-        title: "Error",
-        description: "Supplier name cannot be empty",
+        title: t("Error"),
+        description: t("Supplier name cannot be empty"),
         variant: "destructive",
       });
       return;
@@ -174,8 +176,8 @@ export default function AddSupplierDialog({
 
     if (!user?.id) {
       toast({
-        title: "Error",
-        description: "User ID is required",
+        title: t("Error"),
+        description: t("User ID is required"),
         variant: "destructive",
       });
       return;
@@ -229,8 +231,8 @@ export default function AddSupplierDialog({
 
     if (newSupplierName.trim() === "") {
       toast({
-        title: "Error",
-        description: "Supplier name cannot be empty",
+        title: t("Error"),
+        description: t("Supplier name cannot be empty"),
         variant: "destructive",
       });
       return;
@@ -318,7 +320,7 @@ export default function AddSupplierDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children || (
-          <Button className="h-10 font-medium">+Add Supplier</Button>
+          <Button className="h-10 font-medium">+{t("Add Supplier")}</Button>
         )}
       </DialogTrigger>
       <DialogContent className={SUPPLIER_DIALOG_CONTENT_CLASS}>
@@ -326,11 +328,11 @@ export default function AddSupplierDialog({
           className={DIALOG_EDGE_SCROLL_HEADER}
           icon={Truck}
           tone="emerald"
-          title={editingSupplier ? "Edit Supplier" : "Add Supplier"}
+          title={editingSupplier ? t("Edit Supplier") : t("Add Supplier")}
           description={
             editingSupplier
-              ? "Update the supplier name"
-              : "Enter the name of the new supplier"
+              ? t("Update the supplier name")
+              : t("Enter the name of the new supplier")
           }
         />
         <div className={DIALOG_EDGE_SCROLL_BODY}>
@@ -344,12 +346,12 @@ export default function AddSupplierDialog({
                     required
                     wrapperClassName="mb-2"
                   >
-                    Supplier Name
+                    {t("Supplier Name")}
                   </DialogFormLabel>
                   <Input
                     value={newSupplierName}
                     onChange={(e) => setNewSupplierName(e.target.value)}
-                    placeholder="Supplier Name"
+                    placeholder={t("Supplier Name")}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_EMERALD)}
                   />
                 </div>
@@ -359,12 +361,12 @@ export default function AddSupplierDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Description
+                    {t("Description")}
                   </DialogFormLabel>
                   <Textarea
                     value={newSupplierDescription}
                     onChange={(e) => setNewSupplierDescription(e.target.value)}
-                    placeholder="Enter supplier description..."
+                    placeholder={t("Enter supplier description...")}
                     rows={3}
                     maxLength={500}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_EMERALD)}
@@ -376,12 +378,12 @@ export default function AddSupplierDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Notes
+                    {t("Notes")}
                   </DialogFormLabel>
                   <Textarea
                     value={newSupplierNotes}
                     onChange={(e) => setNewSupplierNotes(e.target.value)}
-                    placeholder="Enter supplier notes..."
+                    placeholder={t("Enter supplier notes...")}
                     rows={3}
                     maxLength={1000}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_EMERALD)}
@@ -400,8 +402,7 @@ export default function AddSupplierDialog({
                     htmlFor="edit-supplier-status"
                     className="min-w-0 flex-1 text-sm font-medium leading-snug text-white/80 dark:text-white/80 cursor-pointer"
                   >
-                    Active (Inactive suppliers will not appear while creating
-                    products)
+                    {t("Active (Inactive suppliers will not appear while creating products)")}
                   </Label>
                 </div>
                 <DialogFooter className="mt-9 mb-4 flex w-full min-w-0 flex-col sm:flex-row items-center gap-2">
@@ -414,14 +415,14 @@ export default function AddSupplierDialog({
                     )}
                   >
                     <X className="h-4 w-4 shrink-0" aria-hidden />
-                    Cancel
+                    {t("Cancel")}
                   </Button>
                   <DialogSubmitButton
                     type="button"
                     onClick={handleUpdateSupplier}
                     isPending={isEditing}
-                    pendingLabel="Saving…"
-                    label="Save Changes"
+                    pendingLabel={t("Saving…")}
+                    label={t("Save Changes")}
                     icon={Plus}
                     hue="emerald"
                     disabled={!isEditValid}
@@ -438,13 +439,13 @@ export default function AddSupplierDialog({
                     required
                     wrapperClassName="mb-2"
                   >
-                    Supplier Name
+                    {t("Supplier Name")}
                   </DialogFormLabel>
                   <Input
                     id="supplier-create-name"
                     value={supplierName}
                     onChange={(e) => setSupplierName(e.target.value)}
-                    placeholder="New Supplier"
+                    placeholder={t("New Supplier")}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_EMERALD)}
                   />
                 </div>
@@ -454,12 +455,12 @@ export default function AddSupplierDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Description
+                    {t("Description")}
                   </DialogFormLabel>
                   <Textarea
                     value={supplierDescription}
                     onChange={(e) => setSupplierDescription(e.target.value)}
-                    placeholder="Enter supplier description..."
+                    placeholder={t("Enter supplier description...")}
                     rows={3}
                     maxLength={500}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_EMERALD)}
@@ -471,12 +472,12 @@ export default function AddSupplierDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Notes
+                    {t("Notes")}
                   </DialogFormLabel>
                   <Textarea
                     value={supplierNotes}
                     onChange={(e) => setSupplierNotes(e.target.value)}
-                    placeholder="Enter supplier notes..."
+                    placeholder={t("Enter supplier notes...")}
                     rows={3}
                     maxLength={1000}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_EMERALD)}
@@ -495,8 +496,7 @@ export default function AddSupplierDialog({
                     htmlFor="supplier-status"
                     className="min-w-0 flex-1 text-sm font-medium leading-snug text-white/80 dark:text-white/80 cursor-pointer"
                   >
-                    Active (Inactive suppliers will not appear while creating
-                    products)
+                    {t("Active (Inactive suppliers will not appear while creating products)")}
                   </Label>
                 </div>
                 <DialogFooter className="mt-9 mb-4 flex w-full min-w-0 flex-col sm:flex-row items-center gap-2">
@@ -509,15 +509,15 @@ export default function AddSupplierDialog({
                       )}
                     >
                       <X className="h-4 w-4 shrink-0" aria-hidden />
-                      Cancel
+                      {t("Cancel")}
                     </Button>
                   </DialogClose>
                   <DialogSubmitButton
                     type="button"
                     onClick={handleAddSupplier}
                     isPending={isSubmitting}
-                    pendingLabel="Creating…"
-                    label="Add Supplier"
+                    pendingLabel={t("Creating…")}
+                    label={t("Add Supplier")}
                     icon={Plus}
                     hue="emerald"
                     disabled={!isAddValid}
@@ -535,7 +535,7 @@ export default function AddSupplierDialog({
                   DIALOG_TABLE_SECTION_TITLE,
                 )}
               >
-                Suppliers{" "}
+                {t("Suppliers")}{" "}
                 {suppliers && suppliers.length > 0 && (
                   <span className={DIALOG_TABLE_SECTION_TITLE}>
                     ({suppliers.length})
@@ -577,7 +577,7 @@ export default function AddSupplierDialog({
                           colSpan={columns.length}
                           className={cn("text-center", DIALOG_TABLE_TEXT_MUTED)}
                         >
-                          Loading...
+                          {t("Loading...")}
                         </TableCell>
                       </TableRow>
                     ) : table.getRowModel().rows?.length ? (
@@ -613,7 +613,7 @@ export default function AddSupplierDialog({
                           colSpan={columns.length}
                           className={cn("text-center", DIALOG_TABLE_TEXT_MUTED)}
                         >
-                          No suppliers found.
+                          {t("No suppliers found.")}
                         </TableCell>
                       </TableRow>
                     )}

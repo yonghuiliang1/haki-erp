@@ -87,6 +87,7 @@ import {
 } from "@/hooks/queries";
 import { useSyncDialogOpenState } from "@/hooks/use-sync-dialog-open-state";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import {
   TicketPriorityBadge,
@@ -129,6 +130,7 @@ export function OwnerSelectRow({
   avatarSize?: number;
   surface?: "trigger" | "item";
 }) {
+  const t = useT();
   const avatar = resolveAvatarSourcesFromSeed(owner.id, owner.image);
   const count = owner.productCount;
   const nameClass =
@@ -163,7 +165,7 @@ export function OwnerSelectRow({
         <span className={metaClass}>
           {owner.email}
           {typeof count === "number"
-            ? ` · ${count} product${count === 1 ? "" : "s"}`
+            ? ` · ${count === 1 ? t("1 product") : t("{count} products", { count })}`
             : ""}
         </span>
       </span>
@@ -189,6 +191,7 @@ export default function SupportTicketDialog({
   variant = "sky",
   existingTicket = null,
 }: SupportTicketDialogProps) {
+  const t = useT();
   const { user } = useAuth();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
@@ -368,15 +371,21 @@ export default function SupportTicketDialog({
         <DialogHeaderBrand
           icon={isEdit ? Pencil : MessageSquare}
           tone={isViolet ? "violet" : "sky"}
-          title={isEdit ? "Edit Support Ticket" : "Create Support Ticket"}
+          title={isEdit ? t("Edit Support Ticket") : t("Create Support Ticket")}
           description={
             isEdit
               ? canEditStatus
-                ? "Update subject, description, status, or priority. Send-to cannot be changed here."
-                : "Update subject, description, or priority. Status and Send-to cannot be changed here."
+                ? t(
+                    "Update subject, description, status, or priority. Send-to cannot be changed here.",
+                  )
+                : t(
+                    "Update subject, description, or priority. Status and Send-to cannot be changed here.",
+                  )
               : productOwners.length > 0
-                ? "Open a new support ticket. Add a subject, description, and choose who to send it to (product owner)."
-                : "Open a new support ticket. Add a subject and description."
+                ? t(
+                    "Open a new support ticket. Add a subject, description, and choose who to send it to (product owner).",
+                  )
+                : t("Open a new support ticket. Add a subject and description.")
           }
         />
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -386,11 +395,11 @@ export default function SupportTicketDialog({
               icon={MessageSquare}
               required
             >
-              Subject
+              {t("Subject")}
             </DialogFormLabel>
             <Input
               id="support-ticket-subject"
-              placeholder="Brief subject of your issue"
+              placeholder={t("Brief subject of your issue")}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               disabled={isPending}
@@ -404,11 +413,11 @@ export default function SupportTicketDialog({
               icon={FileText}
               required
             >
-              Description
+              {t("Description")}
             </DialogFormLabel>
             <Textarea
               id="support-ticket-description"
-              placeholder="Describe the issue or request in detail..."
+              placeholder={t("Describe the issue or request in detail...")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isPending}
@@ -424,7 +433,7 @@ export default function SupportTicketDialog({
                 required={!isEdit && requireAssignee}
                 optional={!isEdit && !requireAssignee}
               >
-                Send to (product owner)
+                {t("Send to (product owner)")}
               </DialogFormLabel>
               {isEdit ? (
                 <div
@@ -443,7 +452,7 @@ export default function SupportTicketDialog({
                     />
                   ) : (
                     <span className="text-sm text-white/75">
-                      — No specific owner —
+                      {t("— No specific owner —")}
                     </span>
                   )}
                 </div>
@@ -466,9 +475,9 @@ export default function SupportTicketDialog({
                           surface="trigger"
                         />
                       ) : requireAssignee ? (
-                        "Select product owner"
+                        t("Select product owner")
                       ) : (
-                        "Select product owner (optional)"
+                        t("Select product owner (optional)")
                       )}
                     </div>
                   }
@@ -499,8 +508,8 @@ export default function SupportTicketDialog({
                         <SelectValue
                           placeholder={
                             requireAssignee
-                              ? "Select product owner"
-                              : "Select product owner (optional)"
+                              ? t("Select product owner")
+                              : t("Select product owner (optional)")
                           }
                         >
                           {selectedOwner ? (
@@ -509,7 +518,7 @@ export default function SupportTicketDialog({
                               surface="trigger"
                             />
                           ) : allowNoneOwner && !assignedToId ? (
-                            "— No specific owner —"
+                            t("— No specific owner —")
                           ) : null}
                         </SelectValue>
                       </SelectTrigger>
@@ -526,7 +535,7 @@ export default function SupportTicketDialog({
                             value="none"
                             className={DIALOG_SELECT_ITEM_CLASS}
                           >
-                            — No specific owner —
+                            {t("— No specific owner —")}
                           </SelectItem>
                         ) : null}
                         {productOwners.map((po) => (
@@ -553,7 +562,7 @@ export default function SupportTicketDialog({
                 icon={Package}
                 optional
               >
-                Related product
+                {t("Related product")}
               </DialogFormLabel>
               {/* REQ-0199 — modal Popover + shared Combobox trigger (no white hover / reopen) */}
               <Popover
@@ -600,8 +609,8 @@ export default function SupportTicketDialog({
                     ) : (
                       <span className="text-sm text-white/75">
                         {!assignedToId
-                          ? "Select a product owner first"
-                          : "— None —"}
+                          ? t("Select a product owner first")
+                          : t("— None —")}
                       </span>
                     )}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -617,9 +626,9 @@ export default function SupportTicketDialog({
                   )}
                 >
                   <Command className="bg-transparent">
-                    <CommandInput placeholder="Search products…" />
+                    <CommandInput placeholder={t("Search products…")} />
                     <CommandList className="max-h-[min(60vh,280px)]">
-                      <CommandEmpty>No products found.</CommandEmpty>
+                      <CommandEmpty>{t("No products found.")}</CommandEmpty>
                       <CommandGroup>
                         <CommandItem
                           value="none"
@@ -629,7 +638,7 @@ export default function SupportTicketDialog({
                           }}
                           className="relative py-2 pr-8"
                         >
-                          <span className="text-sm">— None —</span>
+                          <span className="text-sm">{t("— None —")}</span>
                           <Check
                             className={cn(
                               "absolute right-2 h-4 w-4 shrink-0",
@@ -683,7 +692,7 @@ export default function SupportTicketDialog({
                 htmlFor="support-ticket-related-product-ro"
                 icon={Package}
               >
-                Related product
+                {t("Related product")}
               </DialogFormLabel>
               <div
                 id="support-ticket-related-product-ro"
@@ -769,7 +778,7 @@ export default function SupportTicketDialog({
                 icon={CircleDot}
                 required={canEditStatus}
               >
-                Status
+                {t("Status")}
               </DialogFormLabel>
               {canEditStatus ? (
                 <DeferredSelectGate
@@ -822,7 +831,7 @@ export default function SupportTicketDialog({
                           >
                             <TicketStatusBadge
                               status={s.value}
-                              label={s.label}
+                              label={t(s.label)}
                               size="compact"
                               contrast="opaque"
                             />
@@ -857,7 +866,7 @@ export default function SupportTicketDialog({
               icon={AlertTriangle}
               required
             >
-              Priority
+              {t("Priority")}
             </DialogFormLabel>
             <DeferredSelectGate
               enabled={open}
@@ -909,6 +918,7 @@ export default function SupportTicketDialog({
                       >
                         <TicketPriorityBadge
                           status={p.value}
+                          label={t(p.label)}
                           size="compact"
                           contrast="opaque"
                         />
@@ -928,13 +938,15 @@ export default function SupportTicketDialog({
                 disabled={isPending}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
             </DialogClose>
             <DialogSubmitButton
               isPending={isPending}
-              pendingLabel={isEdit ? "Saving ticket…" : "Creating ticket…"}
-              label={isEdit ? "Save" : "Create Ticket"}
+              pendingLabel={
+                isEdit ? t("Saving ticket…") : t("Creating ticket…")
+              }
+              label={isEdit ? t("Save") : t("Create Ticket")}
               icon={isEdit ? Pencil : Send}
               hue={submitHue}
               disabled={!canSubmit}

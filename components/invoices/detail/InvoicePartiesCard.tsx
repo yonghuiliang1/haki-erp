@@ -15,6 +15,7 @@ import {
 } from "@/components/shared/PartiesRolesCard";
 import { enrichPartyPerson } from "@/lib/navigation/enrich-party-person";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type InvoicePartiesCardProps = {
   invoice?: Invoice;
@@ -29,6 +30,7 @@ export function InvoicePartiesCard({
   isAdminRole = false,
 }: InvoicePartiesCardProps) {
   const { user } = useAuth();
+  const t = useT();
   const viewerUserId = user?.id;
   const enrichOpts = { isAdminRole, viewerUserId };
 
@@ -59,7 +61,7 @@ export function InvoicePartiesCard({
         )}
         orderedBy={enrichPartyPerson(invoice?.orderedBy, enrichOpts)}
         customer={enrichPartyPerson(invoice?.client, enrichOpts)}
-        customerLabel="Customer / Bill to"
+        customerLabel={t("Customer / Bill to")}
         productOwners={productOwners}
       />
     </GlassCard>

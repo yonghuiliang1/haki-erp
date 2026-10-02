@@ -17,6 +17,7 @@ import { PageContentWrapper } from "@/components/shared";
 import FloatingActionButtons from "@/components/shared/FloatingActionButtons";
 import { PageSectionHeader } from "@/components/shared";
 import { useProducts } from "@/hooks/queries";
+import { useT } from "@/lib/i18n/locale-context";
 import { queryKeys, useSyncSsrQueryData } from "@/lib/react-query";
 import type {
   ProductForHome,
@@ -46,6 +47,7 @@ export default function HomePage({
   initialStats,
   initialOAuthSuccess = false,
 }: HomePageProps = {}) {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoggedIn, isCheckingAuth, user, refreshSession } = useAuth();
@@ -122,20 +124,19 @@ export default function HomePage({
           as="h2"
           icon={LayoutDashboard}
           tone="sky"
-          title="Store Overview"
+          title={t("Store Overview")}
           description={
             <>
-              The cards below show your store-wide metrics as the store owner,
-              including your own activity and activity from clients and others.
-              Numbers update automatically when you or others make changes. For
-              your personal orders, products, and activity only, visit{" "}
+              {t(
+                "The cards below show your store-wide metrics as the store owner, including your own activity and activity from clients and others. Numbers update automatically when you or others make changes. For your personal orders, products, and activity only, visit",
+              )}{" "}
               <Link
                 href="/admin/my-activity"
                 className="font-medium text-sky-600 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300"
               >
-                My Activities
+                {t("My Activities")}
               </Link>
-              .
+              {t(".")}
             </>
           }
         />

@@ -33,6 +33,7 @@ import {
 } from "@/hooks/queries";
 import type { Notification, NotificationType } from "@/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface NotificationDropdownProps {
   notifications: Notification[];
@@ -114,6 +115,7 @@ export function NotificationDropdown({
   isError,
   onClose,
 }: NotificationDropdownProps) {
+  const t = useT();
   const updateNotification = useUpdateNotification();
   const markAllAsRead = useMarkAllNotificationsAsRead();
   const deleteNotification = useDeleteNotification();
@@ -142,18 +144,18 @@ export function NotificationDropdown({
       <div className="flex items-center justify-between p-4 border-b border-rose-400/20 dark:border-white/10">
         <div className="flex flex-col gap-1 min-w-0">
           <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-            Notifications
+            {t("Notifications")}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-300 flex flex-wrap items-center gap-1.5">
             <SectionCountBadge>{notifications.length}</SectionCountBadge>
-            <span>total</span>
+            <span>{t("total")}</span>
             {hasUnread && (
               <>
                 <span aria-hidden>·</span>
                 <SectionCountBadge hue="rose">
                   {unreadNotifications.length}
                 </SectionCountBadge>
-                <span>unread</span>
+                <span>{t("unread")}</span>
               </>
             )}
           </p>
@@ -171,7 +173,7 @@ export function NotificationDropdown({
             ) : (
               <CheckCheck className="h-3 w-3 mr-1" />
             )}
-            Mark all read
+            {t("Mark all read")}
           </Button>
         )}
       </div>
@@ -181,16 +183,16 @@ export function NotificationDropdown({
         {isLoading ? (
           <div className="p-4 text-center text-gray-500 dark:text-gray-300">
             <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
-            <p className="text-sm">Loading notifications...</p>
+            <p className="text-sm">{t("Loading notifications...")}</p>
           </div>
         ) : isError ? (
           <div className="p-4 text-center text-red-500 dark:text-red-400">
-            <p className="text-sm">Failed to load notifications</p>
+            <p className="text-sm">{t("Failed to load notifications")}</p>
           </div>
         ) : notifications.length === 0 ? (
           <div className="p-4 sm:p-6 text-center text-gray-500 dark:text-gray-300">
             <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No notifications</p>
+            <p className="text-sm">{t("No notifications")}</p>
           </div>
         ) : (
           <div className="divide-y divide-rose-400/10 dark:divide-white/10">
@@ -273,7 +275,7 @@ export function NotificationDropdown({
                           onClick={() => handleMarkAsRead(notification.id)}
                           disabled={updateNotification.isPending}
                           className="h-6 w-6 p-0"
-                          aria-label="Mark as read"
+                          aria-label={t("Mark as read")}
                         >
                           <Check className="h-3 w-3" />
                         </Button>
@@ -284,7 +286,7 @@ export function NotificationDropdown({
                         onClick={() => handleDelete(notification.id)}
                         disabled={deleteNotification.isPending}
                         className="h-6 w-6 p-0 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                        aria-label="Delete notification"
+                        aria-label={t("Delete notification")}
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
@@ -307,7 +309,7 @@ export function NotificationDropdown({
             className="w-full justify-center gap-2 rounded-none h-10 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:bg-rose-50/50 dark:hover:bg-white/5"
           >
             <X className="h-4 w-4 shrink-0" aria-hidden />
-            Close
+            {t("Close")}
           </Button>
         </div>
       )}

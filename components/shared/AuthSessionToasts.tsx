@@ -9,6 +9,7 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/contexts";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   buildWelcomePayloadFromUser,
   getWelcomeToastContent,
@@ -33,6 +34,7 @@ import {
 
 export function AuthSessionToasts() {
   const { toast } = useToast();
+  const t = useT();
   const { user, refreshSession } = useAuth();
   const consumedRef = useRef(false);
   const oauthWelcomeHandledRef = useRef(false);
@@ -49,9 +51,10 @@ export function AuthSessionToasts() {
         markPostLogoutGoodbyeShown();
         clearPostLogoutGoodbye();
         toast({
-          title: `Goodbye, ${goodbye.userName}! 👋`,
-          description:
+          title: t("Goodbye, {name}! 👋", { name: goodbye.userName }),
+          description: t(
             "You have been logged out successfully. See you soon!",
+          ),
         });
         return;
       }
@@ -66,7 +69,7 @@ export function AuthSessionToasts() {
         toast(getWelcomeToastContent(welcome));
       }
     }
-  }, [toast]);
+  }, [toast, t]);
 
   // Google OAuth — callback redirects with ?oauth_success=true (no sessionStorage pre-set).
   useEffect(() => {

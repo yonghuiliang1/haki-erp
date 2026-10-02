@@ -20,6 +20,7 @@ import WarehouseDialog from "@/components/warehouses/WarehouseDialog";
 import { Product } from "@/types";
 import { fabButtonClass } from "@/lib/ui/fab-button-styles";
 import type { GlassFocusHue } from "@/lib/ui/focus-ring-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type FloatingActionButtonsVariant =
   | "home"
@@ -71,6 +72,7 @@ export default function FloatingActionButtons({
   userId = "",
   selectedOwnerId = "",
 }: FloatingActionButtonsProps) {
+  const t = useT();
   const [expandRequested, setExpandRequested] = useState(false);
   const anyDialogOpenRef = useRef(false);
 
@@ -124,7 +126,7 @@ export default function FloatingActionButtons({
           >
             <FabButton hue="rose" expanded={isExpanded} {...fabClickProps}>
               <Package className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Product</span>
+              <span className={labelClass(isExpanded)}>{t("Add Product")}</span>
             </FabButton>
           </AddProductDialog>
         </div>
@@ -139,7 +141,7 @@ export default function FloatingActionButtons({
           >
             <FabButton hue="rose" expanded={isExpanded} {...fabClickProps}>
               <Package className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Product</span>
+              <span className={labelClass(isExpanded)}>{t("Add Product")}</span>
             </FabButton>
           </AddProductDialog>
         </div>
@@ -150,7 +152,7 @@ export default function FloatingActionButtons({
           <AddCategoryDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="sky" expanded={isExpanded} {...fabClickProps}>
               <Tag className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Category</span>
+              <span className={labelClass(isExpanded)}>{t("Add Category")}</span>
             </FabButton>
           </AddCategoryDialog>
         </div>
@@ -161,7 +163,7 @@ export default function FloatingActionButtons({
           <AddCategoryDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="sky" expanded={isExpanded} {...fabClickProps}>
               <Tag className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Category</span>
+              <span className={labelClass(isExpanded)}>{t("Add Category")}</span>
             </FabButton>
           </AddCategoryDialog>
         </div>
@@ -172,7 +174,7 @@ export default function FloatingActionButtons({
           <AddSupplierDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="emerald" expanded={isExpanded} {...fabClickProps}>
               <Truck className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Supplier</span>
+              <span className={labelClass(isExpanded)}>{t("Add Supplier")}</span>
             </FabButton>
           </AddSupplierDialog>
         </div>
@@ -183,7 +185,7 @@ export default function FloatingActionButtons({
           <OrderDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="violet" expanded={isExpanded} {...fabClickProps}>
               <ShoppingCart className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Create Order</span>
+              <span className={labelClass(isExpanded)}>{t("Create Order")}</span>
             </FabButton>
           </OrderDialog>
         </div>
@@ -202,7 +204,7 @@ export default function FloatingActionButtons({
               {...fabClickProps}
             >
               <ShoppingCart className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Create Order</span>
+              <span className={labelClass(isExpanded)}>{t("Create Order")}</span>
             </FabButton>
           </OrderDialog>
         </div>
@@ -213,7 +215,7 @@ export default function FloatingActionButtons({
           <AddSupplierDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="emerald" expanded={isExpanded} {...fabClickProps}>
               <Truck className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Supplier</span>
+              <span className={labelClass(isExpanded)}>{t("Add Supplier")}</span>
             </FabButton>
           </AddSupplierDialog>
         </div>
@@ -224,7 +226,7 @@ export default function FloatingActionButtons({
           <WarehouseDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="amber" expanded={isExpanded} {...fabClickProps}>
               <Warehouse className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Add Warehouse</span>
+              <span className={labelClass(isExpanded)}>{t("Add Warehouse")}</span>
             </FabButton>
           </WarehouseDialog>
         </div>
@@ -235,7 +237,7 @@ export default function FloatingActionButtons({
           <InvoiceDialog onOpenChange={handleDialogOpenChange}>
             <FabButton hue="indigo" expanded={isExpanded} {...fabClickProps}>
               <FileText className="h-5 w-5 flex-shrink-0" />
-              <span className={labelClass(isExpanded)}>Generate Invoice</span>
+              <span className={labelClass(isExpanded)}>{t("Generate Invoice")}</span>
             </FabButton>
           </InvoiceDialog>
         </div>

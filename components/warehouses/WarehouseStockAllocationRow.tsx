@@ -17,6 +17,7 @@ import { TABLE_CATALOG_LINK_CLASS } from "@/components/shared/dialog-edge-scroll
 import type { StockAllocation } from "@/types";
 import { formatCatalogCommitWarehouseHint } from "@/lib/stock-allocation/catalog-allocation-copy";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 const META_ROW_CLASS = "text-xs text-gray-600 dark:text-gray-300";
 /** Match DialogProductOptionRow / product table SKU mute */
@@ -67,9 +68,10 @@ export function WarehouseStockAllocationRow({
   disableActions = false,
   className,
 }: WarehouseStockAllocationRowProps) {
+  const t = useT();
   const product = allocation.product;
   const available = allocation.quantity - allocation.reservedQuantity;
-  const name = product?.name ?? "Unknown Product";
+  const name = product?.name ?? t("Unknown Product");
   const isArchived = product?.isArchived === true;
   const catalogCommitted = Math.max(
     product?.committedQuantity ?? 0,
@@ -130,13 +132,13 @@ export function WarehouseStockAllocationRow({
                   variant="secondary"
                   className="shrink-0 text-xs font-normal"
                 >
-                  Archived
+                  {t("Archived")}
                 </Badge>
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {product?.categoryName && categoryHref ? (
-                <MetaLink href={categoryHref} icon={Tag} label="Category:">
+                <MetaLink href={categoryHref} icon={Tag} label={t("Category:")}>
                   {product.categoryName}
                 </MetaLink>
               ) : product?.categoryName ? (
@@ -147,7 +149,7 @@ export function WarehouseStockAllocationRow({
                   )}
                 >
                   <Tag className="h-3 w-3 shrink-0" />
-                  Category: {product.categoryName}
+                  {t("Category:")} {product.categoryName}
                 </span>
               ) : null}
               {product?.supplierName && supplierHref && product.supplierId ? (
@@ -158,7 +160,7 @@ export function WarehouseStockAllocationRow({
                   )}
                 >
                   <Truck className="h-3 w-3 shrink-0 text-gray-500 dark:text-gray-300" />
-                  <span className="shrink-0">Supplier:</span>
+                  <span className="shrink-0">{t("Supplier:")}</span>
                   <AvatarInlineLink
                     label={product.supplierName}
                     seed={product.supplierId}
@@ -175,7 +177,7 @@ export function WarehouseStockAllocationRow({
                   )}
                 >
                   <Truck className="h-3 w-3 shrink-0" />
-                  Supplier: {product.supplierName}
+                  {t("Supplier:")} {product.supplierName}
                 </span>
               ) : null}
             </div>
@@ -186,18 +188,18 @@ export function WarehouseStockAllocationRow({
           <p className="text-sm font-medium text-gray-700 dark:text-white">
             {allocation.quantity}{" "}
             <span className="font-normal text-gray-500 dark:text-gray-300">
-              total
+              {t("total")}
             </span>
           </p>
           <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
             {available}{" "}
             <span className="font-normal text-gray-500 dark:text-gray-300">
-              available
+              {t("available")}
             </span>
           </p>
           {allocation.reservedQuantity > 0 ? (
             <p className="text-xs text-amber-600 dark:text-amber-400">
-              {allocation.reservedQuantity} reserved
+              {t("{count} reserved", { count: allocation.reservedQuantity })}
             </p>
           ) : null}
         </div>
@@ -210,21 +212,21 @@ export function WarehouseStockAllocationRow({
             {showCatalogMeta ? (
               <p className="flex flex-wrap items-center gap-x-1 text-xs">
                 <span className="text-slate-600 dark:text-slate-300">
-                  {product!.quantity} Catalog
+                  {product!.quantity} {t("Catalog")}
                 </span>
                 <span className="text-gray-400 dark:text-white/80">·</span>
                 <span className="text-sky-600 dark:text-sky-400">
-                  {product!.allocatedTotal} Allocated
+                  {product!.allocatedTotal} {t("Allocated")}
                 </span>
                 <span className="text-gray-400 dark:text-white/80">·</span>
                 <span className="text-emerald-600 dark:text-emerald-400">
-                  {product!.unallocated} Unallocated
+                  {product!.unallocated} {t("Unallocated")}
                 </span>
                 {catalogCommitted > 0 ? (
                   <>
                     <span className="text-gray-400 dark:text-white/80">·</span>
                     <span className="text-amber-600 dark:text-amber-400">
-                      {catalogCommitted} Reserved
+                      {catalogCommitted} {t("Reserved")}
                     </span>
                   </>
                 ) : null}
@@ -244,7 +246,7 @@ export function WarehouseStockAllocationRow({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-lg text-violet-600 dark:text-violet-400"
-                  aria-label={`Edit allocation for ${name}`}
+                  aria-label={t("Edit allocation for {name}", { name })}
                   onClick={onEdit}
                 >
                   <Pencil className="h-4 w-4" />
@@ -256,7 +258,7 @@ export function WarehouseStockAllocationRow({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-lg text-rose-600 dark:text-rose-400"
-                  aria-label={`Remove allocation for ${name}`}
+                  aria-label={t("Remove allocation for {name}", { name })}
                   onClick={onDelete}
                 >
                   <Trash2 className="h-4 w-4" />

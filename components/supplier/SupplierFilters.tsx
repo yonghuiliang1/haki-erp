@@ -18,6 +18,7 @@ import {
 import { PaginationType } from "@/components/shared/PaginationSelector";
 import type { CatalogStatusFilter } from "@/lib/ui/catalog-filter-tokens";
 import { formatStableDate } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 type StatusFilter = CatalogStatusFilter;
 
@@ -52,6 +53,7 @@ export default function SupplierFilters({
   userId,
 }: SupplierFiltersProps) {
   const { toast } = useToast();
+  const t = useT();
 
   /**
    * Filter suppliers based on current filters
@@ -81,9 +83,8 @@ export default function SupplierFilters({
     try {
       if (filteredSuppliers.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
-            "There are no suppliers to export with the current filters.",
+          title: t("No Data to Export"),
+          description: t("There are no suppliers to export with the current filters."),
           variant: "destructive",
         });
         return;
@@ -91,15 +92,15 @@ export default function SupplierFilters({
 
       // Prepare data for CSV export
       const csvData = filteredSuppliers.map((supplier) => ({
-        Name: supplier.name,
-        Status: supplier.status ? "Active" : "Inactive",
-        Description: supplier.description || "-",
-        Products: supplier.productCount ?? 0,
-        Email: supplier.email || "-",
-        "Created At": supplier.createdAt
+        [t("Name")]: supplier.name,
+        [t("Status")]: supplier.status ? t("Active") : t("Inactive"),
+        [t("Description")]: supplier.description || "-",
+        [t("Products")]: supplier.productCount ?? 0,
+        [t("Email")]: supplier.email || "-",
+        [t("Created At")]: supplier.createdAt
           ? formatStableDate(supplier.createdAt)
           : "-",
-        "Updated At": supplier.updatedAt
+        [t("Updated At")]: supplier.updatedAt
           ? formatStableDate(supplier.updatedAt)
           : "-",
       }));
@@ -122,17 +123,19 @@ export default function SupplierFilters({
       document.body.removeChild(link);
 
       toast({
-        title: "Export Successful",
-        description: `${filteredSuppliers.length} supplier(s) exported to CSV`,
+        title: t("Export Successful"),
+        description: t("{count} supplier(s) exported to CSV", {
+          count: filteredSuppliers.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export suppliers to CSV",
+        title: t("Export Failed"),
+        description: t("Failed to export suppliers to CSV"),
         variant: "destructive",
       });
     }
-  }, [filteredSuppliers, toast]);
+  }, [filteredSuppliers, toast, t]);
 
   /**
    * Export filtered suppliers to Excel
@@ -142,9 +145,8 @@ export default function SupplierFilters({
     try {
       if (filteredSuppliers.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
-            "There are no suppliers to export with the current filters.",
+          title: t("No Data to Export"),
+          description: t("There are no suppliers to export with the current filters."),
           variant: "destructive",
         });
         return;
@@ -152,15 +154,15 @@ export default function SupplierFilters({
 
       // Prepare data for Excel export
       const excelData = filteredSuppliers.map((supplier) => ({
-        Name: supplier.name,
-        Status: supplier.status ? "Active" : "Inactive",
-        Description: supplier.description || "-",
-        Products: supplier.productCount ?? 0,
-        Email: supplier.email || "-",
-        "Created At": supplier.createdAt
+        [t("Name")]: supplier.name,
+        [t("Status")]: supplier.status ? t("Active") : t("Inactive"),
+        [t("Description")]: supplier.description || "-",
+        [t("Products")]: supplier.productCount ?? 0,
+        [t("Email")]: supplier.email || "-",
+        [t("Created At")]: supplier.createdAt
           ? formatStableDate(supplier.createdAt)
           : "-",
-        "Updated At": supplier.updatedAt
+        [t("Updated At")]: supplier.updatedAt
           ? formatStableDate(supplier.updatedAt)
           : "-",
       }));
@@ -171,13 +173,13 @@ export default function SupplierFilters({
 
       // Add header row with column widths
       worksheet.columns = [
-        { header: "Name", key: "Name", width: 25 },
-        { header: "Status", key: "Status", width: 12 },
-        { header: "Description", key: "Description", width: 30 },
-        { header: "Products", key: "Products", width: 12 },
-        { header: "Email", key: "Email", width: 28 },
-        { header: "Created At", key: "Created At", width: 12 },
-        { header: "Updated At", key: "Updated At", width: 12 },
+        { header: t("Name"), key: t("Name"), width: 25 },
+        { header: t("Status"), key: t("Status"), width: 12 },
+        { header: t("Description"), key: t("Description"), width: 30 },
+        { header: t("Products"), key: t("Products"), width: 12 },
+        { header: t("Email"), key: t("Email"), width: 28 },
+        { header: t("Created At"), key: t("Created At"), width: 12 },
+        { header: t("Updated At"), key: t("Updated At"), width: 12 },
       ];
 
       // Add data rows
@@ -209,17 +211,19 @@ export default function SupplierFilters({
       document.body.removeChild(link);
 
       toast({
-        title: "Export Successful",
-        description: `${filteredSuppliers.length} supplier(s) exported to Excel`,
+        title: t("Export Successful"),
+        description: t("{count} supplier(s) exported to Excel", {
+          count: filteredSuppliers.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export suppliers to Excel",
+        title: t("Export Failed"),
+        description: t("Failed to export suppliers to Excel"),
         variant: "destructive",
       });
     }
-  }, [filteredSuppliers, toast]);
+  }, [filteredSuppliers, toast, t]);
 
   return (
     <div className="flex flex-col">
@@ -229,7 +233,7 @@ export default function SupplierFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by Supplier Name..."
+            placeholder={t("Search by Supplier Name...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -256,7 +260,7 @@ export default function SupplierFilters({
 
         <div className="flex-shrink-0">
           <ExportMenuButton
-            label="Export Suppliers"
+            label={t("Export Suppliers")}
             accent="violet"
             onExportCsv={exportToCSV}
             onExportExcel={exportToExcel}

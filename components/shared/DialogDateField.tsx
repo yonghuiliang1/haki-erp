@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { DialogFormLabel } from "@/components/shared/dialog-form-label";
 import { DIALOG_DATE_CALENDAR_ICON_CLASS, DIALOG_NATIVE_DATE_HIDE_INDICATOR } from "@/components/shared/dialog-form-field";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type DialogDateFieldProps = {
   id: string;
@@ -38,6 +39,7 @@ export function DialogDateField({
   labelIcon: LabelIcon = CalendarIcon,
   disabled,
 }: DialogDateFieldProps) {
+  const t = useT();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const openPicker = () => {
@@ -78,7 +80,7 @@ export function DialogDateField({
             "absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded pointer-events-auto",
             DIALOG_DATE_CALENDAR_ICON_CLASS,
           )}
-          aria-label="Open calendar"
+          aria-label={t("Open calendar")}
         >
           <CalendarIcon className="h-4 w-4" />
         </button>

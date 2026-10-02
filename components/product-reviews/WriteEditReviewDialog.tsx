@@ -49,6 +49,7 @@ import {
   useUpdateProductReview,
 } from "@/hooks/queries";
 import { useSyncDialogOpenState } from "@/hooks/use-sync-dialog-open-state";
+import { useT } from "@/lib/i18n/locale-context";
 import type { ProductReview, ProductReviewStatus } from "@/types";
 
 const STATUS_OPTIONS: { value: ProductReviewStatus; label: string }[] = [
@@ -89,6 +90,7 @@ export default function WriteEditReviewDialog({
   allowStatusEdit = false,
   onSuccess,
 }: WriteEditReviewDialogProps) {
+  const t = useT();
   const isEdit = !!existingReview;
   const showStatus = isEdit && allowStatusEdit;
   const [rating, setRating] = useState(existingReview?.rating ?? 5);
@@ -154,15 +156,15 @@ export default function WriteEditReviewDialog({
   };
 
   const description = showStatus
-    ? "Update status, rating, and comment"
+    ? t("Update status, rating, and comment")
     : isEdit
-      ? "Update your rating and comment"
-      : "Share your experience";
+      ? t("Update your rating and comment")
+      : t("Share your experience");
 
   const statusSelect = showStatus ? (
     <div className="space-y-2">
       <DialogFormLabel htmlFor="review-status" icon={CircleDot} required>
-        Status
+        {t("Status")}
       </DialogFormLabel>
       <DeferredSelectGate
         enabled={open}
@@ -177,7 +179,7 @@ export default function WriteEditReviewDialog({
             <ReviewStatusBadge
               status={status}
               label={
-                STATUS_OPTIONS.find((o) => o.value === status)?.label
+                t(STATUS_OPTIONS.find((o) => o.value === status)?.label ?? "")
               }
               size="detail"
               contrast="solid"
@@ -200,7 +202,7 @@ export default function WriteEditReviewDialog({
                 <ReviewStatusBadge
                   status={status}
                   label={
-                    STATUS_OPTIONS.find((o) => o.value === status)?.label
+                    t(STATUS_OPTIONS.find((o) => o.value === status)?.label ?? "")
                   }
                   size="detail"
                   contrast="solid"
@@ -221,7 +223,7 @@ export default function WriteEditReviewDialog({
                 >
                   <ReviewStatusBadge
                     status={opt.value}
-                    label={opt.label}
+                    label={t(opt.label)}
                     size="detail"
                     contrast="opaque"
                   />
@@ -238,7 +240,7 @@ export default function WriteEditReviewDialog({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         <DialogFormLabel icon={Star} required>
-          Rating
+          {t("Rating")}
         </DialogFormLabel>
         <span
           className={cn(
@@ -255,7 +257,7 @@ export default function WriteEditReviewDialog({
             key={v}
             type="button"
             onClick={() => setRating(v)}
-            aria-label={`${v} star${v === 1 ? "" : "s"}`}
+            aria-label={v === 1 ? t("1 star") : t("{count} stars", { count: v })}
             className={cn(
               "p-1 rounded-lg transition-colors",
               rating >= v
@@ -277,14 +279,14 @@ export default function WriteEditReviewDialog({
   const commentBlock = (
     <div className="space-y-2">
       <DialogFormLabel htmlFor="review-comment" icon={MessageSquare} required>
-        Comment
+        {t("Comment")}
       </DialogFormLabel>
       <Textarea
         id="review-comment"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         disabled={isPending}
-        placeholder="Share your experience..."
+        placeholder={t("Share your experience...")}
         className={cn(
           "min-h-[120px] w-full rounded-xl mt-1",
           DIALOG_FORM_FIELD_AMBER,
@@ -311,7 +313,7 @@ export default function WriteEditReviewDialog({
         <DialogHeaderBrand
           icon={Star}
           tone="amber"
-          title={isEdit ? "Edit review" : "Write a review"}
+          title={isEdit ? t("Edit review") : t("Write a review")}
           description={description}
         />
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/70">
@@ -344,12 +346,14 @@ export default function WriteEditReviewDialog({
               )}
             >
               <X className="h-4 w-4 shrink-0" aria-hidden />
-              Cancel
+              {t("Cancel")}
             </Button>
             <DialogSubmitButton
               isPending={isPending}
-              pendingLabel={isEdit ? "Saving review…" : "Submitting review…"}
-              label={isEdit ? "Save" : "Submit review"}
+              pendingLabel={
+                isEdit ? t("Saving review…") : t("Submitting review…")
+              }
+              label={isEdit ? t("Save") : t("Submit review")}
               hue="amber"
               icon={Star}
               disabled={!comment.trim()}

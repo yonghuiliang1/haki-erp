@@ -15,6 +15,7 @@ import { Upload } from "lucide-react";
 import { createHistoryColumns } from "./HistoryTableColumns";
 import HistoryFilters from "./HistoryFilters";
 import { HistoryTable } from "./HistoryTable";
+import { useT } from "@/lib/i18n/locale-context";
 import type { ImportHistoryForPage } from "@/types";
 
 export type HistoryListProps = {
@@ -28,6 +29,7 @@ export default function HistoryList({
   detailHrefBase,
   initialHistory,
 }: HistoryListProps = {}) {
+  const t = useT();
   const historyQuery = useHistory(initialHistory);
 
   useSyncSsrQueryData(queryKeys.history.lists(), initialHistory);
@@ -56,8 +58,10 @@ export default function HistoryList({
         as="h2"
         icon={Upload}
         tone="blue"
-        title="Import History"
-        description="Bulk import runs (CSV/Excel). Data appears here when you use Import for products, orders, suppliers, or categories. View details, success/failed rows, and error logs."
+        title={t("Import History")}
+        description={t(
+          "Bulk import runs (CSV/Excel). Data appears here when you use Import for products, orders, suppliers, or categories. View details, success/failed rows, and error logs.",
+        )}
       />
 
       <div className="pb-6 flex justify-start">

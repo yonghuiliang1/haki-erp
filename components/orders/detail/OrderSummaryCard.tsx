@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { DETAIL_DATA_VALUE_CLASS } from "@/lib/ui/typography-scale";
 import { GlassCard, variantConfig } from "./order-detail-primitives";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderSummaryCardProps = {
   order?: Order;
@@ -54,6 +55,7 @@ export function OrderSummaryCard({
   dataLoading,
   className,
 }: OrderSummaryCardProps) {
+  const t = useT();
   return (
     <GlassCard variant="teal" className={cn("h-full", className)}>
       <div className="flex items-center gap-2 mb-4">
@@ -67,34 +69,34 @@ export function OrderSummaryCard({
           <DollarSign className="h-5 w-5 text-teal-600 dark:text-teal-400" />
         </div>
         <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-          Order Summary
+          {t("Order Summary")}
         </h3>
       </div>
       <div className="space-y-2">
         <SummaryRow
           icon={Receipt}
-          label="Subtotal:"
+          label={t("Subtotal:")}
           loading={dataLoading}
           value={formatStableCurrency(Number(order!.subtotal))}
         />
         {!dataLoading && order!.tax != null && order!.tax > 0 && (
           <SummaryRow
             icon={Percent}
-            label="Tax:"
+            label={t("Tax:")}
             value={formatStableCurrency(Number(order!.tax))}
           />
         )}
         {!dataLoading && order!.shipping != null && order!.shipping > 0 && (
           <SummaryRow
             icon={Truck}
-            label="Shipping:"
+            label={t("Shipping:")}
             value={formatStableCurrency(Number(order!.shipping))}
           />
         )}
         {!dataLoading && order!.discount != null && order!.discount > 0 && (
           <SummaryRow
             icon={Tag}
-            label="Discount:"
+            label={t("Discount:")}
             value={"-" + formatStableCurrency(Number(order!.discount))}
             valueClassName="text-rose-600 dark:text-rose-400"
           />
@@ -104,7 +106,7 @@ export function OrderSummaryCard({
         <div className="flex justify-between text-sm sm:text-base p-2 rounded-xl bg-gradient-to-r from-emerald-100/50 via-emerald-50/30 to-transparent dark:from-emerald-500/15 dark:via-emerald-500/10 dark:to-transparent border border-emerald-200/30 dark:border-emerald-400/20">
           <span className="text-gray-700 dark:text-white inline-flex items-center gap-1.5 font-normal">
             <CircleDollarSign className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            Total:
+            {t("Total:")}
           </span>
           <span className="font-normal text-emerald-600 dark:text-emerald-400">
             {dataLoading ? (

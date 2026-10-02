@@ -14,6 +14,7 @@ import {
   FILTER_CHIP_RESET_BTN_CLASS,
   FILTER_CHIP_ROW_CLASS,
 } from "@/lib/ui/filter-chip-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 const DEFAULT_MAX_VISIBLE = 2;
 
@@ -36,6 +37,7 @@ export function DismissibleFilterChips({
   groups,
   onReset,
 }: DismissibleFilterChipsProps) {
+  const t = useT();
   const activeGroups = groups.filter((g) => g.values.length > 0);
   if (activeGroups.length === 0) return null;
 
@@ -49,18 +51,18 @@ export function DismissibleFilterChips({
         return (
           <div key={group.label} className="flex flex-wrap items-center gap-2">
             <span className={FILTER_CHIP_GROUP_LABEL_CLASS}>
-              {group.label}:
+              {t(group.label)}:
             </span>
             <button
               type="button"
               onClick={group.onClear}
-              aria-label={`Clear ${group.label.toLowerCase()} filter`}
+              aria-label={t("Clear {name} filter", { name: group.label })}
               className={FILTER_CHIP_DISMISS_BTN_CLASS}
             >
               <span className="inline-flex flex-wrap items-center gap-1">
                 {collapsed ? (
                   <span className={FILTER_CHIP_COLLAPSED_CLASS}>
-                    {group.values.length} Selected
+                    {t("{count} Selected", { count: group.values.length })}
                   </span>
                 ) : (
                   visibleValues.map((value) => (
@@ -84,7 +86,7 @@ export function DismissibleFilterChips({
         className={FILTER_CHIP_RESET_BTN_CLASS}
       >
         <RotateCcw className="h-3.5 w-3.5" aria-hidden />
-        Reset
+        {t("Reset")}
       </Button>
     </div>
   );

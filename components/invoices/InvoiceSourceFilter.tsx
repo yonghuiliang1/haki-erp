@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import {
   filterCommandPopoverClass,
@@ -25,6 +27,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { Separator } from "@/components/ui/separator";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type InvoiceSourceFilterValue = "client" | "personal" | "both";
 
@@ -60,10 +63,11 @@ export function InvoiceSourceDropDown({
   onChange,
 }: InvoiceSourceDropDownProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useT();
 
   function getButtonLabel() {
     const o = options.find((opt) => opt.value === value);
-    return o ? o.label : "Invoice type";
+    return o ? t(o.label) : t("Invoice type");
   }
 
   return (
@@ -96,7 +100,7 @@ export function InvoiceSourceDropDown({
                   }}
                 >
                   {opt.icon}
-                  <span className="ml-2">{opt.label}</span>
+                  <span className="ml-2">{t(opt.label)}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -109,7 +113,7 @@ export function InvoiceSourceDropDown({
                 setOpen(false);
               }}
             >
-              Clear
+              {t("Clear")}
             </Button>
           </CommandList>
         </Command>

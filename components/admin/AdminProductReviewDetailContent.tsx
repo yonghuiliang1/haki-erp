@@ -68,6 +68,7 @@ import {
   truncateReviewComment,
 } from "@/lib/ui/review-rating-display";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   isDataSlotLoading,
   queryKeys,
@@ -96,6 +97,7 @@ export type AdminProductReviewDetailContentProps = {
 export default function AdminProductReviewDetailContent({
   initialReview,
 }: AdminProductReviewDetailContentProps = {}) {
+  const t = useT();
   const params = useParams();
   const { navigateTo, handleBack } = useBackWithRefresh("product-review");
   const id = params?.id as string;
@@ -128,11 +130,11 @@ export default function AdminProductReviewDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Product Reviews
+            {t("Back to Product Reviews")}
           </Button>
           <GlassCard variant="rose">
             <p className="py-8 text-center text-gray-600 dark:text-white/80">
-              {error instanceof Error ? error.message : "Review not found"}
+              {error instanceof Error ? error.message : t("Review not found")}
             </p>
           </GlassCard>
         </div>
@@ -150,11 +152,13 @@ export default function AdminProductReviewDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Product Reviews
+            {t("Back to Product Reviews")}
           </Button>
           <GlassCard variant="rose">
             <p className="py-8 text-center text-gray-600 dark:text-white/80">
-              The review you are looking for does not exist or was removed.
+              {t(
+              "The review you are looking for does not exist or was removed.",
+            )}
             </p>
           </GlassCard>
         </div>
@@ -167,12 +171,23 @@ export default function AdminProductReviewDetailContent({
   const actionsDisabled = dataLoading || !review;
   const ratingUi = r ? getRatingDisplay(r.rating) : null;
   const reviewerLabel =
-    r?.reviewerName?.trim() || r?.reviewerEmail || "Reviewer";
+    r?.reviewerName?.trim() || r?.reviewerEmail || t("Reviewer");
   const deleteDescription = r
     ? truncateReviewComment(r.comment, 80)
-      ? `This will permanently delete the review for "${r.productName}": ${truncateReviewComment(r.comment, 80)}`
-      : `This will permanently delete the review for "${r.productName}". This action cannot be undone.`
-    : "This will permanently delete this review. This action cannot be undone.";
+      ? t(
+          'This will permanently delete the review for "{product}": {preview}',
+          {
+            product: r.productName,
+            preview: truncateReviewComment(r.comment, 80),
+          },
+        )
+      : t(
+          'This will permanently delete the review for "{product}". This action cannot be undone.',
+          { product: r.productName },
+        )
+    : t(
+        "This will permanently delete this review. This action cannot be undone.",
+      );
 
   return (
     <PageContentWrapper>
@@ -192,7 +207,7 @@ export default function AdminProductReviewDetailContent({
               <ArrowLeft className="h-5 w-5" />
             </Button>
           }
-          title="Product Review Details"
+          title={t("Product Review Details")}
           description={
             dataLoading ? (
               <DataSlotPulse variant="text-sm" className="w-48" />
@@ -221,8 +236,10 @@ export default function AdminProductReviewDetailContent({
           <GlassCard variant="amber">
             <div className="space-y-4">
               <SectionCardHeader
-                title="Status & Rating"
-                description="Moderation state and stars — edit via Edit Review"
+                title={t("Status & Rating")}
+                description={t(
+                  "Moderation state and stars — edit via Edit Review",
+                )}
                 icon={CircleDot}
                 tone="amber"
                 className="mb-0"
@@ -275,8 +292,8 @@ export default function AdminProductReviewDetailContent({
           <GlassCard variant="amber">
             <div className="h-full flex flex-col">
               <SectionCardHeader
-                title="Comment"
-                description="Submitted review text"
+                title={t("Comment")}
+                description={t("Submitted review text")}
                 icon={MessageSquare}
                 tone="amber"
                 className="mb-4"
@@ -303,8 +320,8 @@ export default function AdminProductReviewDetailContent({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 items-stretch">
           <GlassCard variant="sky">
 <SectionCardHeader
-                title="Product"
-                description="Live catalog link"
+                title={t("Product")}
+                description={t("Live catalog link")}
                 icon={Package}
                 tone="sky"
                 className="mb-4"
@@ -321,7 +338,7 @@ export default function AdminProductReviewDetailContent({
                   <div className="space-y-2 min-w-0 flex-1">
                     <DetailInfoRow
                       icon={Package}
-                      label="Name:"
+                      label={t("Name:")}
                       tone="sky"
                       valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                     >
@@ -337,7 +354,7 @@ export default function AdminProductReviewDetailContent({
                     {r!.productSku ? (
                       <DetailInfoRow
                         icon={Hash}
-                        label="SKU:"
+                        label={t("SKU:")}
                         tone="violet"
                         valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                       >
@@ -352,7 +369,7 @@ export default function AdminProductReviewDetailContent({
                     {r!.categoryId && r!.categoryName ? (
                       <DetailInfoRow
                         icon={Tag}
-                        label="Category:"
+                        label={t("Category:")}
                         tone="amber"
                         valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                       >
@@ -367,7 +384,7 @@ export default function AdminProductReviewDetailContent({
                     {r!.supplierId && r!.supplierName ? (
                       <DetailInfoRow
                         icon={Truck}
-                        label="Supplier:"
+                        label={t("Supplier:")}
                         tone="emerald"
                         valueClassName="min-w-0"
                       >
@@ -387,7 +404,7 @@ export default function AdminProductReviewDetailContent({
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 [&>*]:flex-1 [&>*]:min-w-0">
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Created:"
+                        label={t("Created:")}
                         tone="orange"
                         valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                       >
@@ -399,7 +416,7 @@ export default function AdminProductReviewDetailContent({
                       {r!.updatedAt ? (
                         <DetailInfoRow
                           icon={Calendar}
-                          label="Updated:"
+                          label={t("Updated:")}
                           tone="amber"
                           valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                         >
@@ -417,8 +434,8 @@ export default function AdminProductReviewDetailContent({
 
           <GlassCard variant="violet">
 <SectionCardHeader
-                title="Reviewer"
-                description="Account that submitted this review"
+                title={t("Reviewer")}
+                description={t("Account that submitted this review")}
                 icon={User}
                 tone="violet"
                 className="mb-4"
@@ -429,7 +446,7 @@ export default function AdminProductReviewDetailContent({
                 <div className="space-y-2">
                   <DetailInfoRow
                     icon={User}
-                    label="Reviewer:"
+                    label={t("Reviewer:")}
                     tone="violet"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -445,7 +462,7 @@ export default function AdminProductReviewDetailContent({
                   {r!.reviewerEmail ? (
                     <DetailInfoRow
                       icon={Hash}
-                      label="Email:"
+                      label={t("Email:")}
                       tone="sky"
                       valueClassName={cn("text-xs", TYPO_BODY_MUTED)}
                     >
@@ -459,7 +476,7 @@ export default function AdminProductReviewDetailContent({
                   ) : null}
                   <DetailInfoRow
                     icon={Hash}
-                    label="User ID:"
+                    label={t("User ID:")}
                     tone="violet"
                     valueClassName={cn("font-mono text-xs", TYPO_BODY_MUTED)}
                   >
@@ -478,8 +495,8 @@ export default function AdminProductReviewDetailContent({
         {!dataLoading && r?.orderId ? (
           <GlassCard variant="sky">
 <SectionCardHeader
-                title="Purchase"
-                description="Related order and invoice for this review"
+                title={t("Purchase")}
+                description={t("Related order and invoice for this review")}
                 icon={FileText}
                 tone="sky"
                 className="mb-4"
@@ -487,7 +504,7 @@ export default function AdminProductReviewDetailContent({
               <div className="space-y-2">
                 <DetailInfoRow
                   icon={Package}
-                  label="Order:"
+                  label={t("Order:")}
                   tone="sky"
                   valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                 >
@@ -507,7 +524,7 @@ export default function AdminProductReviewDetailContent({
                 {r.orderStatus ? (
                   <DetailInfoRow
                     icon={CircleDot}
-                    label="Order status:"
+                    label={t("Order status:")}
                     tone="amber"
                   >
                     <OrderStatusBadge status={r.orderStatus} size="detail" />
@@ -516,7 +533,7 @@ export default function AdminProductReviewDetailContent({
                 {r.orderPaymentStatus ? (
                   <DetailInfoRow
                     icon={Wallet}
-                    label="Payment:"
+                    label={t("Payment:")}
                     tone="emerald"
                   >
                     <PaymentStatusBadge
@@ -528,7 +545,7 @@ export default function AdminProductReviewDetailContent({
                 {r.orderTotal != null ? (
                   <DetailInfoRow
                     icon={CircleDollarSign}
-                    label="Order total:"
+                    label={t("Order total:")}
                     tone="emerald"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -538,7 +555,7 @@ export default function AdminProductReviewDetailContent({
                 {r.orderCreatedAt ? (
                   <DetailInfoRow
                     icon={Calendar}
-                    label="Order date:"
+                    label={t("Order date:")}
                     tone="orange"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -551,7 +568,7 @@ export default function AdminProductReviewDetailContent({
                 {r.invoiceId && r.invoiceNumber ? (
                   <DetailInfoRow
                     icon={FileText}
-                    label="Invoice:"
+                    label={t("Invoice:")}
                     tone="violet"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -568,7 +585,7 @@ export default function AdminProductReviewDetailContent({
                 {r.invoiceStatus ? (
                   <DetailInfoRow
                     icon={FileText}
-                    label="Invoice status:"
+                    label={t("Invoice status:")}
                     tone="violet"
                   >
                     <InvoiceStatusBadge
@@ -581,7 +598,7 @@ export default function AdminProductReviewDetailContent({
                 {r.invoiceTotal != null ? (
                   <DetailInfoRow
                     icon={CircleDollarSign}
-                    label="Invoice total:"
+                    label={t("Invoice total:")}
                     tone="violet"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -600,7 +617,7 @@ export default function AdminProductReviewDetailContent({
             )}
           >
             <ArrowLeft className="h-4 w-4 shrink-0" />
-            Back
+            {t("Back")}
           </Button>
           <Button
             type="button"
@@ -612,15 +629,15 @@ export default function AdminProductReviewDetailContent({
             )}
           >
             <Pencil className="h-4 w-4 shrink-0" />
-            Edit Review
+            {t("Edit Review")}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <DialogSubmitButton
                 type="button"
                 isPending={isDeleting}
-                pendingLabel="Deleting…"
-                label="Delete Review"
+                pendingLabel={t("Deleting…")}
+                label={t("Delete Review")}
                 icon={Trash2}
                 hue="rose"
                 disabled={actionsDisabled}
@@ -629,21 +646,21 @@ export default function AdminProductReviewDetailContent({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete product review?</AlertDialogTitle>
+                <AlertDialogTitle>{t("Delete product review?")}</AlertDialogTitle>
                 <AlertDialogDescription>
                   {deleteDescription}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={isDeleting}>
-                  Cancel
+                  {t("Cancel")}
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDelete}
                   disabled={isDeleting || actionsDisabled}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  {isDeleting ? "Deleting..." : "Delete"}
+                  {isDeleting ? t("Deleting...") : t("Delete")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

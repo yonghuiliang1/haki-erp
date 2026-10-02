@@ -75,6 +75,7 @@ import { dueDateSemanticKind } from "@/lib/ui/semantic-date-styles";
 import InvoiceDialog from "@/components/invoices/InvoiceDialog";
 import { AlertDialogWrapper } from "@/components/dialogs";
 import { PaymentDialog } from "@/components/payments";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type InvoiceDetailPageProps = {
   /** When set (e.g. "/admin/client-invoices"), Back button navigates here */
@@ -96,6 +97,7 @@ export default function InvoiceDetailPage({
   const router = useRouter();
   const pathname = usePathname() ?? "";
   const { user, isCheckingAuth } = useAuth();
+  const t = useT();
   // REQ-0209 — list path follows route shell (/invoices vs /admin/invoices)
   const invoicesListPath = useMemo(
     () => (pathname.startsWith("/admin") ? "/admin/invoices" : "/invoices"),
@@ -192,19 +194,19 @@ export default function InvoiceDetailPage({
             className="max-w-md text-center"
           >
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-              Invoice Not Found
+              {t("Invoice Not Found")}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               {error instanceof Error
                 ? error.message
-                : "Failed to load invoice details"}
+                : t("Failed to load invoice details")}
             </p>
             <Button
               onClick={() => navigateTo("/")}
               className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t("Back to Home")}
             </Button>
           </GlassCard>
         </div>
@@ -223,17 +225,19 @@ export default function InvoiceDetailPage({
             className="max-w-md text-center"
           >
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-              Invoice Not Found
+              {t("Invoice Not Found")}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              The invoice you are looking for does not exist or was removed.
+              {t(
+                "The invoice you are looking for does not exist or was removed.",
+              )}
             </p>
             <Button
               onClick={() => navigateTo("/")}
               className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t("Back to Home")}
             </Button>
           </GlassCard>
         </div>
@@ -301,7 +305,7 @@ export default function InvoiceDetailPage({
             }
             title={
               <>
-                Invoice{" "}
+                {t("Invoice")}{" "}
                 {dataLoading ? (
                   <DataSlotPulse
                     variant="text-lg"
@@ -326,7 +330,7 @@ export default function InvoiceDetailPage({
               ) : (
                 <ClientRelativeTime
                   date={createdAt}
-                  prefix="Created "
+                  prefix={t("Created ")}
                   semantic="created"
                 />
               )
@@ -338,7 +342,7 @@ export default function InvoiceDetailPage({
             <div className="flex flex-col gap-2 min-w-0 h-full">
               <GlassCard padding="body" variant="violet">
                 <p className="text-xs uppercase tracking-[0.2em] text-gray-600 dark:text-white/80 mb-3">
-                  Invoice Status
+                  {t("Invoice Status")}
                 </p>
                 {dataLoading ? (
                   <DataSlotPulse
@@ -367,7 +371,7 @@ export default function InvoiceDetailPage({
                 className="flex-1"
               >
                 <p className="text-xs uppercase tracking-[0.25em] text-gray-600 dark:text-white/80 mb-3">
-                  {isInvoiceCancelled ? "Balance Closed" : "Amount Due"}
+                  {isInvoiceCancelled ? t("Balance Closed") : t("Amount Due")}
                 </p>
                 {dataLoading ? (
                   <DataSlotPulse variant="currency" className="h-8 w-28" />
@@ -386,8 +390,8 @@ export default function InvoiceDetailPage({
                       <p className="text-sm mt-2 flex flex-wrap items-baseline gap-x-1 gap-y-0.5 text-gray-600 dark:text-gray-300">
                         <span>
                           {isInvoiceCancelled || isOrderRefunded
-                            ? "Collected:"
-                            : "Paid:"}
+                            ? t("Collected:")
+                            : t("Paid:")}
                         </span>
                         <span
                           className={cn(
@@ -406,8 +410,8 @@ export default function InvoiceDetailPage({
                         {(isInvoiceCancelled || isOrderRefunded) && (
                           <span className="w-full text-xs text-rose-600 dark:text-rose-400 mt-0.5">
                             {isOrderRefunded
-                              ? "Refunded — no remaining balance"
-                              : "Cancelled — no remaining balance"}
+                              ? t("Refunded — no remaining balance")
+                              : t("Cancelled — no remaining balance")}
                           </span>
                         )}
                       </p>
@@ -425,7 +429,7 @@ export default function InvoiceDetailPage({
                 {(dataLoading || invoice?.billingAddress) && (
                   <GlassCard padding="body" variant="blue" className="h-full">
                     <SectionCardHeader
-                      title="Billing Address"
+                      title={t("Billing Address")}
                       icon={MapPin}
                       tone="blue"
                       className="mb-3"
@@ -446,7 +450,7 @@ export default function InvoiceDetailPage({
                 {(dataLoading || invoice?.shippingAddress) && (
                   <GlassCard padding="body" variant="violet" className="h-full">
                     <SectionCardHeader
-                      title="Shipping Address"
+                      title={t("Shipping Address")}
                       icon={MapPin}
                       tone="violet"
                       className="mb-3"
@@ -499,7 +503,7 @@ export default function InvoiceDetailPage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 items-start">
             <GlassCard padding="body" variant="orange">
               <SectionCardHeader
-                title="Invoice Information"
+                title={t("Invoice Information")}
                 icon={FileText}
                 tone="orange"
                 className="mb-4"
@@ -514,28 +518,28 @@ export default function InvoiceDetailPage({
                   <>
                     <DetailInfoRow
                       icon={FileText}
-                      label="Invoice #:"
+                      label={t("Invoice #:")}
                       tone="orange"
                     >
                       <CopyableText value={invoice.invoiceNumber}>
                         {invoice.invoiceNumber}
                       </CopyableText>
                     </DetailInfoRow>
-                    <DetailInfoRow icon={Hash} label="Invoice ID:" tone="violet">
+                    <DetailInfoRow icon={Hash} label={t("Invoice ID:")} tone="violet">
                       <CopyableText value={invoice.id}>
                         <span className="font-mono text-xs">{invoice.id}</span>
                       </CopyableText>
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={FileText}
-                      label="Invoice Status:"
+                      label={t("Invoice Status:")}
                       tone="violet"
                     >
                       <InvoiceStatusBadge status={invoice.status} />
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={Wallet}
-                      label="Amount Paid:"
+                      label={t("Amount Paid:")}
                       tone="emerald"
                     >
                       <span className="text-emerald-600 dark:text-emerald-400 font-normal">
@@ -544,7 +548,7 @@ export default function InvoiceDetailPage({
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={Banknote}
-                      label="Amount Due:"
+                      label={t("Amount Due:")}
                       tone={
                         invoice.amountDue > 0 && isOverdue
                           ? "rose"
@@ -564,7 +568,7 @@ export default function InvoiceDetailPage({
                   {(dataLoading || issuedAt) && (
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Issued:"
+                      label={t("Issued:")}
                       tone="orange"
                       loading={dataLoading && !issuedAt}
                     >
@@ -576,7 +580,7 @@ export default function InvoiceDetailPage({
                   {(dataLoading || updatedAt) && (
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Updated:"
+                      label={t("Updated:")}
                       tone="amber"
                       loading={dataLoading && !updatedAt}
                     >
@@ -590,7 +594,7 @@ export default function InvoiceDetailPage({
                 {!dataLoading && dueDate && (
                   <DetailInfoRow
                     icon={Calendar}
-                    label="Due Date:"
+                    label={t("Due Date:")}
                     tone={isOverdue ? "rose" : "amber"}
                   >
                     <ClientDateTime
@@ -600,21 +604,21 @@ export default function InvoiceDetailPage({
                   </DetailInfoRow>
                 )}
                 {!dataLoading && sentAt && (
-                  <DetailInfoRow icon={Send} label="Sent:" tone="violet">
+                  <DetailInfoRow icon={Send} label={t("Sent:")} tone="violet">
                     <ClientDateTime date={sentAt} semantic="sent" />
                   </DetailInfoRow>
                 )}
                 {!dataLoading && paidAt && (
                   <DetailInfoRow
                     icon={CheckCircle}
-                    label="Paid:"
+                    label={t("Paid:")}
                     tone="emerald"
                   >
                     <ClientDateTime date={paidAt} semantic="paid" />
                   </DetailInfoRow>
                 )}
                 {!dataLoading && cancelledAt && (
-                  <DetailInfoRow icon={Ban} label="Cancelled:" tone="rose">
+                  <DetailInfoRow icon={Ban} label={t("Cancelled:")} tone="rose">
                     <ClientDateTime date={cancelledAt} semantic="cancelled" />
                   </DetailInfoRow>
                 )}
@@ -622,7 +626,7 @@ export default function InvoiceDetailPage({
                 {!dataLoading && invoice?.orderId && (
                   <DetailInfoRow
                     icon={FileText}
-                    label="Related Order:"
+                    label={t("Related Order:")}
                     tone="violet"
                   >
                     {invoice.linkedOrderNumber ? (
@@ -639,7 +643,7 @@ export default function InvoiceDetailPage({
                         href={`${linkedOrderHrefBase}/${invoice.orderId}`}
                         className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-normal"
                       >
-                        View Order
+                        {t("View Order")}
                       </Link>
                     )}
                   </DetailInfoRow>
@@ -648,7 +652,7 @@ export default function InvoiceDetailPage({
                 {!dataLoading && invoice?.paymentLink && (
                   <DetailInfoRow
                     icon={CreditCard}
-                    label="Payment Link:"
+                    label={t("Payment Link:")}
                     tone="sky"
                   >
                     <a
@@ -657,12 +661,13 @@ export default function InvoiceDetailPage({
                       rel="noopener noreferrer"
                       className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 inline-flex items-center gap-1 font-normal"
                     >
-                      Pay Invoice <ExternalLink className="h-3 w-3" />
+                      {t("Pay Invoice")}{" "}
+                      <ExternalLink className="h-3 w-3" />
                     </a>
                   </DetailInfoRow>
                 )}
                 {!dataLoading && invoice?.stripePaymentIntentId && (
-                  <DetailInfoRow icon={CreditCard} label="Stripe:" tone="blue">
+                  <DetailInfoRow icon={CreditCard} label={t("Stripe:")} tone="blue">
                     <CopyableText value={invoice.stripePaymentIntentId}>
                       <span className="font-mono text-xs break-all">
                         {invoice.stripePaymentIntentId}
@@ -671,7 +676,7 @@ export default function InvoiceDetailPage({
                   </DetailInfoRow>
                 )}
                 <AuditUserDetailRow
-                  label="Created by:"
+                  label={t("Created by:")}
                   tone="violet"
                   user={invoice?.creator}
                   loading={dataLoading && !invoice?.creator}
@@ -685,7 +690,7 @@ export default function InvoiceDetailPage({
                   }
                 />
                 <AuditUserDetailRow
-                  label="Updated by:"
+                  label={t("Updated by:")}
                   tone="blue"
                   user={invoice?.updater}
                   loading={dataLoading && !invoice?.updater}
@@ -699,7 +704,7 @@ export default function InvoiceDetailPage({
                   }
                 />
                 {!dataLoading && invoice?.notes && (
-                  <DetailInfoRow icon={StickyNote} label="Notes:" tone="teal">
+                  <DetailInfoRow icon={StickyNote} label={t("Notes:")} tone="teal">
                     {invoice.notes}
                   </DetailInfoRow>
                 )}
@@ -721,7 +726,7 @@ export default function InvoiceDetailPage({
               className={glassDetailBackButtonClass("w-full sm:w-auto gap-2")}
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
-              Back
+              {t("Back")}
             </Button>
             {/* REQ-0210 — cancelled invoices cannot be edited */}
             {invoice?.status !== "cancelled" && (
@@ -731,7 +736,7 @@ export default function InvoiceDetailPage({
                 className={glassDetailFooterButtonClass("blue")}
               >
                 <Edit className="h-4 w-4 shrink-0" />
-                Edit Invoice
+                {t("Edit Invoice")}
               </Button>
             )}
             {!dataLoading && invoice && (
@@ -741,7 +746,7 @@ export default function InvoiceDetailPage({
                   download={`invoice-${invoice.invoiceNumber}.pdf`}
                 >
                   <Download className="h-4 w-4 shrink-0" />
-                  Download PDF
+                  {t("Download PDF")}
                 </a>
               </Button>
             )}
@@ -753,8 +758,8 @@ export default function InvoiceDetailPage({
                   type="button"
                   onClick={() => setSendDialogOpen(true)}
                   isPending={isSending}
-                  pendingLabel="Sending…"
-                  label="Send Invoice"
+                  pendingLabel={t("Sending…")}
+                  label={t("Send Invoice")}
                   icon={Send}
                   hue="sky"
                   className="group w-full sm:w-auto gap-2"
@@ -768,8 +773,8 @@ export default function InvoiceDetailPage({
                   type="button"
                   onClick={() => setDeleteDialogOpen(true)}
                   isPending={isDeleting}
-                  pendingLabel="Deleting…"
-                  label="Delete Invoice"
+                  pendingLabel={t("Deleting…")}
+                  label={t("Delete Invoice")}
                   icon={Trash2}
                   hue="rose"
                   className="group w-full sm:w-auto gap-2"
@@ -782,7 +787,7 @@ export default function InvoiceDetailPage({
               >
                 <Link href={`${linkedOrderHrefBase}/${invoice.orderId}`}>
                   <FileText className="h-4 w-4 shrink-0" />
-                  View Related Order
+                  {t("View Related Order")}
                 </Link>
               </Button>
             )}
@@ -812,7 +817,9 @@ export default function InvoiceDetailPage({
                   trigger={
                     <Button className={glassDetailFooterButtonClass("emerald")}>
                       <CreditCard className="h-4 w-4 shrink-0" />
-                      Pay {formatStableCurrency(invoice.amountDue)}
+                      {t("Pay {amount}", {
+                        amount: formatStableCurrency(invoice.amountDue),
+                      })}
                     </Button>
                   }
                 />
@@ -824,10 +831,13 @@ export default function InvoiceDetailPage({
             <AlertDialogWrapper
               open={deleteDialogOpen}
               onOpenChange={setDeleteDialogOpen}
-              title="Delete Invoice"
-              description={`Are you sure you want to delete invoice ${invoice.invoiceNumber}? This action cannot be undone.`}
-              actionLabel="Delete"
-              actionLoadingLabel="Deleting..."
+              title={t("Delete Invoice")}
+              description={t(
+                "Are you sure you want to delete invoice {invoice}? This action cannot be undone.",
+                { invoice: invoice.invoiceNumber },
+              )}
+              actionLabel={t("Delete")}
+              actionLoadingLabel={t("Deleting...")}
               isLoading={isDeleting}
               onAction={handleConfirmDeleteInvoice}
               onCancel={() => setDeleteDialogOpen(false)}
@@ -839,10 +849,13 @@ export default function InvoiceDetailPage({
             <AlertDialogWrapper
               open={sendDialogOpen}
               onOpenChange={setSendDialogOpen}
-              title="Send Invoice"
-              description={`Are you sure you want to send invoice ${invoice.invoiceNumber} via email?`}
-              actionLabel="Send"
-              actionLoadingLabel="Sending..."
+              title={t("Send Invoice")}
+              description={t(
+                "Are you sure you want to send invoice {invoice} via email?",
+                { invoice: invoice.invoiceNumber },
+              )}
+              actionLabel={t("Send")}
+              actionLoadingLabel={t("Sending...")}
               isLoading={isSending}
               onAction={handleConfirmSendInvoice}
               onCancel={() => setSendDialogOpen(false)}

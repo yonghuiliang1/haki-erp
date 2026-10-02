@@ -23,12 +23,14 @@ import {
   AUTH_FORM_STAGGER_BASE,
 } from "@/components/auth/auth-animation";
 import { Sparkles } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Register page — split layout with promo cards + form.
  * REQ-0030 — shared AuthPageShell, stagger animations, max-w-7xl.
  */
 export default function RegisterPage() {
+  const t = useT();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,8 +46,8 @@ export default function RegisterPage() {
     } catch (error) {
       console.error("Error initiating Google OAuth:", error);
       toast({
-        title: "OAuth Error",
-        description: "Failed to initiate Google sign-in. Please try again.",
+        title: t("OAuth Error"),
+        description: t("Failed to initiate Google sign-in. Please try again."),
         variant: "destructive",
       });
     }
@@ -57,8 +59,8 @@ export default function RegisterPage() {
 
     if (password !== confirmPassword) {
       toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
+        title: t("Password Mismatch"),
+        description: t("Passwords do not match. Please try again."),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -74,8 +76,11 @@ export default function RegisterPage() {
 
       if (response.status === 201) {
         toast({
-          title: "Account Created Successfully! 🎉",
-          description: `Welcome, ${name}! Your account has been created. Redirecting to login page...`,
+          title: t("Account Created Successfully! 🎉"),
+          description: t(
+            "Welcome, {name}! Your account has been created. Redirecting to login page...",
+            { name },
+          ),
         });
 
         setName("");
@@ -95,9 +100,9 @@ export default function RegisterPage() {
       };
       const serverMessage = axiosErr?.response?.data?.error;
       toast({
-        title: "Registration Failed",
+        title: t("Registration Failed"),
         description:
-          serverMessage || "An unexpected error occurred. Please try again.",
+          serverMessage || t("An unexpected error occurred. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -118,10 +123,10 @@ export default function RegisterPage() {
       <AuthFormCard variant="register" className="w-full space-y-4">
         <AuthAnimatedBlock delayMs={formRowDelay(0)} className="space-y-2">
           <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white text-center">
-            Create Account
+            {t("Create Account")}
           </h2>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-white/80 text-center">
-            Sign up to get started with your inventory dashboard
+            {t("Sign up to get started with your inventory dashboard")}
           </p>
         </AuthAnimatedBlock>
 
@@ -131,7 +136,7 @@ export default function RegisterPage() {
               htmlFor="name"
               className="text-sm font-medium text-gray-700 dark:text-white/80"
             >
-              Name
+              {t("Name")}
             </label>
             <Input
               id="name"
@@ -149,7 +154,7 @@ export default function RegisterPage() {
               htmlFor="email"
               className="text-sm font-medium text-gray-700 dark:text-white/80"
             >
-              Email
+              {t("Email")}
             </label>
             <Input
               id="email"
@@ -167,14 +172,14 @@ export default function RegisterPage() {
               htmlFor="password"
               className="text-sm font-medium text-gray-700 dark:text-white/80"
             >
-              Password
+              {t("Password")}
             </label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder={t("Enter your password")}
               required
               className={cn("w-full", AUTH_FORM_FIELD_EMERALD)}
             />
@@ -185,14 +190,14 @@ export default function RegisterPage() {
               htmlFor="confirmPassword"
               className="text-sm font-medium text-gray-700 dark:text-white/80"
             >
-              Confirm Password
+              {t("Confirm Password")}
             </label>
             <Input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm your password"
+              placeholder={t("Confirm your password")}
               required
               className={cn("w-full", AUTH_FORM_FIELD_EMERALD)}
             />
@@ -208,11 +213,11 @@ export default function RegisterPage() {
               disabled={isLoading}
             >
               {isLoading ? (
-                "Creating Account..."
+                t("Creating Account...")
               ) : (
                 <>
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Sign Up
+                  {t("Sign Up")}
                 </>
               )}
             </Button>
@@ -225,7 +230,7 @@ export default function RegisterPage() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-transparent px-2 text-gray-600 dark:text-white/80">
-              Or continue with
+              {t("Or continue with")}
             </span>
           </div>
         </AuthAnimatedBlock>
@@ -260,7 +265,7 @@ export default function RegisterPage() {
                 fill="#EA4335"
               />
             </svg>
-            Continue with Google
+            {t("Continue with Google")}
           </Button>
         </AuthAnimatedBlock>
 
@@ -269,12 +274,12 @@ export default function RegisterPage() {
           className="text-center text-sm"
         >
           <p className="text-gray-600 dark:text-white/80">
-            Already have an account?{" "}
+            {t("Already have an account?")}{" "}
             <Link
               href="/login"
               className="text-emerald-600 dark:text-sky-400 hover:text-emerald-700 dark:hover:text-sky-300 transition-colors font-medium"
             >
-              Sign in
+              {t("Sign in")}
             </Link>
           </p>
         </AuthAnimatedBlock>
@@ -285,7 +290,7 @@ export default function RegisterPage() {
   return (
     <AuthPageShell
       illustrationSrc="/personal-finance.svg"
-      illustrationAlt="Personal Finance Illustration"
+      illustrationAlt={t("Personal Finance Illustration")}
       left={leftPanel}
       right={rightPanel}
     />

@@ -8,6 +8,7 @@
 import { CircleDollarSign, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type PaymentMoneyBreakdownProps = {
   total: number;
@@ -25,6 +26,7 @@ export function PaymentMoneyBreakdown({
   variant = "table",
   className,
 }: PaymentMoneyBreakdownProps) {
+  const t = useT();
   const paid = Math.max(0, Number(amountPaid) || 0);
   const due =
     amountDue != null
@@ -57,7 +59,7 @@ export function PaymentMoneyBreakdown({
               )}
             >
               <CircleDollarSign className="h-3 w-3 shrink-0" aria-hidden />
-              Paid {formatStableCurrency(paid)}
+              {t("Paid")} {formatStableCurrency(paid)}
             </span>
           )}
           {due > 0 && (
@@ -68,7 +70,7 @@ export function PaymentMoneyBreakdown({
               )}
             >
               <Clock className="h-3 w-3 shrink-0" aria-hidden />
-              Due {formatStableCurrency(due)}
+              {t("Due")} {formatStableCurrency(due)}
             </span>
           )}
         </>

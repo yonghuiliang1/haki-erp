@@ -79,6 +79,7 @@ import {
 import { buildPortalOrderStatusBadges } from "@/lib/ui/portal-order-status-badges";
 import { formatStableCurrency } from "@/lib/format";
 import type { SupplierPortalDashboard } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type SupplierPortalPageProps = {
   /** REQ-0025 — SSR-passed supplier dashboard */
@@ -88,6 +89,7 @@ export type SupplierPortalPageProps = {
 export default function SupplierPortalPage({
   initialDashboard,
 }: SupplierPortalPageProps = {}) {
+  const t = useT();
   const { isCheckingAuth, user } = useAuth();
   const dashboardQuery = useSupplierPortalDashboard(initialDashboard);
 
@@ -107,7 +109,7 @@ export default function SupplierPortalPage({
         <PageContentWrapper>
           <div className="space-y-4">
             <h1 className="text-sm sm:text-lg font-medium text-primary">
-              Supplier Portal
+              {t("Supplier Portal")}
             </h1>
             <article
               className={cn(
@@ -116,12 +118,12 @@ export default function SupplierPortalPage({
             >
               <p className="text-muted-foreground text-center">
                 {dashboardQuery.isError
-                  ? "Failed to load supplier dashboard. Please ensure your account is linked to a supplier entity."
-                  : "No supplier data available."}
+                  ? t("Failed to load supplier dashboard. Please ensure your account is linked to a supplier entity.")
+                  : t("No supplier data available.")}
               </p>
               <div className="flex justify-center mt-4">
                 <Button asChild variant="outline">
-                  <Link href="/">Go to Dashboard</Link>
+                  <Link href="/">{t("Go to Dashboard")}</Link>
                 </Button>
               </div>
             </article>
@@ -139,10 +141,10 @@ export default function SupplierPortalPage({
             as="h1"
             icon={Truck}
             tone="emerald"
-            title="Supplier Portal"
+            title={t("Supplier Portal")}
             description={
               <>
-                Welcome,{" "}
+                {t("Welcome,")}{" "}
                 {dataLoading ? (
                   <DataSlotPulse variant="text-sm" />
                 ) : (
@@ -160,42 +162,42 @@ export default function SupplierPortalPage({
             )}
           >
             <StatisticsCard
-              title="Total Products"
+              title={t("Total Products")}
               value={dashboard?.totalProducts ?? 0}
-              description="Products in your catalog"
+              description={t("Products in your catalog")}
               icon={Package}
               variant="sky"
               valueLoading={dataLoading}
               badgeValuesLoading={dataLoading}
               badges={[
                 {
-                  label: "Available",
+                  label: t("Available"),
                   value:
                     dashboard?.productStatusCounts?.available ??
                     (dashboard?.totalProducts ?? 0) -
                       (dashboard?.lowStockProducts.length ?? 0),
                 },
                 {
-                  label: "Stock low",
+                  label: t("Stock low"),
                   value:
                     dashboard?.productStatusCounts?.stockLow ??
                     dashboard?.lowStockProducts.length ??
                     0,
                 },
                 {
-                  label: "Stock out",
+                  label: t("Stock out"),
                   value: dashboard?.productStatusCounts?.stockOut ?? 0,
                 },
                 {
-                  label: "Product value",
+                  label: t("Product value"),
                   value: formatStableCurrency(dashboard?.productValue ?? 0),
                 },
               ]}
             />
             <StatisticsCard
-              title="Total Orders"
+              title={t("Total Orders")}
               value={dashboard?.totalOrders ?? 0}
-              description="Orders containing your products"
+              description={t("Orders containing your products")}
               icon={ShoppingCart}
               variant="emerald"
               valueLoading={dataLoading}
@@ -210,40 +212,40 @@ export default function SupplierPortalPage({
               })}
             />
             <StatisticsCard
-              title="Pending Orders"
+              title={t("Pending Orders")}
               value={dashboard?.pendingOrders ?? 0}
-              description="Orders awaiting action"
+              description={t("Orders awaiting action")}
               icon={Clock}
               variant="amber"
               valueLoading={dataLoading}
               badgeValuesLoading={dataLoading}
               badges={[
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: dashboard?.orderStatusCounts?.cancelled ?? 0,
                 },
                 {
-                  label: "Completed",
+                  label: t("Completed"),
                   value: dashboard?.orderStatusCounts?.completed ?? 0,
                 },
                 {
-                  label: "Refunded",
+                  label: t("Refunded"),
                   value: dashboard?.orderStatusCounts?.refunded ?? 0,
                 },
-                { label: "Of Total", value: dashboard?.totalOrders ?? 0 },
+                { label: t("Of Total"), value: dashboard?.totalOrders ?? 0 },
               ]}
             />
             <StatisticsCard
-              title="Total Revenue"
+              title={t("Total Revenue")}
               value={formatStableCurrency(dashboard?.totalRevenue ?? 0)}
-              description="Revenue from your products (excl. cancelled)"
+              description={t("Revenue from your products (excl. cancelled)")}
               icon={DollarSign}
               variant="violet"
               valueLoading={dataLoading}
               badgeValuesLoading={dataLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatStableCurrency(
                     dashboard?.revenueBreakdown?.paid ??
                       dashboard?.paidRevenue ??
@@ -251,25 +253,25 @@ export default function SupplierPortalPage({
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatStableCurrency(
                     dashboard?.revenueBreakdown?.partial ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatStableCurrency(
                     dashboard?.revenueBreakdown?.due ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatStableCurrency(
                     dashboard?.revenueBreakdown?.refund ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatStableCurrency(
                     dashboard?.revenueBreakdown?.pending ??
                       dashboard?.unpaidRevenue ??
@@ -279,7 +281,7 @@ export default function SupplierPortalPage({
                 ...((dashboard?.totalOrders ?? 0) > 0
                   ? [
                       {
-                        label: "Avg/Order",
+                        label: t("Avg/Order"),
                         value: formatStableCurrency(
                           (dashboard?.totalRevenue ?? 0) /
                             Math.max(
@@ -310,15 +312,15 @@ export default function SupplierPortalPage({
                 className="mb-4"
                 icon={TrendingUp}
                 tone="emerald"
-                title="Monthly Revenue"
-                description="Revenue from your products over the last 6 months (grouped by month)"
+                title={t("Monthly Revenue")}
+                description={t("Revenue from your products over the last 6 months (grouped by month)")}
               />
               <DeferredChartSection
                 loading={dataLoading}
                 hasData={(dashboard?.monthlyRevenue.length ?? 0) > 0}
                 emptyMessage={
                   <p className="text-muted-foreground text-center py-8">
-                    No revenue data yet
+                    {t("No revenue data yet")}
                   </p>
                 }
               >
@@ -338,7 +340,7 @@ export default function SupplierPortalPage({
                     <Tooltip
                       formatter={(value) => [
                         formatStableCurrency(Number(value)),
-                        "Revenue",
+                        t("Revenue"),
                       ]}
                     />
                     <Area
@@ -373,8 +375,8 @@ export default function SupplierPortalPage({
                   className="mb-4"
                   icon={ShoppingCart}
                   tone="sky"
-                  title="Recent Orders"
-                  description="Orders containing your products"
+                  title={t("Recent Orders")}
+                  description={t("Orders containing your products")}
                 />
                 <div>
                   {dataLoading ? (
@@ -388,7 +390,7 @@ export default function SupplierPortalPage({
                     </ul>
                   ) : (dashboard?.recentOrders.length ?? 0) === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No orders yet
+                      {t("No orders yet")}
                     </p>
                   ) : (
                     <ul className={CARD_LIST_DIVIDE_CLASS}>
@@ -436,7 +438,7 @@ export default function SupplierPortalPage({
                                   </span>
                                 ) : (
                                   <span className={CARD_LIST_META_CLASS}>
-                                    {order.productCount} products
+                                    {t("{count} products", { count: order.productCount })}
                                   </span>
                                 )}
                                 {order.categoryId && order.categoryName ? (
@@ -527,7 +529,7 @@ export default function SupplierPortalPage({
                     >
                       <Link href="/orders">
                         <ArrowRight className="h-4 w-4 shrink-0" />
-                        View All Orders
+                        {t("View All Orders")}
                       </Link>
                     </Button>
                   </div>
@@ -549,26 +551,26 @@ export default function SupplierPortalPage({
                   className="mb-4"
                   icon={AlertTriangle}
                   tone="amber"
-                  title="Low Stock Products"
-                  description="Products with 20 or fewer available units (same threshold as product owner)"
+                  title={t("Low Stock Products")}
+                  description={t("Products with 20 or fewer available units (same threshold as product owner)")}
                 />
                 <div>
                   {dataLoading ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Product</TableHead>
+                          <TableHead>{t("Product")}</TableHead>
                           <TableHead className="text-right">
-                            Available
+                            {t("Available")}
                           </TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead>{t("Status")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBodyPulseRows rows={5} columnCount={3} />
                     </Table>
                   ) : (dashboard?.lowStockProducts.length ?? 0) === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      All products have sufficient stock
+                      {t("All products have sufficient stock")}
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
@@ -631,7 +633,7 @@ export default function SupplierPortalPage({
                     >
                       <Link href="/products">
                         <ArrowRight className="h-4 w-4 shrink-0" />
-                        View All Products
+                        {t("View All Products")}
                       </Link>
                     </Button>
                   </div>

@@ -27,6 +27,8 @@ import { cn } from "@/lib/utils";
 import { useAdminCounts } from "@/hooks/queries";
 import { isDataSlotUnsettled } from "@/lib/react-query";
 import { DataSlotPulse } from "@/components/shared/DataSlotPulse";
+import { LocaleSwitcher } from "@/components/shared/LocaleSwitcher";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   ADMIN_MANAGEMENT_ITEMS,
   ADMIN_MY_ACTIVITY_ITEMS,
@@ -70,6 +72,7 @@ export default function AdminSidebar({
   const countsQuery = useAdminCounts(initialCounts);
   const counts = countsQuery.data ?? initialCounts;
   const countsLoading = isDataSlotUnsettled(countsQuery, initialCounts);
+  const t = useT();
 
   const getCount = (key: AdminNavItemConfig["countKey"]): number | undefined => {
     if (!counts || !key) return undefined;
@@ -90,11 +93,11 @@ export default function AdminSidebar({
             isSub,
             collapsed,
           })}
-          title={collapsed ? item.label : undefined}
+          title={collapsed ? t(item.label) : undefined}
         >
           <Icon className="h-4 w-4 flex-shrink-0" />
           {!collapsed && (
-            <span className="min-w-0 flex-1 truncate">{item.label}</span>
+            <span className="min-w-0 flex-1 truncate">{t(item.label)}</span>
           )}
           {!collapsed && showBadge && (
             <span
@@ -104,9 +107,9 @@ export default function AdminSidebar({
               )}
               aria-label={
                 countsLoading
-                  ? "Loading count"
+                  ? t("Loading count")
                   : count !== undefined
-                    ? `${count} items`
+                    ? t("{count} items", { count })
                     : undefined
               }
             >
@@ -129,7 +132,7 @@ export default function AdminSidebar({
     return (
       <nav
         className="flex min-h-0 flex-col items-center px-2 gap-1"
-        aria-label="Admin navigation"
+        aria-label={t("Admin navigation")}
       >
         {renderNavItems(ADMIN_MY_STORE_ITEMS)}
         <div className="w-6 border-t border-gray-200/50 dark:border-white/10 my-1" />
@@ -144,10 +147,13 @@ export default function AdminSidebar({
             isSub: true,
             collapsed,
           })}
-          title="Email Preferences"
+          title={t("Email Preferences")}
         >
           <Mail className="h-4 w-4 flex-shrink-0" />
         </Link>
+        <div className="my-1">
+          <LocaleSwitcher iconOnly />
+        </div>
       </nav>
     );
   }
@@ -155,22 +161,22 @@ export default function AdminSidebar({
   return (
     <nav className="flex min-h-0 flex-col p-2 gap-1">
       <p className="px-2 pt-2  text-xs font-normal uppercase tracking-wider text-muted-foreground">
-        My Store
+        {t("My Store")}
       </p>
       {renderNavItems(ADMIN_MY_STORE_ITEMS)}
 
       <p className="px-2 pt-2  text-xs font-normal uppercase tracking-wider text-muted-foreground">
-        Product & System Management
+        {t("Product & System Management")}
       </p>
       {renderNavItems(ADMIN_MANAGEMENT_ITEMS)}
 
       <p className="px-2 pt-2  text-xs font-normal uppercase tracking-wider text-muted-foreground">
-        Personal activity
+        {t("Personal activity")}
       </p>
       {renderNavItems(ADMIN_MY_ACTIVITY_ITEMS)}
 
       <p className="px-2 pt-2  text-xs font-normal uppercase tracking-wider text-muted-foreground">
-        System Settings
+        {t("System Settings")}
       </p>
       <Link
         href={ADMIN_SETTINGS_EMAIL_HREF}
@@ -180,8 +186,13 @@ export default function AdminSidebar({
         })}
       >
         <Mail className="h-4 w-4 flex-shrink-0" />
-        Email Preferences
+        {t("Email Preferences")}
       </Link>
+
+      {/* Language toggle (中文 / EN) */}
+      <div className="px-2 pt-3 pb-1">
+        <LocaleSwitcher fullWidth />
+      </div>
     </nav>
   );
 }

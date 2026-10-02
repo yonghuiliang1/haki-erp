@@ -22,6 +22,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { invalidateAfterCatalogChange } from "@/lib/react-query";
 import { GLASS_GHOST_BUTTON } from "@/components/shared";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface ProductImportDialogProps {
   /**
@@ -53,6 +54,7 @@ export function ProductImportDialog({
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const t = useT();
   const queryClient = useQueryClient();
 
   // Use controlled or internal state
@@ -72,8 +74,8 @@ export function ProductImportDialog({
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
     if (!["csv", "xlsx", "xls"].includes(fileExtension || "")) {
       toast({
-        title: "Invalid File Type",
-        description: "Please select a CSV or Excel file (.csv, .xlsx, .xls)",
+        title: t("Invalid File Type"),
+        description: t("Please select a CSV or Excel file (.csv, .xlsx, .xls)"),
         variant: "destructive",
       });
       return;
@@ -83,8 +85,8 @@ export function ProductImportDialog({
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       toast({
-        title: "File Too Large",
-        description: "File size must be less than 10MB",
+        title: t("File Too Large"),
+        description: t("File size must be less than 10MB"),
         variant: "destructive",
       });
       return;
@@ -122,8 +124,11 @@ export function ProductImportDialog({
       invalidateAfterCatalogChange(queryClient);
 
       toast({
-        title: "Import Successful!",
-        description: `Successfully imported ${data.successRows} of ${data.totalRows} products.`,
+        title: t("Import Successful!"),
+        description: t("Successfully imported {success} of {total} products.", {
+          success: data.successRows,
+          total: data.totalRows,
+        }),
       });
 
       // Reset file input
@@ -146,15 +151,15 @@ export function ProductImportDialog({
         errors: [
           {
             rowNumber: 0,
-            message: error instanceof Error ? error.message : "Unknown error",
+            message: error instanceof Error ? error.message : t("Unknown error"),
           },
         ],
       });
 
       toast({
-        title: "Import Failed",
+        title: t("Import Failed"),
         description:
-          error instanceof Error ? error.message : "Failed to import products",
+          error instanceof Error ? error.message : t("Failed to import products"),
         variant: "destructive",
       });
     } finally {
@@ -188,7 +193,7 @@ export function ProductImportDialog({
           className="h-10 rounded-[28px] border border-amber-400/30 dark:border-amber-400/30 bg-gradient-to-r from-amber-500/30 via-amber-500/15 to-amber-500/5 dark:from-amber-500/30 dark:via-amber-500/15 dark:to-amber-500/5 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(245,158,11,0.2)] backdrop-blur-md transition duration-200 hover:border-amber-300/60 hover:from-amber-500/35 hover:via-amber-500/25 hover:to-amber-500/15 dark:hover:border-amber-300/60 dark:hover:from-amber-500/35 dark:hover:via-amber-500/25 dark:hover:to-amber-500/15"
         >
           <Upload className="h-4 w-4" />
-          Import Products
+          {t("Import Products")}
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -197,12 +202,10 @@ export function ProductImportDialog({
       >
         <DialogHeader>
           <DialogTitle className="text-[22px] text-white">
-            Import Products
+            {t("Import Products")}
           </DialogTitle>
           <DialogDescription className="text-white/70">
-            Upload a CSV or Excel file to import products. The file should
-            include columns: Product Name, SKU, Price, Quantity, Status,
-            Category, Supplier.
+            {t("Upload a CSV or Excel file to import products. The file should include columns: Product Name, SKU, Price, Quantity, Status, Category, Supplier.")}
           </DialogDescription>
         </DialogHeader>
 
@@ -221,12 +224,12 @@ export function ProductImportDialog({
                 )}
                 <p className="mb-2 text-sm text-white/80">
                   <span className="font-medium">
-                    {isImporting ? "Importing..." : "Click to upload"}
+                    {isImporting ? t("Importing...") : t("Click to upload")}
                   </span>{" "}
-                  or drag and drop
+                  {t("or drag and drop")}
                 </p>
                 <p className="text-xs text-white/50">
-                  CSV or Excel (MAX. 10MB)
+                  {t("CSV or Excel (MAX. 10MB)")}
                 </p>
               </div>
               <input
@@ -253,38 +256,40 @@ export function ProductImportDialog({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-white">
                   <FileText className="h-4 w-4" />
-                  <span className="font-medium">Import Summary</span>
+                  <span className="font-medium">{t("Import Summary")}</span>
                 </div>
                 <div className="text-sm  text-white/80">
                   <p>
-                    Total Rows:{" "}
+                    {t("Total Rows:")}{" "}
                     <strong className="text-white">
                       {importResult.totalRows}
                     </strong>
                   </p>
                   <p className="text-emerald-400">
-                    Successful: <strong>{importResult.successRows}</strong>
+                    {t("Successful:")} <strong>{importResult.successRows}</strong>
                   </p>
                   {importResult.failedRows > 0 && (
                     <p className="text-red-400">
-                      Failed: <strong>{importResult.failedRows}</strong>
+                      {t("Failed:")} <strong>{importResult.failedRows}</strong>
                     </p>
                   )}
                 </div>
                 {importResult.errors && importResult.errors.length > 0 && (
                   <div className="mt-2 max-h-32 overflow-y-auto">
                     <p className="text-xs font-medium mb-1 text-white/70">
-                      Errors:
+                      {t("Errors:")}
                     </p>
                     <ul className="text-xs  list-disc list-inside">
                       {importResult.errors.slice(0, 5).map((error, index) => (
                         <li key={index} className="text-red-400">
-                          Row {error.rowNumber}: {error.message}
+                          {t("Row {row}:", { row: error.rowNumber })} {error.message}
                         </li>
                       ))}
                       {importResult.errors.length > 5 && (
                         <li className="text-white/50">
-                          ... and {importResult.errors.length - 5} more errors
+                          {t("... and {count} more errors", {
+                            count: importResult.errors.length - 5,
+                          })}
                         </li>
                       )}
                     </ul>
@@ -301,7 +306,7 @@ export function ProductImportDialog({
             disabled={isImporting}
             className={cn("h-11 w-full sm:w-auto px-11", GLASS_GHOST_BUTTON)}
           >
-            {importResult ? "Close" : "Cancel"}
+            {importResult ? t("Close") : t("Cancel")}
           </Button>
         </DialogFooter>
       </DialogContent>

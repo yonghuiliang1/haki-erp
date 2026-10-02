@@ -27,6 +27,7 @@ import {
 import { OrderStatusBadge, PaymentStatusBadge } from "@/lib/ui/semantic-badges";
 import { FILTER_CHIP_COLLAPSED_CLASS } from "@/lib/ui/filter-chip-styles";
 import type { Order } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 const ORDER_SOURCE_LABELS: Record<OrderSourceFilterValue, string> = {
   client: "Client orders",
@@ -67,6 +68,7 @@ export default function OrderFilters({
   setOrderSourceFilter,
 }: OrderFiltersProps) {
   const { toast } = useToast();
+  const t = useT();
 
   /**
    * Filter orders based on search term and selected filters
@@ -102,54 +104,57 @@ export default function OrderFilters({
     try {
       if (filteredOrders.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
+          title: t("No Data to Export"),
+          description: t(
             "There are no orders to export with the current filters.",
+          ),
           variant: "destructive",
         });
         return;
       }
 
       const csvData = filteredOrders.map((order) => ({
-        "Order Number": order.orderNumber,
-        "Order Date": formatStableDate(order.createdAt),
-        Status: order.status,
-        "Payment Status": order.paymentStatus,
-        Subtotal: order.subtotal.toFixed(2),
-        Tax: order.tax ? order.tax.toFixed(2) : "0.00",
-        Shipping: order.shipping ? order.shipping.toFixed(2) : "0.00",
-        Total: order.total.toFixed(2),
-        "Items Count": order.items.length,
-        "Tracking Number": order.trackingNumber || "-",
+        [t("Order Number")]: order.orderNumber,
+        [t("Order Date")]: formatStableDate(order.createdAt),
+        [t("Status")]: order.status,
+        [t("Payment Status")]: order.paymentStatus,
+        [t("Subtotal")]: order.subtotal.toFixed(2),
+        [t("Tax")]: order.tax ? order.tax.toFixed(2) : "0.00",
+        [t("Shipping")]: order.shipping ? order.shipping.toFixed(2) : "0.00",
+        [t("Total")]: order.total.toFixed(2),
+        [t("Items Count")]: order.items.length,
+        [t("Tracking Number")]: order.trackingNumber || "-",
       }));
 
       const columns = [
-        { header: "Order Number", key: "Order Number" },
-        { header: "Order Date", key: "Order Date" },
-        { header: "Status", key: "Status" },
-        { header: "Payment Status", key: "Payment Status" },
-        { header: "Subtotal", key: "Subtotal" },
-        { header: "Tax", key: "Tax" },
-        { header: "Shipping", key: "Shipping" },
-        { header: "Total", key: "Total" },
-        { header: "Items Count", key: "Items Count" },
-        { header: "Tracking Number", key: "Tracking Number" },
+        { header: t("Order Number"), key: t("Order Number") },
+        { header: t("Order Date"), key: t("Order Date") },
+        { header: t("Status"), key: t("Status") },
+        { header: t("Payment Status"), key: t("Payment Status") },
+        { header: t("Subtotal"), key: t("Subtotal") },
+        { header: t("Tax"), key: t("Tax") },
+        { header: t("Shipping"), key: t("Shipping") },
+        { header: t("Total"), key: t("Total") },
+        { header: t("Items Count"), key: t("Items Count") },
+        { header: t("Tracking Number"), key: t("Tracking Number") },
       ];
 
       exportToCSV(csvData, columns, "stockly-orders");
 
       toast({
-        title: "CSV Export Successful!",
-        description: `${filteredOrders.length} orders exported to CSV file.`,
+        title: t("CSV Export Successful!"),
+        description: t("{count} orders exported to CSV file.", {
+          count: filteredOrders.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export orders to CSV. Please try again.",
+        title: t("Export Failed"),
+        description: t("Failed to export orders to CSV. Please try again."),
         variant: "destructive",
       });
     }
-  }, [filteredOrders, toast]);
+  }, [filteredOrders, toast, t]);
 
   /**
    * Export filtered orders to Excel
@@ -159,57 +164,60 @@ export default function OrderFilters({
     try {
       if (filteredOrders.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
+          title: t("No Data to Export"),
+          description: t(
             "There are no orders to export with the current filters.",
+          ),
           variant: "destructive",
         });
         return;
       }
 
       const excelData = filteredOrders.map((order) => ({
-        "Order Number": order.orderNumber,
-        "Order Date": formatStableDate(order.createdAt),
-        Status: order.status,
-        "Payment Status": order.paymentStatus,
-        Subtotal: order.subtotal.toFixed(2),
-        Tax: order.tax ? order.tax.toFixed(2) : "0.00",
-        Shipping: order.shipping ? order.shipping.toFixed(2) : "0.00",
-        Total: order.total.toFixed(2),
-        "Items Count": order.items.length,
-        "Tracking Number": order.trackingNumber || "-",
+        [t("Order Number")]: order.orderNumber,
+        [t("Order Date")]: formatStableDate(order.createdAt),
+        [t("Status")]: order.status,
+        [t("Payment Status")]: order.paymentStatus,
+        [t("Subtotal")]: order.subtotal.toFixed(2),
+        [t("Tax")]: order.tax ? order.tax.toFixed(2) : "0.00",
+        [t("Shipping")]: order.shipping ? order.shipping.toFixed(2) : "0.00",
+        [t("Total")]: order.total.toFixed(2),
+        [t("Items Count")]: order.items.length,
+        [t("Tracking Number")]: order.trackingNumber || "-",
       }));
 
       await exportToExcel({
         sheetName: "Orders",
         fileName: "stockly-orders",
         columns: [
-          { header: "Order Number", key: "Order Number", width: 20 },
-          { header: "Order Date", key: "Order Date", width: 12 },
-          { header: "Status", key: "Status", width: 12 },
-          { header: "Payment Status", key: "Payment Status", width: 15 },
-          { header: "Subtotal", key: "Subtotal", width: 12 },
-          { header: "Tax", key: "Tax", width: 10 },
-          { header: "Shipping", key: "Shipping", width: 12 },
-          { header: "Total", key: "Total", width: 12 },
-          { header: "Items Count", key: "Items Count", width: 12 },
-          { header: "Tracking Number", key: "Tracking Number", width: 20 },
+          { header: t("Order Number"), key: t("Order Number"), width: 20 },
+          { header: t("Order Date"), key: t("Order Date"), width: 12 },
+          { header: t("Status"), key: t("Status"), width: 12 },
+          { header: t("Payment Status"), key: t("Payment Status"), width: 15 },
+          { header: t("Subtotal"), key: t("Subtotal"), width: 12 },
+          { header: t("Tax"), key: t("Tax"), width: 10 },
+          { header: t("Shipping"), key: t("Shipping"), width: 12 },
+          { header: t("Total"), key: t("Total"), width: 12 },
+          { header: t("Items Count"), key: t("Items Count"), width: 12 },
+          { header: t("Tracking Number"), key: t("Tracking Number"), width: 20 },
         ],
         data: excelData,
       });
 
       toast({
-        title: "Excel Export Successful!",
-        description: `${filteredOrders.length} orders exported to Excel file.`,
+        title: t("Excel Export Successful!"),
+        description: t("{count} orders exported to Excel file.", {
+          count: filteredOrders.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export orders to Excel. Please try again.",
+        title: t("Export Failed"),
+        description: t("Failed to export orders to Excel. Please try again."),
         variant: "destructive",
       });
     }
-  }, [filteredOrders, toast]);
+  }, [filteredOrders, toast, t]);
 
   const handleResetFilters = useCallback(() => {
     setSelectedStatuses([]);
@@ -228,12 +236,12 @@ export default function OrderFilters({
 
     if (showOrderSourceFilter && orderSourceFilter !== "both") {
       groups.push({
-        label: "Type",
+        label: t("Type"),
         values: [orderSourceFilter],
         onClear: () => setOrderSourceFilter?.("both"),
         renderBadge: (value) => (
           <span className={FILTER_CHIP_COLLAPSED_CLASS}>
-            {ORDER_SOURCE_LABELS[value as OrderSourceFilterValue] ?? value}
+            {t(ORDER_SOURCE_LABELS[value as OrderSourceFilterValue] ?? value)}
           </span>
         ),
       });
@@ -241,7 +249,7 @@ export default function OrderFilters({
 
     groups.push(
       {
-        label: "Status",
+        label: t("Status"),
         values: selectedStatuses,
         onClear: () => setSelectedStatuses([]),
         renderBadge: (value) => (
@@ -249,7 +257,7 @@ export default function OrderFilters({
         ),
       },
       {
-        label: "Payment",
+        label: t("Payment"),
         values: selectedPaymentStatuses,
         onClear: () => setSelectedPaymentStatuses([]),
         renderBadge: (value) => (
@@ -267,6 +275,7 @@ export default function OrderFilters({
     setOrderSourceFilter,
     setSelectedStatuses,
     setSelectedPaymentStatuses,
+    t,
   ]);
 
   return (
@@ -277,7 +286,7 @@ export default function OrderFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by Order #..."
+            placeholder={t("Search by Order #...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -315,7 +324,7 @@ export default function OrderFilters({
         {/* Export Dropdown - Right */}
         <div className="flex-shrink-0 flex items-center gap-2">
           <ExportMenuButton
-            label="Export Orders"
+            label={t("Export Orders")}
             accent="violet"
             disabled={filteredOrders.length === 0}
             onExportCsv={handleExportToCSV}

@@ -22,6 +22,7 @@ import { ProductStockStatusBadge } from "@/lib/ui/semantic-badges";
 import { FILTER_CHIP_COLLAPSED_CLASS } from "@/lib/ui/filter-chip-styles";
 import { cn } from "@/lib/utils";
 import { formatStableDate } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 type FiltersAndActionsProps = {
   allProducts: Product[];
@@ -87,6 +88,7 @@ export default function FiltersAndActions({
   userId,
 }: FiltersAndActionsProps) {
   const { toast } = useToast();
+  const t = useT();
 
   /**
    * Filter products based on current filters
@@ -125,23 +127,22 @@ export default function FiltersAndActions({
     try {
       if (filteredProducts.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
-            "There are no products to export with the current filters.",
+          title: t("No Data to Export"),
+          description: t("There are no products to export with the current filters."),
           variant: "destructive",
         });
         return;
       }
 
       const csvData = filteredProducts.map((product) => ({
-        "Product Name": product.name,
-        SKU: product.sku,
-        Price: `$${product.price.toFixed(2)}`,
-        Quantity: product.quantity,
-        Status: product.status,
-        Category: product.category || "Unknown",
-        Supplier: product.supplier || "Unknown",
-        "Created Date": formatStableDate(product.createdAt),
+        [t("Product Name")]: product.name,
+        [t("SKU")]: product.sku,
+        [t("Price")]: `$${product.price.toFixed(2)}`,
+        [t("Quantity")]: product.quantity,
+        [t("Status")]: product.status,
+        [t("Category")]: product.category || t("Unknown"),
+        [t("Supplier")]: product.supplier || t("Unknown"),
+        [t("Created Date")]: formatStableDate(product.createdAt),
       }));
 
       const csv = Papa.unparse(csvData);
@@ -159,17 +160,19 @@ export default function FiltersAndActions({
       document.body.removeChild(link);
 
       toast({
-        title: "CSV Export Successful!",
-        description: `${filteredProducts.length} products exported to CSV file.`,
+        title: t("CSV Export Successful!"),
+        description: t("{count} products exported to CSV file.", {
+          count: filteredProducts.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export products to CSV. Please try again.",
+        title: t("Export Failed"),
+        description: t("Failed to export products to CSV. Please try again."),
         variant: "destructive",
       });
     }
-  }, [filteredProducts, toast]);
+  }, [filteredProducts, toast, t]);
 
   /**
    * Export filtered products to Excel
@@ -179,23 +182,22 @@ export default function FiltersAndActions({
     try {
       if (filteredProducts.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
-            "There are no products to export with the current filters.",
+          title: t("No Data to Export"),
+          description: t("There are no products to export with the current filters."),
           variant: "destructive",
         });
         return;
       }
 
       const excelData = filteredProducts.map((product) => ({
-        "Product Name": product.name,
-        SKU: product.sku,
-        Price: product.price,
-        Quantity: product.quantity,
-        Status: product.status,
-        Category: product.category || "Unknown",
-        Supplier: product.supplier || "Unknown",
-        "Created Date": formatStableDate(product.createdAt),
+        [t("Product Name")]: product.name,
+        [t("SKU")]: product.sku,
+        [t("Price")]: product.price,
+        [t("Quantity")]: product.quantity,
+        [t("Status")]: product.status,
+        [t("Category")]: product.category || t("Unknown"),
+        [t("Supplier")]: product.supplier || t("Unknown"),
+        [t("Created Date")]: formatStableDate(product.createdAt),
       }));
 
       // Create a new workbook and worksheet
@@ -204,14 +206,14 @@ export default function FiltersAndActions({
 
       // Add header row
       worksheet.columns = [
-        { header: "Product Name", key: "Product Name", width: 20 },
-        { header: "SKU", key: "SKU", width: 15 },
-        { header: "Price", key: "Price", width: 10 },
-        { header: "Quantity", key: "Quantity", width: 10 },
-        { header: "Status", key: "Status", width: 12 },
-        { header: "Category", key: "Category", width: 15 },
-        { header: "Supplier", key: "Supplier", width: 15 },
-        { header: "Created Date", key: "Created Date", width: 12 },
+        { header: t("Product Name"), key: t("Product Name"), width: 20 },
+        { header: t("SKU"), key: t("SKU"), width: 15 },
+        { header: t("Price"), key: t("Price"), width: 10 },
+        { header: t("Quantity"), key: t("Quantity"), width: 10 },
+        { header: t("Status"), key: t("Status"), width: 12 },
+        { header: t("Category"), key: t("Category"), width: 15 },
+        { header: t("Supplier"), key: t("Supplier"), width: 15 },
+        { header: t("Created Date"), key: t("Created Date"), width: 12 },
       ];
 
       // Add data rows
@@ -243,17 +245,19 @@ export default function FiltersAndActions({
       document.body.removeChild(link);
 
       toast({
-        title: "Excel Export Successful!",
-        description: `${filteredProducts.length} products exported to Excel file.`,
+        title: t("Excel Export Successful!"),
+        description: t("{count} products exported to Excel file.", {
+          count: filteredProducts.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export products to Excel. Please try again.",
+        title: t("Export Failed"),
+        description: t("Failed to export products to Excel. Please try again."),
         variant: "destructive",
       });
     }
-  }, [filteredProducts, toast]);
+  }, [filteredProducts, toast, t]);
 
   const handleResetFilters = useCallback(() => {
     setSelectedStatuses([]);
@@ -273,7 +277,7 @@ export default function FiltersAndActions({
 
     return [
       {
-        label: "Status",
+        label: t("Status"),
         values: selectedStatuses,
         onClear: () => setSelectedStatuses([]),
         renderBadge: (value) => (
@@ -281,7 +285,7 @@ export default function FiltersAndActions({
         ),
       },
       {
-        label: "Category",
+        label: t("Category"),
         values: selectedCategory,
         onClear: () => setSelectedCategory([]),
         renderBadge: (value) => (
@@ -291,7 +295,7 @@ export default function FiltersAndActions({
         ),
       },
       {
-        label: "Supplier",
+        label: t("Supplier"),
         values: selectedSuppliers,
         onClear: () => setSelectedSuppliers([]),
         renderBadge: (value) => (
@@ -325,11 +329,16 @@ export default function FiltersAndActions({
             <span className="truncate">
               {storeOwnerCounts && storeOwnerCounts.total > 0 ? (
                 <>
-                  {storeOwnerCounts.withProducts} of {storeOwnerCounts.total}{" "}
-                  store owners have products · Select Product Owner
+                  {t(
+                    "{withProducts} of {total} store owners have products · Select Product Owner",
+                    {
+                      withProducts: storeOwnerCounts.withProducts,
+                      total: storeOwnerCounts.total,
+                    },
+                  )}
                 </>
               ) : (
-                "Select Product Owner"
+                t("Select Product Owner")
               )}
             </span>
           </p>
@@ -363,7 +372,7 @@ export default function FiltersAndActions({
           <div className="relative w-full sm:max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
             <Input
-              placeholder="Search by Name or SKU..."
+              placeholder={t("Search by Name or SKU...")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -389,7 +398,7 @@ export default function FiltersAndActions({
           />
           {!hideImport && <ProductImportDialog />}
           <ExportMenuButton
-            label="Export Products"
+            label={t("Export Products")}
             accent="violet"
             onExportCsv={exportToCSV}
             onExportExcel={exportToExcel}

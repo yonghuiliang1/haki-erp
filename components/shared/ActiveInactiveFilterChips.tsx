@@ -13,6 +13,7 @@ import {
   FILTER_CHIP_RESET_BTN_CLASS,
   FILTER_CHIP_ROW_CLASS,
 } from "@/lib/ui/filter-chip-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type ActiveInactiveFilterChipsProps = {
   statusFilter: CatalogStatusFilter;
@@ -25,17 +26,20 @@ export function ActiveInactiveFilterChips({
   onClear,
   onReset,
 }: ActiveInactiveFilterChipsProps) {
+  const t = useT();
   if (statusFilter === "all") return null;
 
   const isActive = statusFilter === "active";
 
   return (
     <div className={FILTER_CHIP_ROW_CLASS}>
-      <span className={FILTER_CHIP_GROUP_LABEL_CLASS}>Status:</span>
+      <span className={FILTER_CHIP_GROUP_LABEL_CLASS}>{t("Status")}:</span>
       <button
         type="button"
         onClick={onClear}
-        aria-label={`Clear ${isActive ? "active" : "inactive"} status filter`}
+        aria-label={t("Clear {state} status filter", {
+          state: t(isActive ? "Active" : "Inactive"),
+        })}
         className={FILTER_CHIP_DISMISS_BTN_CLASS}
       >
         <ActiveInactiveBadge active={isActive} size="compact" />
@@ -52,7 +56,7 @@ export function ActiveInactiveFilterChips({
         className={FILTER_CHIP_RESET_BTN_CLASS}
       >
         <RotateCcw className="h-3.5 w-3.5" aria-hidden />
-        Reset
+        {t("Reset")}
       </Button>
     </div>
   );

@@ -48,11 +48,14 @@ import {
 } from "@/lib/ui/order-invoice-column-tooltips";
 import { cn } from "@/lib/utils";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 
 const META_MUTED = "text-xs text-gray-600 dark:text-gray-300";
 
 /** REQ-0145 — items / units / created with icons; date matches muted meta color */
 function OrderCompactMeta({ order }: { order: Order }) {
+  const t = useT();
   const { itemCount, unitCount } = getOrderItemUnitCounts(order.items);
   return (
     <span
@@ -60,12 +63,16 @@ function OrderCompactMeta({ order }: { order: Order }) {
     >
       <span className="inline-flex items-center gap-1">
         <Package className="h-3 w-3 shrink-0" aria-hidden />
-        {itemCount} item{itemCount === 1 ? "" : "s"}
+        {t(itemCount === 1 ? "{count} item" : "{count} items", {
+          count: itemCount,
+        })}
       </span>
       <span aria-hidden>·</span>
       <span className="inline-flex items-center gap-1">
         <Boxes className="h-3 w-3 shrink-0" aria-hidden />
-        {unitCount} unit{unitCount === 1 ? "" : "s"}
+        {t(unitCount === 1 ? "{count} unit" : "{count} units", {
+          count: unitCount,
+        })}
       </span>
       <span aria-hidden>·</span>
       <span className="inline-flex items-center gap-1">
@@ -90,6 +97,7 @@ type SortableHeaderProps = {
  * Matches Product/Category/Supplier table pattern
  */
 const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -105,9 +113,9 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
           className={`flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white ${
             isSorted && "text-primary"
           }`}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
@@ -115,12 +123,12 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
         {/* Ascending Sorting */}
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         {/* Descending Sorting */}
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -155,6 +163,7 @@ export const createOrderColumns = (
   onEdit?: (order: Order) => void,
   detailHrefBase?: string,
   options?: CreateOrderColumnsOptions,
+  t: TranslateFn = (text) => text,
 ): ColumnDef<Order>[] => {
   const isAdminBase = detailHrefBase?.startsWith("/admin") === true;
   const invoiceHrefBase = isAdminBase ? "/admin/invoices" : "/invoices";
@@ -171,7 +180,7 @@ export const createOrderColumns = (
           <HelpTooltip
             content={ORDER_NUMBER_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Order # column help"
+            ariaLabel={t("Order # column help")}
             className="shrink-0"
           />
         </div>
@@ -273,7 +282,7 @@ export const createOrderColumns = (
           <HelpTooltip
             content={ORDER_TOTAL_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Total column help"
+            ariaLabel={t("Total column help")}
             className="shrink-0"
           />
         </div>
@@ -306,7 +315,7 @@ export const createOrderColumns = (
           <HelpTooltip
             content={ORDER_STATUS_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Status column help"
+            ariaLabel={t("Status column help")}
             className="shrink-0"
           />
         </div>
@@ -332,7 +341,7 @@ export const createOrderColumns = (
           <HelpTooltip
             content={ORDER_PAYMENT_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Payment column help"
+            ariaLabel={t("Payment column help")}
             className="shrink-0"
           />
         </div>
@@ -378,7 +387,7 @@ export const createOrderColumns = (
           <HelpTooltip
             content={INVOICE_NUMBER_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Invoice # column help"
+            ariaLabel={t("Invoice # column help")}
             className="shrink-0"
           />
         </div>
@@ -392,7 +401,7 @@ export const createOrderColumns = (
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => t("Actions"),
       cell: ({ row }) => {
         return (
           <OrderActions

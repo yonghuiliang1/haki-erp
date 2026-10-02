@@ -7,6 +7,7 @@ import { FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { LuGitPullRequestDraft } from "react-icons/lu";
 import { Product } from "@/types"; // Import shared interfaces
+import { useT } from "@/lib/i18n/locale-context";
 
 const statuses = [
   { value: "Available", label: "Available", icon: <FaCheck /> },
@@ -21,6 +22,7 @@ export default function Status({
   selectedTab: string;
   setSelectedTab: Dispatch<SetStateAction<Product["status"]>>;
 }) {
+  const t = useT();
   const getStatusClass = (status: string) => {
     switch (status) {
       case "Available":
@@ -36,7 +38,7 @@ export default function Status({
 
   return (
     <div>
-      <Label className="text-slate-600">Status</Label>
+      <Label className="text-slate-600">{t("Status")}</Label>
       <Tabs
         value={selectedTab}
         onValueChange={(value: string) =>
@@ -54,7 +56,7 @@ export default function Status({
               value={status.value}
             >
               {status.icon}
-              {status.label}
+              {t(status.label)}
             </TabsTrigger>
           ))}
         </TabsList>

@@ -32,6 +32,7 @@ import {
 import SupportTicketActions from "@/components/admin/SupportTicketActions";
 import { ticketMessageTotal } from "@/lib/support-tickets/ticket-message-stats";
 import { resolveDetailAuditUserHref } from "@/lib/navigation/audit-user-href";
+import { useT } from "@/lib/i18n/locale-context";
 import type { ProductOwnerOption, SupportTicket } from "@/types";
 
 type SortableHeaderProps = {
@@ -39,7 +40,14 @@ type SortableHeaderProps = {
   label: string;
 };
 
+/** Inline text rendered as a client component so non-component code can translate. */
+function TranslatedText({ text }: { text: string }) {
+  const t = useT();
+  return <>{t(text)}</>;
+}
+
 function SortableHeader({ column, label }: SortableHeaderProps) {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -56,20 +64,20 @@ function SortableHeader({ column, label }: SortableHeaderProps) {
             "flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white",
             isSorted && "text-primary",
           )}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -141,7 +149,7 @@ export function createSupportTicketColumns(
     },
     {
       id: "customer",
-      header: "Customer",
+      header: () => <TranslatedText text="Customer" />,
       cell: ({ row }) => {
         const t = row.original;
         const name =
@@ -164,7 +172,7 @@ export function createSupportTicketColumns(
     },
     {
       id: "sentTo",
-      header: "Sent to",
+      header: () => <TranslatedText text="Sent to" />,
       cell: ({ row }) => {
         const t = row.original;
         if (!t.assignedToId) {
@@ -212,7 +220,7 @@ export function createSupportTicketColumns(
     },
     {
       id: "messages",
-      header: "Messages",
+      header: () => <TranslatedText text="Messages" />,
       cell: ({ row }) => (
         <span className="text-muted-foreground">
           {ticketMessageTotal(row.original.replyCount)}
@@ -229,7 +237,9 @@ export function createSupportTicketColumns(
         return (
           <div className="flex flex-col whitespace-nowrap text-xs">
             <span>
-              <span className="text-muted-foreground">Created: </span>
+              <span className="text-muted-foreground">
+                <TranslatedText text="Created:" />
+              </span>{" "}
               {t.createdAt ? (
                 <ClientDateTime date={t.createdAt} semantic="created" />
               ) : (
@@ -237,7 +247,9 @@ export function createSupportTicketColumns(
               )}
             </span>
             <span className="mt-0.5">
-              <span className="text-muted-foreground">Updated: </span>
+              <span className="text-muted-foreground">
+                <TranslatedText text="Updated:" />
+              </span>{" "}
               {t.updatedAt ? (
                 <ClientDateTime date={t.updatedAt} semantic="updated" />
               ) : (
@@ -250,7 +262,7 @@ export function createSupportTicketColumns(
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <TranslatedText text="Actions" />,
       cell: ({ row }) => (
         <SupportTicketActions
           ticket={row.original}

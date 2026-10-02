@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { TYPO_CARD_TITLE } from "@/lib/ui/typography-scale";
 import { GlassCard } from "@/components/orders/detail/order-detail-primitives";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type InvoiceSummaryCardProps = {
   invoice?: Invoice;
@@ -95,6 +96,7 @@ export function InvoiceSummaryCard({
   invoice,
   dataLoading,
 }: InvoiceSummaryCardProps) {
+  const t = useT();
   const amountDue = Number(invoice?.amountDue ?? 0);
   // REQ-0210 — cancelled/refunded: collected history, not "paid in full"
   const isClosed =
@@ -104,7 +106,7 @@ export function InvoiceSummaryCard({
   return (
     <GlassCard variant="teal" className="h-full">
       <SectionCardHeader
-        title="Invoice Summary"
+        title={t("Invoice Summary")}
         icon={DollarSign}
         tone="teal"
         className="mb-4"
@@ -113,7 +115,7 @@ export function InvoiceSummaryCard({
       <div className="space-y-2">
         <SummaryRow
           icon={Receipt}
-          label="Subtotal:"
+          label={t("Subtotal:")}
           loading={dataLoading}
           iconClassName="text-sky-600 dark:text-sky-400"
           value={formatStableCurrency(Number(invoice?.subtotal ?? 0))}
@@ -121,7 +123,7 @@ export function InvoiceSummaryCard({
         {!dataLoading && invoice?.tax != null && invoice.tax > 0 && (
           <SummaryRow
             icon={Percent}
-            label="Tax:"
+            label={t("Tax:")}
             iconClassName="text-violet-600 dark:text-violet-400"
             value={formatStableCurrency(Number(invoice.tax))}
           />
@@ -129,7 +131,7 @@ export function InvoiceSummaryCard({
         {!dataLoading && invoice?.shipping != null && invoice.shipping > 0 && (
           <SummaryRow
             icon={Truck}
-            label="Shipping:"
+            label={t("Shipping:")}
             iconClassName="text-cyan-600 dark:text-cyan-400"
             value={formatStableCurrency(Number(invoice.shipping))}
           />
@@ -137,7 +139,7 @@ export function InvoiceSummaryCard({
         {!dataLoading && invoice?.discount != null && invoice.discount > 0 && (
           <SummaryRow
             icon={Tag}
-            label="Discount:"
+            label={t("Discount:")}
             iconClassName="text-rose-600 dark:text-rose-400"
             value={"-" + formatStableCurrency(Number(invoice.discount))}
             valueClassName="text-rose-600 dark:text-rose-400"
@@ -148,7 +150,7 @@ export function InvoiceSummaryCard({
         <div className="flex justify-between text-sm sm:text-base font-normal p-2 rounded-xl bg-gradient-to-r from-emerald-100/50 via-emerald-50/30 to-transparent dark:from-emerald-500/15 dark:via-emerald-500/10 dark:to-transparent border border-emerald-200/30 dark:border-emerald-400/20">
           <span className="text-gray-700 dark:text-white inline-flex items-center gap-1.5">
             <CircleDollarSign className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            Total:
+            {t("Total:")}
           </span>
           <span className="text-emerald-600 dark:text-emerald-400 font-normal">
             {dataLoading ? (
@@ -160,7 +162,7 @@ export function InvoiceSummaryCard({
         </div>
         <SummaryRow
           icon={Wallet}
-          label={isClosed ? "Collected:" : "Amount Paid:"}
+          label={isClosed ? t("Collected:") : t("Amount Paid:")}
           loading={dataLoading}
           iconClassName={
             isClosed
@@ -176,7 +178,7 @@ export function InvoiceSummaryCard({
         />
         <SummaryRow
           icon={Banknote}
-          label={isClosed ? "Balance Closed:" : "Amount Due:"}
+          label={isClosed ? t("Balance Closed:") : t("Amount Due:")}
           loading={dataLoading}
           iconClassName={
             isClosed

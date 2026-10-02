@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Reusable Form Number Field Component
  * Number input field with formatting support (using react-number-format)
@@ -11,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { MdError } from "react-icons/md";
 import { NumericFormat } from "react-number-format";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Props for FormNumberField component
@@ -78,6 +81,7 @@ export function FormNumberField({
     control,
     formState: { errors },
   } = useFormContext();
+  const t = useT();
 
   const fieldError = errors[name];
   const displayError = errorMessage || fieldError?.message;
@@ -113,7 +117,7 @@ export function FormNumberField({
       {displayError && (
         <div className="text-red-500 flex gap-1 items-center text-[13px]">
           <MdError />
-          <p>{String(displayError)}</p>
+          <p>{t(String(displayError))}</p>
         </div>
       )}
     </div>

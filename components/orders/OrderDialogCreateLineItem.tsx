@@ -50,6 +50,7 @@ import {
 import type { OrderLineStockProduct } from "@/lib/orders/order-line-stock-validation";
 import { formatOrderLineAutoAssignHint } from "@/lib/orders/order-line-stock-validation";
 import type { Product } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** Create-order form shape shared with OrderDialog (REQ-0111/0113). */
 export type OrderFormData = {
@@ -140,6 +141,7 @@ export function OrderDialogCreateLineItem({
 }: OrderDialogCreateLineItemProps) {
   const queryClient = useQueryClient();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const t = useT();
 
   const quantity =
     quantityValue !== undefined && quantityValue !== null
@@ -200,7 +202,7 @@ export function OrderDialogCreateLineItem({
         <div className="flex-1 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_100px_minmax(0,1fr)] gap-2 items-start">
           <div className="flex flex-col gap-2">
             <DialogFormLabel icon={Package} required>
-              Product {index + 1}
+              {t("Product {number}", { number: index + 1 })}
             </DialogFormLabel>
             {/* REQ-0187 — Allocate-style searchable Combobox + DialogProductOptionRow */}
             <Popover
@@ -263,14 +265,16 @@ export function OrderDialogCreateLineItem({
                 )}
               >
                 <Command className="bg-transparent">
-                  <CommandInput placeholder="Search products…" />
+                  <CommandInput placeholder={t("Search products…")} />
                   <CommandList className="max-h-[min(60vh,280px)]">
                     <CommandEmpty>
                       {availableProducts.length === 0 &&
                       isClientCreatingOrder &&
                       productOwner
-                        ? `${productOwner.name} hasn't added any products yet`
-                        : "No products found."}
+                        ? t("{name} hasn't added any products yet", {
+                            name: productOwner.name,
+                          })
+                        : t("No products found.")}
                     </CommandEmpty>
                     <CommandGroup>
                       {availableProducts.map((product) => (
@@ -322,7 +326,7 @@ export function OrderDialogCreateLineItem({
             {/* REQ-0187 gap — Subtotal under Product column */}
             {selectedProduct ? (
               <div className="text-sm text-white/70 min-w-0 inline-flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span>Subtotal:</span>
+                <span>{t("Subtotal:")}</span>
                 <ProportionalPriceDisplay
                   listAmount={itemSubtotal}
                   className="text-white/90"
@@ -336,7 +340,7 @@ export function OrderDialogCreateLineItem({
 
           <div className="flex flex-col gap-2">
             <DialogFormLabel icon={Layers} required>
-              Quantity
+              {t("Quantity")}
             </DialogFormLabel>
             <Input
               type="number"
@@ -369,7 +373,7 @@ export function OrderDialogCreateLineItem({
                   }
                 }
               }}
-              placeholder="Enter quantity"
+              placeholder={t("Enter quantity")}
               className={cn(
                 "h-11",
                 DIALOG_FORM_FIELD_VIOLET,

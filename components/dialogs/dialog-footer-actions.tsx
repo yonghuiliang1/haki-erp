@@ -18,6 +18,7 @@ import { DialogSubmitButton } from "@/components/shared/DialogSubmitButton";
 import { GLASS_GHOST_BUTTON } from "@/components/shared";
 import type { GlassFocusHue } from "@/lib/ui/focus-ring-styles";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Dialog Footer Actions Props
@@ -99,7 +100,7 @@ export interface DialogFooterActionsProps {
  * - Loading states
  */
 export function DialogFooterActions({
-  cancelLabel = "Cancel",
+  cancelLabel,
   actionLabel,
   actionLoadingLabel,
   isLoading = false,
@@ -113,6 +114,7 @@ export function DialogFooterActions({
   showCancel = true,
   children,
 }: DialogFooterActionsProps) {
+  const t = useT();
   // If custom children provided, use them instead
   if (children) {
     return (
@@ -147,7 +149,7 @@ export function DialogFooterActions({
             type="button"
             disabled={isLoading}
           >
-            {cancelLabel}
+            {cancelLabel ?? t("Cancel")}
           </Button>
         </DialogClose>
       )}

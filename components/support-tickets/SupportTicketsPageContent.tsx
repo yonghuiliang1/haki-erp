@@ -17,6 +17,7 @@ import { SupportTicketTable } from "@/components/admin/SupportTicketTable";
 import { createSupportTicketColumns } from "@/components/admin/SupportTicketTableColumns";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { ticketMessageTotal } from "@/lib/support-tickets/ticket-message-stats";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type SupportTicketsPageContentProps = {
   initialTickets: SupportTicket[];
@@ -27,6 +28,7 @@ export default function SupportTicketsPageContent({
   initialTickets,
   productOwners,
 }: SupportTicketsPageContentProps) {
+  const t = useT();
   // REQ-0227 — personal /support-tickets = creator scope (matches SSR).
   // Do not use view "all" — for admin that key/API means assigned-to-me (store inbox).
   const ticketsQuery = useSupportTickets("created_by_me", initialTickets);
@@ -88,8 +90,10 @@ export default function SupportTicketsPageContent({
             as="h1"
             icon={MessageSquare}
             tone="sky"
-            title="Your Support Tickets"
-            description="Open and track tickets you've sent. Create a ticket to get help from a product owner."
+            title={t("Your Support Tickets")}
+            description={t(
+              "Open and track tickets you've sent. Create a ticket to get help from a product owner.",
+            )}
             trailing={
               <SupportTicketDialog
                 productOwners={productOwners}
@@ -105,7 +109,7 @@ export default function SupportTicketsPageContent({
                     )}
                   >
                     <Plus className="h-4 w-4" />
-                    Create Ticket
+                    {t("Create Ticket")}
                   </Button>
                 }
               />
@@ -114,56 +118,56 @@ export default function SupportTicketsPageContent({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-stretch pb-6">
             <StatisticsCard
-              title="Support Tickets"
+              title={t("Support Tickets")}
               value={list.length}
-              description="Sent by you"
+              description={t("Sent by you")}
               icon={MessageSquare}
               variant="sky"
               valueLoading={cardsLoading}
               badgeValuesLoading={cardsLoading}
               badges={[
-                { label: "Open", value: ticketStats.statusCounts.open },
+                { label: t("Open"), value: ticketStats.statusCounts.open },
                 {
-                  label: "In progress",
+                  label: t("In progress"),
                   value: ticketStats.statusCounts.in_progress,
                 },
                 {
-                  label: "Resolved",
+                  label: t("Resolved"),
                   value: ticketStats.statusCounts.resolved,
                 },
                 {
-                  label: "Closed",
+                  label: t("Closed"),
                   value: ticketStats.statusCounts.closed,
                 },
                 {
-                  label: "Total messages",
+                  label: t("Total messages"),
                   value: ticketStats.totalMessages,
                 },
               ]}
             />
             <StatisticsCard
-              title="Total messages"
+              title={t("Total messages")}
               value={ticketStats.totalMessages}
-              description="Replies across tickets"
+              description={t("Replies across tickets")}
               icon={MessageCircle}
               variant="violet"
               valueLoading={cardsLoading}
               badgeValuesLoading={cardsLoading}
               badges={[
                 {
-                  label: "Low",
+                  label: t("Low"),
                   value: ticketStats.priorityCounts.low,
                 },
                 {
-                  label: "Medium",
+                  label: t("Medium"),
                   value: ticketStats.priorityCounts.medium,
                 },
                 {
-                  label: "High",
+                  label: t("High"),
                   value: ticketStats.priorityCounts.high,
                 },
                 {
-                  label: "Urgent",
+                  label: t("Urgent"),
                   value: ticketStats.priorityCounts.urgent,
                 },
               ]}

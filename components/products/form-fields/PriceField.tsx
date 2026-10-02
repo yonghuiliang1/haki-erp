@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { MdError } from "react-icons/md";
 import { NumericFormat } from "react-number-format";
 import { useFormContext, Controller } from "react-hook-form";
+import { useT } from "@/lib/i18n/locale-context";
 
 export default function Price() {
   const {
@@ -15,10 +16,12 @@ export default function Price() {
     formState: { errors },
   } = useFormContext();
 
+  const t = useT();
+
   return (
     <div className="flex flex-col gap-2 pt-[6px]">
       <DialogFormLabel htmlFor="price" icon={DollarSign} required>
-        Price
+        {t("Price")}
       </DialogFormLabel>
       <Controller
         name="price"

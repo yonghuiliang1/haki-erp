@@ -24,6 +24,7 @@ import type { ProductForHome } from "@/lib/server/home-data";
 import type { DashboardStats, SupplierPortalDashboard } from "@/types";
 import { APP_SHELL_WIDTH_CLASS } from "@/lib/ui/shell-layout-styles";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const ProductTable = dynamic(
   () =>
@@ -50,6 +51,7 @@ const ProductList = React.memo(function ProductList({
   initialStats,
   initialSupplierPortal,
 }: ProductListProps = {}) {
+  const t = useT();
   const pathname = usePathname();
   const { user } = useAuth();
   const isAdminProducts = pathname?.startsWith("/admin") ?? false;
@@ -227,12 +229,12 @@ const ProductList = React.memo(function ProductList({
         icon={Package}
         tone="rose"
         title={
-          isSupplierProductsPage ? "My Products" : "Product Inventory Management"
+          isSupplierProductsPage ? t("My Products") : t("Product Inventory Management")
         }
         description={
           isSupplierProductsPage
-            ? "Products supplied by you. View stock, categories, and which store owner manages each product. Use filters and search to find items quickly."
-            : "Efficiently manage your product catalog with advanced filtering, search capabilities, and real-time stock tracking. Monitor inventory levels, organize by categories and suppliers, and maintain optimal stock control."
+            ? t("Products supplied by you. View stock, categories, and which store owner manages each product. Use filters and search to find items quickly.")
+            : t("Efficiently manage your product catalog with advanced filtering, search capabilities, and real-time stock tracking. Monitor inventory levels, organize by categories and suppliers, and maintain optimal stock control.")
         }
       />
 
@@ -240,61 +242,61 @@ const ProductList = React.memo(function ProductList({
       {isSupplierProductsPage && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={supplierPortal?.totalProducts ?? 0}
-            description="Products in your catalog"
+            description={t("Products in your catalog")}
             icon={Package}
             variant="rose"
             valueLoading={supplierCardsLoading}
             badgeValuesLoading={supplierCardsLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value: supplierPortal?.productStatusCounts?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value: supplierPortal?.productStatusCounts?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value: supplierPortal?.productStatusCounts?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Product Value"
+            title={t("Product Value")}
             value={formatCurrency(supplierPortal?.productValue ?? 0)}
-            description="Total Product value assigned by owner"
+            description={t("Total Product value assigned by owner")}
             icon={DollarSign}
             variant="violet"
             valueLoading={supplierCardsLoading}
             badgeValuesLoading={supplierCardsLoading}
             badges={[
               {
-                label: "Orders",
+                label: t("Orders"),
                 value: formatCurrency(
                   supplierPortal?.valueBreakdown?.orders ?? 0,
                 ),
               },
               {
-                label: "Invoices",
+                label: t("Invoices"),
                 value: formatCurrency(
                   supplierPortal?.valueBreakdown?.invoices ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(supplierPortal?.valueBreakdown?.due ?? 0),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatCurrency(
                   supplierPortal?.valueBreakdown?.cancelled ?? 0,
                 ),
               },
               {
-                label: "Refunded",
+                label: t("Refunded"),
                 value: formatCurrency(
                   supplierPortal?.valueBreakdown?.refunded ?? 0,
                 ),
@@ -302,81 +304,81 @@ const ProductList = React.memo(function ProductList({
             ]}
           />
           <StatisticsCard
-            title="Total Orders"
+            title={t("Total Orders")}
             value={supplierPortal?.totalOrders ?? 0}
-            description="Orders containing your products"
+            description={t("Orders containing your products")}
             icon={Truck}
             variant="emerald"
             valueLoading={supplierCardsLoading}
             badgeValuesLoading={supplierCardsLoading}
             badges={[
               {
-                label: "Pending",
+                label: t("Pending"),
                 value: supplierPortal?.orderStatusCounts?.pending ?? 0,
               },
               {
-                label: "In progress",
+                label: t("In progress"),
                 value: supplierPortal?.orderStatusCounts?.inProgress ?? 0,
               },
               {
-                label: "Shipping",
+                label: t("Shipping"),
                 value: supplierPortal?.orderStatusCounts?.shipped ?? 0,
               },
               {
-                label: "Delivered",
+                label: t("Delivered"),
                 value: supplierPortal?.orderStatusCounts?.delivered ?? 0,
               },
               {
-                label: "Refunded",
+                label: t("Refunded"),
                 value: supplierPortal?.orderStatusCounts?.refunded ?? 0,
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: supplierPortal?.orderStatusCounts?.cancelled ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Revenue"
+            title={t("Total Revenue")}
             value={formatCurrency(supplierPortal?.totalRevenue ?? 0)}
-            description="Revenue from your products (excl. cancelled)"
+            description={t("Revenue from your products (excl. cancelled)")}
             icon={DollarSign}
             variant="amber"
             valueLoading={supplierCardsLoading}
             badgeValuesLoading={supplierCardsLoading}
             badges={[
               {
-                label: "Paid",
+                label: t("Paid"),
                 value: formatCurrency(
                   supplierPortal?.revenueBreakdown?.paid ?? 0,
                 ),
               },
               {
-                label: "Partial",
+                label: t("Partial"),
                 value: formatCurrency(
                   supplierPortal?.revenueBreakdown?.partial ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   supplierPortal?.revenueBreakdown?.due ?? 0,
                 ),
               },
               {
-                label: "Refund",
+                label: t("Refund"),
                 value: formatCurrency(
                   supplierPortal?.revenueBreakdown?.refund ?? 0,
                 ),
               },
               {
-                label: "Pending",
+                label: t("Pending"),
                 value: formatCurrency(
                   supplierPortal?.revenueBreakdown?.pending ?? 0,
                 ),
               },
               {
-                label: "Avg/Order",
+                label: t("Avg/Order"),
                 value: formatCurrency(supplierAvgOrder),
               },
             ]}
@@ -388,39 +390,39 @@ const ProductList = React.memo(function ProductList({
       {isAdminProductsPage && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 pb-6 items-stretch">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={dashboard?.counts.products ?? 0}
-            description="Products availability"
+            description={t("Products availability")}
             icon={Package}
             variant="rose"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value: dashboard?.productStatusBreakdown?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value: dashboard?.productStatusBreakdown?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value: dashboard?.productStatusBreakdown?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Value"
+            title={t("Total Value")}
             value={formatCurrency(dashboard?.totalInventoryValue ?? 0)}
-            description="Total inventory value"
+            description={t("Total inventory value")}
             icon={DollarSign}
             variant="violet"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Orders",
+                label: t("Orders"),
                 value: formatCurrency(
                   dashboard?.orderAnalytics?.totalRevenueExcludingCancelled ??
                     dashboard?.revenue?.fromOrders ??
@@ -428,17 +430,17 @@ const ProductList = React.memo(function ProductList({
                 ),
               },
               {
-                label: "Invoices",
+                label: t("Invoices"),
                 value: formatCurrency(dashboard?.revenue?.fromInvoices ?? 0),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   dashboard?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatCurrency(
                   dashboard?.orderAnalytics?.cancelledOrderAmount ?? 0,
                 ),
@@ -446,39 +448,39 @@ const ProductList = React.memo(function ProductList({
             ]}
           />
           <StatisticsCard
-            title="Total Suppliers"
+            title={t("Total Suppliers")}
             value={dashboard?.counts.suppliers ?? 0}
-            description="Suppliers"
+            description={t("Suppliers")}
             icon={Truck}
             variant="emerald"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: dashboard?.supplierStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value: dashboard?.supplierStatusBreakdown?.inactive ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Categories"
+            title={t("Categories")}
             value={dashboard?.counts.categories ?? 0}
-            description="Product categories"
+            description={t("Product categories")}
             icon={FolderTree}
             variant="amber"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: dashboard?.categoryStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value: dashboard?.categoryStatusBreakdown?.inactive ?? 0,
               },
             ]}
@@ -490,40 +492,40 @@ const ProductList = React.memo(function ProductList({
       {isUserProductsPage && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={productsPageStats?.counts.products ?? 0}
-            description="Products availability"
+            description={t("Products availability")}
             icon={Package}
             variant="rose"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value:
                   productsPageStats?.productStatusBreakdown?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value: productsPageStats?.productStatusBreakdown?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value: productsPageStats?.productStatusBreakdown?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Value"
+            title={t("Total Value")}
             value={formatCurrency(productsPageStats?.totalInventoryValue ?? 0)}
-            description="Total inventory value"
+            description={t("Total inventory value")}
             icon={DollarSign}
             variant="violet"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Orders",
+                label: t("Orders"),
                 value: formatCurrency(
                   productsPageStats?.orderAnalytics
                     ?.totalRevenueExcludingCancelled ??
@@ -532,19 +534,19 @@ const ProductList = React.memo(function ProductList({
                 ),
               },
               {
-                label: "Invoices",
+                label: t("Invoices"),
                 value: formatCurrency(
                   productsPageStats?.revenue?.fromInvoices ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   productsPageStats?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatCurrency(
                   productsPageStats?.orderAnalytics?.cancelledOrderAmount ?? 0,
                 ),
@@ -552,40 +554,40 @@ const ProductList = React.memo(function ProductList({
             ]}
           />
           <StatisticsCard
-            title="Total Suppliers"
+            title={t("Total Suppliers")}
             value={productsPageStats?.counts.suppliers ?? 0}
-            description="Suppliers"
+            description={t("Suppliers")}
             icon={Truck}
             variant="emerald"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: productsPageStats?.supplierStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   productsPageStats?.supplierStatusBreakdown?.inactive ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Categories"
+            title={t("Categories")}
             value={productsPageStats?.counts.categories ?? 0}
-            description="Product categories"
+            description={t("Product categories")}
             icon={FolderTree}
             variant="amber"
             valueLoading={dashboardCardsLoading}
             badgeValuesLoading={dashboardCardsLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: productsPageStats?.categoryStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   productsPageStats?.categoryStatusBreakdown?.inactive ?? 0,
               },

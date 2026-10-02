@@ -27,6 +27,7 @@ import { buildStoreInvoiceStatusBadges } from "@/lib/ui/store-invoice-status-bad
 import { useAuth } from "@/contexts";
 import type { DashboardStats } from "@/types";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const formatCurrency = formatStableCurrency;
 
@@ -38,6 +39,7 @@ export type StatisticsSectionProps = {
 export function StatisticsSection({
   initialStats,
 }: StatisticsSectionProps = {}) {
+  const t = useT();
   const { user } = useAuth();
   const dashboardQuery = useDashboard(initialStats ?? undefined);
   const stats = dashboardQuery.data ?? initialStats ?? null;
@@ -57,39 +59,39 @@ export function StatisticsSection({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch">
       <StatisticsCard
-        title="Total Products"
+        title={t("Total Products")}
         value={stats?.counts?.products ?? 0}
-        description="Products availability"
+        description={t("Products availability")}
         icon={Package}
         variant="rose"
         valueLoading={dataLoading}
         badgeValuesLoading={dataLoading}
         badges={[
           {
-            label: "Available",
+            label: t("Available"),
             value: stats?.productStatusBreakdown?.available ?? 0,
           },
           {
-            label: "Stock low",
+            label: t("Stock low"),
             value: stats?.productStatusBreakdown?.stockLow ?? 0,
           },
           {
-            label: "Stock out",
+            label: t("Stock out"),
             value: stats?.productStatusBreakdown?.stockOut ?? 0,
           },
         ]}
       />
       <StatisticsCard
-        title="Total Value"
+        title={t("Total Value")}
         value={formatCurrency(stats?.totalInventoryValue ?? 0)}
-        description="Total inventory value"
+        description={t("Total inventory value")}
         icon={DollarSign}
         variant="violet"
         valueLoading={dataLoading}
         badgeValuesLoading={dataLoading}
         badges={[
           {
-            label: "Orders",
+            label: t("Orders"),
             value: formatCurrency(
               stats?.orderAnalytics?.totalRevenueExcludingCancelled ??
                 stats?.revenue?.fromOrders ??
@@ -97,17 +99,17 @@ export function StatisticsSection({
             ),
           },
           {
-            label: "Invoices",
+            label: t("Invoices"),
             value: formatCurrency(stats?.revenue?.fromInvoices ?? 0),
           },
           {
-            label: "Due",
+            label: t("Due"),
             value: formatCurrency(
               stats?.invoiceAnalytics?.outstandingAmount ?? 0,
             ),
           },
           {
-            label: "Cancelled",
+            label: t("Cancelled"),
             value: formatCurrency(
               stats?.orderAnalytics?.cancelledOrderAmount ?? 0,
             ),
@@ -115,36 +117,36 @@ export function StatisticsSection({
         ]}
       />
       <StatisticsCard
-        title="Total Revenue"
+        title={t("Total Revenue")}
         value={formatCurrency(revenueFromOrders)}
-        description="Profits (excl. cancelled)"
+        description={t("Profits (excl. cancelled)")}
         icon={DollarSign}
         variant="emerald"
         valueLoading={dataLoading}
         badgeValuesLoading={dataLoading}
         badges={[
           {
-            label: "Paid",
+            label: t("Paid"),
             value: formatCurrency(stats?.orderAnalytics?.paidOrderAmount ?? 0),
           },
           {
-            label: "Partial",
+            label: t("Partial"),
             value: formatCurrency(
               stats?.orderAnalytics?.partialOrderAmount ?? 0,
             ),
           },
           {
-            label: "Due",
+            label: t("Due"),
             value: formatCurrency(
               stats?.invoiceAnalytics?.outstandingAmount ?? 0,
             ),
           },
           {
-            label: "Refund",
+            label: t("Refund"),
             value: formatCurrency(stats?.orderAnalytics?.refundedAmount ?? 0),
           },
           {
-            label: "Pending",
+            label: t("Pending"),
             value: formatCurrency(
               stats?.orderAnalytics?.pendingOrderAmount ?? 0,
             ),
@@ -152,11 +154,11 @@ export function StatisticsSection({
           ...(selfOthers
             ? [
                 {
-                  label: "Self",
+                  label: t("Self"),
                   value: formatCurrency(selfOthers.revenueSelf),
                 },
                 {
-                  label: "Others",
+                  label: t("Others"),
                   value: formatCurrency(selfOthers.revenueOthers),
                 },
               ]
@@ -164,9 +166,9 @@ export function StatisticsSection({
         ]}
       />
       <StatisticsCard
-        title="Total Orders"
+        title={t("Total Orders")}
         value={stats?.counts?.orders ?? 0}
-        description="Total orders placed (self + client)"
+        description={t("Total orders placed (self + client)")}
         icon={ShoppingCart}
         variant="blue"
         valueLoading={dataLoading}
@@ -183,9 +185,9 @@ export function StatisticsSection({
         })}
       />
       <StatisticsCard
-        title="Invoices"
+        title={t("Invoices")}
         value={stats?.counts?.invoices ?? 0}
-        description="Total invoices (store-wide)"
+        description={t("Total invoices (store-wide)")}
         icon={FileText}
         variant="sky"
         valueLoading={dataLoading}
@@ -210,58 +212,58 @@ export function StatisticsSection({
         })}
       />
       <StatisticsCard
-        title="Total Warehouses"
+        title={t("Total Warehouses")}
         value={stats?.counts?.warehouses ?? 0}
-        description="Storage locations"
+        description={t("Storage locations")}
         icon={Warehouse}
         variant="teal"
         valueLoading={dataLoading}
         badgeValuesLoading={dataLoading}
         badges={[
           {
-            label: "Active",
+            label: t("Active"),
             value: stats?.warehouseAnalytics?.activeWarehouses ?? 0,
           },
           {
-            label: "Inactive",
+            label: t("Inactive"),
             value: stats?.warehouseAnalytics?.inactiveWarehouses ?? 0,
           },
         ]}
       />
       <StatisticsCard
-        title="Total Suppliers"
+        title={t("Total Suppliers")}
         value={stats?.counts?.suppliers ?? 0}
-        description="Suppliers"
+        description={t("Suppliers")}
         icon={Truck}
         variant="emerald"
         valueLoading={dataLoading}
         badgeValuesLoading={dataLoading}
         badges={[
           {
-            label: "Active",
+            label: t("Active"),
             value: stats?.supplierStatusBreakdown?.active ?? 0,
           },
           {
-            label: "Inactive",
+            label: t("Inactive"),
             value: stats?.supplierStatusBreakdown?.inactive ?? 0,
           },
         ]}
       />
       <StatisticsCard
-        title="Categories"
+        title={t("Categories")}
         value={stats?.counts?.categories ?? 0}
-        description="Product categories"
+        description={t("Product categories")}
         icon={FolderTree}
         variant="amber"
         valueLoading={dataLoading}
         badgeValuesLoading={dataLoading}
         badges={[
           {
-            label: "Active",
+            label: t("Active"),
             value: stats?.categoryStatusBreakdown?.active ?? 0,
           },
           {
-            label: "Inactive",
+            label: t("Inactive"),
             value: stats?.categoryStatusBreakdown?.inactive ?? 0,
           },
         ]}

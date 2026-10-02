@@ -68,6 +68,7 @@ import {
 } from "@/hooks/queries";
 import type { Product, StockAllocation } from "@/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 const TRANSFER_DIALOG_CONTENT_CLASS = `${DIALOG_EDGE_SCROLL_SHELL} poppins border-teal-400/30 dark:border-teal-400/30 shadow-[0_30px_80px_rgba(20,184,166,0.35)] dark:shadow-[0_30px_80px_rgba(20,184,166,0.25)]`;
 
@@ -87,6 +88,7 @@ export default function TransferStockDialog({
   fromWarehouseName,
   stockAllocations = [],
 }: TransferStockDialogProps) {
+  const t = useT();
   const [productId, setProductId] = useState("");
   const [toWarehouseId, setToWarehouseId] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -188,12 +190,14 @@ export default function TransferStockDialog({
       <DialogContent className={TRANSFER_DIALOG_CONTENT_CLASS}>
         <DialogHeader className={DIALOG_EDGE_SCROLL_HEADER}>
           <DialogTitle className="text-[22px] text-white">
-            Transfer Stock
+            {t("Transfer Stock")}
           </DialogTitle>
           <DialogDescription className="text-white/70">
-            Move units from{" "}
-            {fromWarehouseName ? `"${fromWarehouseName}"` : "this warehouse"}{" "}
-            to another location.
+            {t("Move units from {source} to another location.", {
+              source: fromWarehouseName
+                ? `"${fromWarehouseName}"`
+                : t("this warehouse"),
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -202,7 +206,7 @@ export default function TransferStockDialog({
             <div className="mt-2 space-y-4">
               <div>
                 <DialogFormLabel icon={Package} required>
-                  Product
+                  {t("Product")}
                 </DialogFormLabel>
                 {/* REQ-0199 — modal Combobox; ghost trigger (no outline→white hover) */}
                 <Popover open={pickerOpen} onOpenChange={setPickerOpen} modal>
@@ -254,7 +258,7 @@ export default function TransferStockDialog({
                         />
                       ) : (
                         <span className="text-muted-foreground">
-                          Select product in warehouse…
+                          {t("Select product in warehouse…")}
                         </span>
                       )}
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -270,9 +274,9 @@ export default function TransferStockDialog({
                     )}
                   >
                     <Command className="bg-transparent">
-                      <CommandInput placeholder="Search products…" />
+                      <CommandInput placeholder={t("Search products…")} />
                       <CommandList className="max-h-[min(60vh,280px)]">
-                        <CommandEmpty>No products in this warehouse.</CommandEmpty>
+                        <CommandEmpty>{t("No products in this warehouse.")}</CommandEmpty>
                         <CommandGroup>
                           {allocatable.map((a) => {
                             const avail = a.quantity - a.reservedQuantity;
@@ -288,7 +292,7 @@ export default function TransferStockDialog({
                                 className="relative py-2 pr-8"
                               >
                                 <DialogProductOptionRow
-                                  name={a.product?.name ?? "Product"}
+                                  name={a.product?.name ?? t("Product")}
                                   imageUrl={a.product?.imageUrl}
                                   sku={a.product?.sku}
                                   price={a.product?.price}
@@ -327,14 +331,14 @@ export default function TransferStockDialog({
                 </Popover>
                 {allocatable.length === 0 && (
                   <p className="mt-1 text-xs text-white/60">
-                    No available stock to transfer from this warehouse.
+                    {t("No available stock to transfer from this warehouse.")}
                   </p>
                 )}
               </div>
 
               <div className="min-h-11">
                 <DialogFormLabel icon={Warehouse} required>
-                  Destination
+                  {t("Destination")}
                 </DialogFormLabel>
                 {/* REQ-0203 — type badge + name; Select check stays right */}
                   <Select
@@ -353,7 +357,7 @@ export default function TransferStockDialog({
                     <SelectValue
                       placeholder={resolveSelectPlaceholder("warehouse", {
                         count: destinationOptions.length,
-                        invite: "Select warehouse…",
+                        invite: t("Select warehouse…"),
                       })}
                     >
                       {toWarehouseId
@@ -432,12 +436,12 @@ export default function TransferStockDialog({
                 className={cn("w-full sm:w-auto px-11 gap-2", GLASS_GHOST_BUTTON)}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
               <DialogSubmitButton
                 isPending={isPending}
-                pendingLabel="Transferring…"
-                label="Transfer"
+                pendingLabel={t("Transferring…")}
+                label={t("Transfer")}
                 icon={ArrowRightLeft}
                 hue="teal"
                 disabled={!isValid}

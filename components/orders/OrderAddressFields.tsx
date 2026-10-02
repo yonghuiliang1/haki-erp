@@ -10,6 +10,7 @@ import {
   DIALOG_FORM_FIELD_VIOLET,
   DIALOG_FORM_SUB_LABEL,
 } from "@/components/shared";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderAddressPrefix = "shippingAddress" | "billingAddress";
 
@@ -18,39 +19,40 @@ export type OrderAddressFieldsProps = {
 };
 
 export function OrderAddressFields({ prefix }: OrderAddressFieldsProps) {
+  const t = useT();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       <FormField
         name={`${prefix}.street`}
-        label="Street Address"
+        label={t("Street Address")}
         placeholder="123 Main St"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}
       />
       <FormField
         name={`${prefix}.city`}
-        label="City"
+        label={t("City")}
         placeholder="New York"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}
       />
       <FormField
         name={`${prefix}.state`}
-        label="State/Province"
+        label={t("State/Province")}
         placeholder="NY"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}
       />
       <FormField
         name={`${prefix}.zipCode`}
-        label="Zip Code"
+        label={t("Zip Code")}
         placeholder="10001"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}
       />
       <FormField
         name={`${prefix}.country`}
-        label="Country"
+        label={t("Country")}
         placeholder="United States"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         className="sm:col-span-2"

@@ -31,6 +31,7 @@ import { useClampPaginationIndex } from "@/hooks/use-clamp-pagination-index";
 import { Button } from "@/components/ui/button";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
+import { useT } from "@/lib/i18n/locale-context";
 import type { SupportTicket } from "@/types";
 
 interface SupportTicketTableProps {
@@ -56,6 +57,7 @@ export const SupportTicketTable = React.memo(function SupportTicketTable({
   selectedStatuses,
   selectedPriorities,
 }: SupportTicketTableProps) {
+  const t = useT();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const filteredData = useMemo(() => {
@@ -143,7 +145,7 @@ export const SupportTicketTable = React.memo(function SupportTicketTable({
                     colSpan={columns.length}
                     className="text-center text-gray-700 dark:text-white"
                   >
-                    No support tickets found.
+                    {t("No support tickets found.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -180,7 +182,10 @@ export const SupportTicketTable = React.memo(function SupportTicketTable({
             <GrFormPrevious />
           </Button>
           <span className="text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+            {t("Page {page} of {total}", {
+              page: pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </span>
           <Button
             variant="outline"

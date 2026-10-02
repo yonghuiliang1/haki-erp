@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useT } from "@/lib/i18n/locale-context";
 
 const SHORTCUTS: { keys: string; description: string }[] = [
   { keys: "?", description: "Show keyboard shortcuts" },
@@ -41,6 +42,7 @@ interface KeyboardShortcutsProviderProps {
 export function KeyboardShortcutsProvider({
   children,
 }: KeyboardShortcutsProviderProps) {
+  const t = useT();
   const [open, setOpen] = useState(false);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -63,10 +65,11 @@ export function KeyboardShortcutsProvider({
           aria-describedby="keyboard-shortcuts-description"
         >
           <DialogHeader>
-            <DialogTitle>Keyboard shortcuts</DialogTitle>
+            <DialogTitle>{t("Keyboard shortcuts")}</DialogTitle>
             <DialogDescription id="keyboard-shortcuts-description">
-              Use these shortcuts anywhere in the app when not typing in a
-              field.
+              {t(
+                "Use these shortcuts anywhere in the app when not typing in a field.",
+              )}
             </DialogDescription>
           </DialogHeader>
           <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
@@ -78,7 +81,7 @@ export function KeyboardShortcutsProvider({
                 <kbd className="font-mono text-xs font-medium text-foreground rounded border border-white/20 dark:border-white/20 bg-white/10 dark:bg-white/10 px-2 py-1">
                   {keys}
                 </kbd>
-                <span>{description}</span>
+                <span>{t(description)}</span>
               </li>
             ))}
           </ul>

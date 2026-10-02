@@ -10,6 +10,7 @@ import { DataSlotPulse } from "@/components/shared";
 import type { OrderStatus, PaymentStatus } from "@/types";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/lib/ui/semantic-badges";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import { GlassCard } from "./order-detail-primitives";
 
 export type OrderStatusBadgesProps = {
@@ -30,6 +31,7 @@ export function OrderStatusBadges({
   layout = "grid",
   className,
 }: OrderStatusBadgesProps) {
+  const t = useT();
   return (
     <div
       className={cn(
@@ -48,7 +50,7 @@ export function OrderStatusBadges({
       >
         <p className="text-xs uppercase tracking-[0.25em] text-gray-600 dark:text-white/80 mb-3 inline-flex items-center gap-1.5">
           <ClipboardList className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
-          Order Status
+          {t("Order Status")}
         </p>
         <div className="flex flex-wrap items-center gap-2">
           {dataLoading ? (
@@ -67,7 +69,7 @@ export function OrderStatusBadges({
       >
         <p className="text-xs uppercase tracking-[0.25em] text-gray-600 dark:text-white/80 mb-3 inline-flex items-center gap-1.5">
           <Wallet className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          Payment Status
+          {t("Payment Status")}
         </p>
         {dataLoading ? (
           <DataSlotPulse variant="badge" className="h-7 w-20 rounded-full" />

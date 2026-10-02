@@ -30,6 +30,7 @@ import Link from "next/link";
 import { useDeleteOrder, useDeleteInvoice } from "@/hooks/queries";
 import { useAuth } from "@/contexts";
 import { AlertDialogWrapper } from "@/components/dialogs";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface OrderActionsProps {
   order: Order;
@@ -56,6 +57,7 @@ export default function OrderActions({
   onCreateInvoice,
 }: OrderActionsProps) {
   const { user } = useAuth();
+  const t = useT();
   const deleteOrderMutation = useDeleteOrder();
   const deleteInvoiceMutation = useDeleteInvoice();
   const isDeleting = deleteOrderMutation.isPending;
@@ -78,7 +80,10 @@ export default function OrderActions({
   const handleCancelOrder = async () => {
     if (
       window.confirm(
-        `Are you sure you want to cancel order ${order.orderNumber}? This action cannot be undone.`,
+        t(
+          "Are you sure you want to cancel order {number}? This action cannot be undone.",
+          { number: order.orderNumber },
+        ),
       )
     ) {
       try {
@@ -115,7 +120,7 @@ export default function OrderActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
@@ -133,7 +138,7 @@ export default function OrderActions({
               className="flex items-center gap-2"
             >
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </Link>
           </DropdownMenuItem>
           {/* REQ-0210 — hide Edit on cancelled (status/payment must not be manipulated) */}
@@ -144,7 +149,7 @@ export default function OrderActions({
               className="flex items-center gap-2"
             >
               <Edit className="h-4 w-4" />
-              Edit Order
+              {t("Edit Order")}
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -157,7 +162,7 @@ export default function OrderActions({
                   className="flex items-center gap-2"
                 >
                   <FileText className="h-4 w-4" />
-                  View Invoice
+                  {t("View Invoice")}
                 </Link>
               </DropdownMenuItem>
               {/* REQ-0210 — no edit/delete when order or invoice cancelled */}
@@ -171,7 +176,7 @@ export default function OrderActions({
                         className="flex items-center gap-2"
                       >
                         <Edit className="h-4 w-4" />
-                        Edit Invoice
+                        {t("Edit Invoice")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -180,7 +185,7 @@ export default function OrderActions({
                       disabled={isDeletingInvoice}
                     >
                       <Trash2 className="h-4 w-4" />
-                      {isDeletingInvoice ? "Deleting..." : "Delete Invoice"}
+                      {isDeletingInvoice ? t("Deleting...") : t("Delete Invoice")}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -194,7 +199,7 @@ export default function OrderActions({
                 className="flex items-center gap-2"
               >
                 <FilePlus2 className="h-4 w-4" />
-                Create Invoice
+                {t("Create Invoice")}
               </DropdownMenuItem>
             )
           )}
@@ -210,17 +215,17 @@ export default function OrderActions({
                 className="flex items-center gap-2"
               >
                 <Star className="h-4 w-4" />
-                Write / Edit review
+                {t("Write / Edit review")}
               </Link>
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
               disabled
               className="flex items-center gap-2 text-muted-foreground"
-              title="Available after order is paid"
+              title={t("Available after order is paid")}
             >
               <Star className="h-4 w-4" />
-              Write / Edit review
+              {t("Write / Edit review")}
             </DropdownMenuItem>
           )}
           {order.status !== "cancelled" && (
@@ -231,7 +236,7 @@ export default function OrderActions({
                 disabled={isDeleting || disableOrderActions}
               >
                 <Trash2 className="h-4 w-4" />
-                {isDeleting ? "Cancelling..." : "Cancel Order"}
+                {isDeleting ? t("Cancelling...") : t("Cancel Order")}
               </DropdownMenuItem>
             </>
           )}
@@ -243,10 +248,16 @@ export default function OrderActions({
         <AlertDialogWrapper
           open={deleteInvoiceDialogOpen}
           onOpenChange={setDeleteInvoiceDialogOpen}
-          title="Delete Invoice"
-          description={`Are you sure you want to delete invoice ${linkedInvoice.invoiceNumber} for order ${order.orderNumber}? This action cannot be undone.`}
-          actionLabel="Delete"
-          actionLoadingLabel="Deleting..."
+          title={t("Delete Invoice")}
+          description={t(
+            "Are you sure you want to delete invoice {invoice} for order {order}? This action cannot be undone.",
+            {
+              invoice: linkedInvoice.invoiceNumber,
+              order: order.orderNumber,
+            },
+          )}
+          actionLabel={t("Delete")}
+          actionLoadingLabel={t("Deleting...")}
           isLoading={isDeletingInvoice}
           onAction={handleDeleteInvoice}
           onCancel={() => setDeleteInvoiceDialogOpen(false)}

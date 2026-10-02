@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export interface HelpTooltipProps {
   /** Help text shown on hover */
@@ -28,14 +29,15 @@ export function HelpTooltip({
   content,
   side = "top",
   className,
-  ariaLabel = "Help",
+  ariaLabel,
 }: HelpTooltipProps) {
+  const t = useT();
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <span
           role="img"
-          aria-label={ariaLabel}
+          aria-label={t(ariaLabel ?? "Help")}
           className={cn(
             "inline-flex cursor-help align-middle text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded",
             className,

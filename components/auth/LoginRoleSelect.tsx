@@ -14,6 +14,7 @@ import {
   filterCommandPopoverClass,
 } from "@/lib/ui/popover-readability-styles";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   roleMeta,
   roleIconClassByHue,
@@ -36,6 +37,7 @@ export function LoginRoleSelect({
   onRoleSelect,
   disabled = false,
 }: LoginRoleSelectProps) {
+  const t = useT();
   const [open, setOpen] = useState(false);
 
   const selectedKey = selectedRole as TestAccountRoleKey;
@@ -63,7 +65,7 @@ export function LoginRoleSelect({
           )}
         />
         <span className="flex-1 truncate text-left">
-          {selectedMeta?.label ?? "Select Role Based Test Account"}
+          {selectedMeta?.label ?? t("Select Role Based Test Account")}
         </span>
       </SelectTrigger>
       <SelectContent
@@ -96,7 +98,7 @@ export function LoginRoleSelect({
           >
             <span className="flex items-center gap-2">
               <X className="h-4 w-4 shrink-0" />
-              <span>Clear Selection</span>
+              <span>{t("Clear Selection")}</span>
             </span>
           </SelectItem>
         ) : null}

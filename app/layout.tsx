@@ -5,7 +5,9 @@
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { KeyboardShortcutsProvider } from "@/components/providers/KeyboardShortcutsProvider";
-import { Poppins } from "next/font/google";
+import { LocaleProvider } from "@/lib/i18n/locale-context";
+import { localeHtmlLang } from "@/lib/i18n/config";
+import { resolveLocale } from "@/lib/i18n/server";
 import localFont from "next/font/local";
 import React from "react";
 import { AuthProvider } from "@/contexts";
@@ -32,10 +34,16 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const poppins = Poppins({
-  subsets: ["latin"],
+/**
+ * The `poppins` shell font now loads from the bundled Geist variable font.
+ * Keeping the local source removes the Google Fonts fetch at dev/build time
+ * (unreachable in some networks and the source of Turbopack font-module
+ * failures); the CSS variable name stays so existing `poppins` classes work.
+ */
+const poppins = localFont({
+  src: "./fonts/GeistVF.woff",
   variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: "100 900",
 });
 
 /** Force dynamic rendering for all routes so useSearchParams etc. work without Suspense and pages render instantly. */
@@ -128,10 +136,12 @@ export default async function RootLayout({
   const shellNotifications = session
     ? await getShellNotificationsForUser(session.id)
     : null;
+  // UI language: profile preference → cookie → default (Chinese).
+  const initialLocale = await resolveLocale();
 
   return (
     <html
-      lang="en"
+      lang={localeHtmlLang(initialLocale)}
       {...(disableBrowserTranslate ? { translate: "no" as const } : {})}
       suppressHydrationWarning
       style={{ overscrollBehavior: "none" }}
@@ -144,6 +154,7 @@ export default async function RootLayout({
       >
         <ErrorBoundary>
           <QueryProvider>
+            <LocaleProvider initialLocale={initialLocale}>
             <AuthProvider initialUser={initialUser}>
               <ShellSsrProvider
                 value={
@@ -172,6 +183,7 @@ export default async function RootLayout({
               <AuthSessionToasts />
               </ShellSsrProvider>
             </AuthProvider>
+            </LocaleProvider>
           </QueryProvider>
         </ErrorBoundary>
       </body>

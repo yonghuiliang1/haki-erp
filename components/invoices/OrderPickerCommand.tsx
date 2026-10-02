@@ -39,6 +39,7 @@ import { getOrderItemUnitCounts } from "@/lib/orders/order-list-meta";
 import { cn } from "@/lib/utils";
 import type { Order } from "@/types";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const fmt = formatStableCurrency;
 
@@ -63,6 +64,7 @@ export function OrderPickerCommand({
   triggerClassName,
 }: OrderPickerCommandProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useT();
 
   const selected = React.useMemo(
     () => orders.find((o) => o.id === selectedOrderId),
@@ -116,7 +118,7 @@ export function OrderPickerCommand({
               />
             </span>
           ) : (
-            <span className="truncate text-white/60">Select an order...</span>
+            <span className="truncate text-white/60">{t("Select an order...")}</span>
           )}
           <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
         </Button>
@@ -133,12 +135,12 @@ export function OrderPickerCommand({
       >
         <Command className="bg-popover text-popover-foreground">
           <CommandInput
-            placeholder="Search order #, customer, total..."
+            placeholder={t("Search order #, customer, total...")}
             className="h-11"
           />
           <CommandList className="max-h-[min(60vh,280px)]">
             <CommandEmpty className="text-sm text-center p-5 text-muted-foreground">
-              No matching order found.
+              {t("No matching order found.")}
             </CommandEmpty>
             <CommandGroup>
               {orders.map((order) => {
@@ -186,12 +188,16 @@ export function OrderPickerCommand({
                         <span aria-hidden>·</span>
                         <span className="inline-flex items-center gap-1">
                           <Package className="h-3 w-3 shrink-0" aria-hidden />
-                          {itemCount} item{itemCount === 1 ? "" : "s"}
+                          {t(itemCount === 1 ? "{count} item" : "{count} items", {
+                            count: itemCount,
+                          })}
                         </span>
                         <span aria-hidden>·</span>
                         <span className="inline-flex items-center gap-1">
                           <Boxes className="h-3 w-3 shrink-0" aria-hidden />
-                          {unitCount} unit{unitCount === 1 ? "" : "s"}
+                          {t(unitCount === 1 ? "{count} unit" : "{count} units", {
+                            count: unitCount,
+                          })}
                         </span>
                         <span aria-hidden>·</span>
                         <span className="inline-flex items-center gap-1">

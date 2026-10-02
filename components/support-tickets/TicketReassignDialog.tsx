@@ -35,6 +35,7 @@ import {
   GLASS_GHOST_BUTTON,
 } from "@/components/shared";
 import { useUpdateSupportTicket } from "@/hooks/queries";
+import { useT } from "@/lib/i18n/locale-context";
 import { willClearProductOnReassign } from "@/lib/support-tickets/ticket-reassign-product";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
@@ -56,6 +57,7 @@ export default function TicketReassignDialog({
   onOpenChange,
   variant = "violet",
 }: TicketReassignDialogProps) {
+  const t = useT();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [reassignToId, setReassignToId] = useState<string | null>(
     ticket.assignedToId ?? null,
@@ -84,8 +86,8 @@ export default function TicketReassignDialog({
 
   const selectedOwner = productOwners.find((po) => po.id === reassignToId);
   const targetLabel = selectedOwner
-    ? selectedOwner.name?.trim() || selectedOwner.email || "selected owner"
-    : "no specific owner";
+    ? selectedOwner.name?.trim() || selectedOwner.email || t("selected owner")
+    : t("no specific owner");
 
   // REQ-0197 — Related product clears when new owner ≠ product owner (assignee)
   // Product owner is the Send-to; mismatch when next assignee ≠ current ticket.assignedToId
@@ -101,14 +103,25 @@ export default function TicketReassignDialog({
   const productLabel =
     ticket.relatedProductName?.trim() ||
     ticket.relatedProductSku ||
-    (ticket.productId ? ticket.productId.slice(-8) : "linked product");
+    (ticket.productId ? ticket.productId.slice(-8) : t("linked product"));
   const productSkuSuffix = ticket.relatedProductSku
     ? ` (${ticket.relatedProductSku})`
     : "";
 
   const confirmDescription = clearsProduct
-    ? `Reassign "${ticket.subject}" to ${targetLabel}? Related product "${productLabel}${productSkuSuffix}" will be cleared because it is not owned by the new recipient.`
-    : `Reassign "${ticket.subject}" to ${targetLabel}? The previous recipient will no longer be the Send-to owner.`;
+    ? t(
+        'Reassign "{subject}" to {target}? Related product "{product}{sku}" will be cleared because it is not owned by the new recipient.',
+        {
+          subject: ticket.subject,
+          target: targetLabel,
+          product: productLabel,
+          sku: productSkuSuffix,
+        },
+      )
+    : t(
+        'Reassign "{subject}" to {target}? The previous recipient will no longer be the Send-to owner.',
+        { subject: ticket.subject, target: targetLabel },
+      );
 
   const handleConfirm = async () => {
     try {
@@ -140,15 +153,18 @@ export default function TicketReassignDialog({
           <DialogHeaderBrand
             icon={UserRoundPen}
             tone={isViolet ? "violet" : "sky"}
-            title="Reassign ticket"
-            description={`Choose who receives "${ticket.subject}". Confirm before applying.`}
+            title={t("Reassign ticket")}
+            description={t(
+              'Choose who receives "{subject}". Confirm before applying.',
+              { subject: ticket.subject },
+            )}
           />
           <div className="mt-4 space-y-2">
             <DialogFormLabel
               htmlFor="support-ticket-reassign-to"
               icon={UserRoundPen}
             >
-              Send to (product owner)
+              {t("Send to (product owner)")}
             </DialogFormLabel>
             <DeferredSelectGate
               enabled={open}
@@ -165,7 +181,7 @@ export default function TicketReassignDialog({
                   {selectedOwner ? (
                     <OwnerSelectRow owner={selectedOwner} surface="trigger" />
                   ) : (
-                    "Select product owner (optional)"
+                    t("Select product owner (optional)")
                   )}
                 </div>
               }
@@ -187,14 +203,14 @@ export default function TicketReassignDialog({
                       inputClass,
                     )}
                   >
-                    <SelectValue placeholder="Select product owner">
+                    <SelectValue placeholder={t("Select product owner")}>
                       {selectedOwner ? (
                         <OwnerSelectRow
                           owner={selectedOwner}
                           surface="trigger"
                         />
                       ) : (
-                        "— No specific owner —"
+                        t("— No specific owner —")
                       )}
                     </SelectValue>
                   </SelectTrigger>
@@ -207,7 +223,7 @@ export default function TicketReassignDialog({
                       value="none"
                       className={DIALOG_SELECT_ITEM_CLASS}
                     >
-                      — No specific owner —
+                      {t("— No specific owner —")}
                     </SelectItem>
                     {productOwners.map((po) => (
                       <SelectItem
@@ -232,14 +248,14 @@ export default function TicketReassignDialog({
                 disabled={isReassigning}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
             </DialogClose>
             <DialogSubmitButton
               type="button"
               isPending={false}
-              pendingLabel="Continue…"
-              label="Continue"
+              pendingLabel={t("Continue…")}
+              label={t("Continue")}
               icon={UserRoundPen}
               hue={isViolet ? "violet" : "sky"}
               className="h-11 rounded-xl"
@@ -252,10 +268,10 @@ export default function TicketReassignDialog({
       <AlertDialogWrapper
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Reassign support ticket?"
+        title={t("Reassign support ticket?")}
         description={confirmDescription}
-        actionLabel="Reassign"
-        actionLoadingLabel="Reassigning..."
+        actionLabel={t("Reassign")}
+        actionLoadingLabel={t("Reassigning...")}
         isLoading={isReassigning}
         onAction={handleConfirm}
         onCancel={() => setConfirmOpen(false)}

@@ -22,6 +22,7 @@ import {
   useClientCatalogOverview,
 } from "@/hooks/queries";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   ShoppingCart,
   FileText,
@@ -139,6 +140,7 @@ export default function ClientPortalPage({
   initialDashboard,
   initialCatalog,
 }: ClientPortalPageProps = {}) {
+  const t = useT();
   const { isCheckingAuth, user } = useAuth();
   const dashboardQuery = useClientPortalDashboard(initialDashboard);
   const catalogQuery = useClientCatalogOverview(initialCatalog);
@@ -170,7 +172,7 @@ export default function ClientPortalPage({
         <PageContentWrapper>
           <div className="space-y-4">
             <h1 className="text-sm sm:text-lg font-medium text-primary">
-              Client Portal
+              {t("Client Portal")}
             </h1>
             <article
               className={cn(
@@ -178,11 +180,11 @@ export default function ClientPortalPage({
               )}
             >
               <p className="text-muted-foreground text-center">
-                Failed to load client dashboard?.
+                {t("Failed to load client dashboard?.")}
               </p>
               <div className="flex justify-center mt-4">
                 <Button asChild variant="outline">
-                  <Link href="/">Go to Dashboard</Link>
+                  <Link href="/">{t("Go to Dashboard")}</Link>
                 </Button>
               </div>
             </article>
@@ -200,10 +202,10 @@ export default function ClientPortalPage({
             as="h1"
             icon={Store}
             tone="sky"
-            title="Client Portal"
+            title={t("Client Portal")}
             description={
               <>
-                Welcome,{" "}
+                {t("Welcome,")}{" "}
                 {dashboardLoading ? (
                   <DataSlotPulse variant="text-sm" />
                 ) : (
@@ -221,9 +223,9 @@ export default function ClientPortalPage({
             )}
           >
             <StatisticsCard
-              title="Total Orders"
+              title={t("Total Orders")}
               value={dashboard?.totalOrders ?? 0}
-              description="Your order history"
+              description={t("Your order history")}
               icon={ShoppingCart}
               variant="sky"
               valueLoading={dashboardLoading}
@@ -237,70 +239,70 @@ export default function ClientPortalPage({
               })}
             />
             <StatisticsCard
-              title="Awaiting Payment"
+              title={t("Awaiting Payment")}
               value={dashboard?.ordersAwaitingPayment ?? 0}
-              description="Orders awaiting payment"
+              description={t("Orders awaiting payment")}
               icon={Clock}
               variant="amber"
               valueLoading={dashboardLoading}
               badgeValuesLoading={dashboardLoading}
               badges={[
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: dashboard?.orderStatusCounts?.cancelled ?? 0,
                 },
                 {
-                  label: "Completed",
+                  label: t("Completed"),
                   value: dashboard?.ordersCompleted ?? 0,
                 },
                 {
-                  label: "Refunded",
+                  label: t("Refunded"),
                   value: dashboard?.refundedOrdersCount ?? 0,
                 },
-                { label: "Of Total", value: dashboard?.totalOrders },
+                { label: t("Of Total"), value: dashboard?.totalOrders },
               ]}
             />
             <StatisticsCard
-              title="Total Spent"
+              title={t("Total Spent")}
               value={formatStableCurrency(dashboard?.totalSpent ?? 0)}
-              description="Total order value"
+              description={t("Total order value")}
               icon={DollarSign}
               variant="emerald"
               valueLoading={dashboardLoading}
               badgeValuesLoading={dashboardLoading}
               badges={[
                 {
-                  label: "Paid",
+                  label: t("Paid"),
                   value: formatStableCurrency(
                     dashboard?.paymentBreakdown?.paid ?? 0,
                   ),
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: formatStableCurrency(
                     dashboard?.paymentBreakdown?.partial ?? 0,
                   ),
                 },
                 {
-                  label: "Due",
+                  label: t("Due"),
                   value: formatStableCurrency(
                     dashboard?.paymentBreakdown?.due ?? 0,
                   ),
                 },
                 {
-                  label: "Refund",
+                  label: t("Refund"),
                   value: formatStableCurrency(
                     dashboard?.paymentBreakdown?.refund ?? 0,
                   ),
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: formatStableCurrency(
                     dashboard?.paymentBreakdown?.pending ?? 0,
                   ),
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: formatStableCurrency(
                     dashboard?.paymentBreakdown?.cancelled ?? 0,
                   ),
@@ -308,7 +310,7 @@ export default function ClientPortalPage({
                 ...((dashboard?.totalOrders ?? 0) > 0
                   ? [
                       {
-                        label: "Avg/Order",
+                        label: t("Avg/Order"),
                         value: formatStableCurrency(
                           (dashboard?.totalSpent ?? 0) /
                             (dashboard?.totalOrders ?? 1),
@@ -319,43 +321,43 @@ export default function ClientPortalPage({
               ]}
             />
             <StatisticsCard
-              title="Due"
+              title={t("Due")}
               value={formatStableCurrency(dashboard?.outstandingAmount ?? 0)}
-              description="Unpaid invoice balance"
+              description={t("Unpaid invoice balance")}
               icon={AlertCircle}
               variant="rose"
               valueLoading={dashboardLoading}
               badgeValuesLoading={dashboardLoading}
               badges={[
                 ...(dashboard?.outstandingAmount === 0
-                  ? [{ label: "Status", value: "All Paid" }]
+                  ? [{ label: t("Status"), value: t("All Paid") }]
                   : []),
                 {
-                  label: "Invoices Paid",
+                  label: t("Invoices Paid"),
                   value: dashboard?.invoiceBreakdown?.paid ?? 0,
                 },
                 {
-                  label: "Partial",
+                  label: t("Partial"),
                   value: dashboard?.invoiceBreakdown?.partial ?? 0,
                 },
                 {
-                  label: "Pending",
+                  label: t("Pending"),
                   value: dashboard?.invoiceBreakdown?.pending ?? 0,
                 },
                 {
-                  label: "Overdue",
+                  label: t("Overdue"),
                   value: dashboard?.invoiceBreakdown?.overdue ?? 0,
                 },
                 {
-                  label: "Cancelled",
+                  label: t("Cancelled"),
                   value: dashboard?.invoiceBreakdown?.cancelled ?? 0,
                 },
                 {
-                  label: "Refunded",
+                  label: t("Refunded"),
                   value: dashboard?.invoiceBreakdown?.refunded ?? 0,
                 },
                 {
-                  label: "Total Invoices",
+                  label: t("Total Invoices"),
                   value: dashboard?.invoiceBreakdown?.total ?? 0,
                 },
               ]}
@@ -376,15 +378,17 @@ export default function ClientPortalPage({
                 className="mb-4"
                 icon={TrendingUp}
                 tone="emerald"
-                title="Monthly Spending"
-                description="Your spending over the last 6 months (grouped by month)"
+                title={t("Monthly Spending")}
+                description={t(
+                  "Your spending over the last 6 months (grouped by month)",
+                )}
               />
               <DeferredChartSection
                 loading={dashboardLoading}
                 hasData={(dashboard?.monthlySpending.length ?? 0) > 0}
                 emptyMessage={
                   <p className="text-muted-foreground text-center py-8">
-                    No spending data yet
+                    {t("No spending data yet")}
                   </p>
                 }
               >
@@ -404,7 +408,7 @@ export default function ClientPortalPage({
                     <Tooltip
                       formatter={(value) => [
                         formatStableCurrency(Number(value)),
-                        "Spent",
+                        t("Spent"),
                       ]}
                     />
                     <Area
@@ -439,8 +443,8 @@ export default function ClientPortalPage({
                 className="mb-6"
                 icon={Store}
                 tone="sky"
-                title="Catalog — What's available"
-                description="Browse suppliers, categories, and products"
+                title={t("Catalog — What's available")}
+                description={t("Browse suppliers, categories, and products")}
               />
               <div className="space-y-4">
                 {catalogLoading ? (
@@ -449,16 +453,16 @@ export default function ClientPortalPage({
                       <CatalogSubsectionTitle
                         icon={Layers}
                         iconClassName="text-sky-500"
-                        label="Suppliers"
+                        label={t("Suppliers")}
                       />
                       <div className="overflow-x-auto rounded-md border">
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Name</TableHead>
-                              <TableHead>Status</TableHead>
+                              <TableHead>{t("Name")}</TableHead>
+                              <TableHead>{t("Status")}</TableHead>
                               <TableHead className="text-right">
-                                Products
+                                {t("Products")}
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -470,17 +474,17 @@ export default function ClientPortalPage({
                       <CatalogSubsectionTitle
                         icon={Boxes}
                         iconClassName="text-violet-500"
-                        label="Categories"
+                        label={t("Categories")}
                       />
                       <div className="overflow-x-auto rounded-md border">
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Name</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Product Owner</TableHead>
+                              <TableHead>{t("Name")}</TableHead>
+                              <TableHead>{t("Status")}</TableHead>
+                              <TableHead>{t("Product Owner")}</TableHead>
                               <TableHead className="text-right">
-                                Products
+                                {t("Products")}
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -492,21 +496,21 @@ export default function ClientPortalPage({
                       <CatalogSubsectionTitle
                         icon={Package}
                         iconClassName="text-emerald-500"
-                        label="Products"
+                        label={t("Products")}
                       />
                       <div className="overflow-x-auto rounded-md border">
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Product Name</TableHead>
-                              <TableHead>SKU</TableHead>
-                              <TableHead>Category</TableHead>
-                              <TableHead>Supplier</TableHead>
-                              <TableHead>Product Owner</TableHead>
+                              <TableHead>{t("Product Name")}</TableHead>
+                              <TableHead>{t("SKU")}</TableHead>
+                              <TableHead>{t("Category")}</TableHead>
+                              <TableHead>{t("Supplier")}</TableHead>
+                              <TableHead>{t("Product Owner")}</TableHead>
                               <TableHead className="text-right">
-                                Price
+                                {t("Price")}
                               </TableHead>
-                              <TableHead>Status</TableHead>
+                              <TableHead>{t("Status")}</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBodyPulseRows rows={8} columnCount={6} />
@@ -516,7 +520,7 @@ export default function ClientPortalPage({
                   </>
                 ) : catalogQuery.isError || !catalog ? (
                   <p className="text-muted-foreground text-center py-4">
-                    Unable to load catalog.
+                    {t("Unable to load catalog.")}
                   </p>
                 ) : (
                   <>
@@ -524,7 +528,7 @@ export default function ClientPortalPage({
                       <CatalogSubsectionTitle
                         icon={Layers}
                         iconClassName="text-sky-500"
-                        label="Suppliers"
+                        label={t("Suppliers")}
                         count={
                           catalog.meta?.totalSuppliers ??
                           catalog.suppliers.length
@@ -534,10 +538,10 @@ export default function ClientPortalPage({
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Name</TableHead>
-                              <TableHead>Status</TableHead>
+                              <TableHead>{t("Name")}</TableHead>
+                              <TableHead>{t("Status")}</TableHead>
                               <TableHead className="text-right">
-                                Products
+                                {t("Products")}
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -548,7 +552,7 @@ export default function ClientPortalPage({
                                   colSpan={3}
                                   className="text-center text-muted-foreground py-4"
                                 >
-                                  No suppliers
+                                  {t("No suppliers")}
                                 </TableCell>
                               </TableRow>
                             ) : (
@@ -581,7 +585,7 @@ export default function ClientPortalPage({
                       <CatalogSubsectionTitle
                         icon={Boxes}
                         iconClassName="text-violet-500"
-                        label="Categories"
+                        label={t("Categories")}
                         count={
                           catalog.meta?.totalCategories ??
                           catalog.categories.length
@@ -591,11 +595,11 @@ export default function ClientPortalPage({
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Name</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Product Owner</TableHead>
+                              <TableHead>{t("Name")}</TableHead>
+                              <TableHead>{t("Status")}</TableHead>
+                              <TableHead>{t("Product Owner")}</TableHead>
                               <TableHead className="text-right">
-                                Products
+                                {t("Products")}
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -606,7 +610,7 @@ export default function ClientPortalPage({
                                   colSpan={4}
                                   className="text-center text-muted-foreground py-4"
                                 >
-                                  No categories
+                                  {t("No categories")}
                                 </TableCell>
                               </TableRow>
                             ) : (
@@ -651,7 +655,7 @@ export default function ClientPortalPage({
                       <CatalogSubsectionTitle
                         icon={Package}
                         iconClassName="text-emerald-500"
-                        label="Products"
+                        label={t("Products")}
                         count={
                           catalog.meta?.totalProducts ?? catalog.products.length
                         }
@@ -660,14 +664,14 @@ export default function ClientPortalPage({
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Product</TableHead>
-                              <TableHead>Category</TableHead>
-                              <TableHead>Supplier</TableHead>
-                              <TableHead>Product Owner</TableHead>
+                              <TableHead>{t("Product")}</TableHead>
+                              <TableHead>{t("Category")}</TableHead>
+                              <TableHead>{t("Supplier")}</TableHead>
+                              <TableHead>{t("Product Owner")}</TableHead>
                               <TableHead className="text-right">
-                                Price
+                                {t("Price")}
                               </TableHead>
-                              <TableHead>Status</TableHead>
+                              <TableHead>{t("Status")}</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -677,7 +681,7 @@ export default function ClientPortalPage({
                                   colSpan={6}
                                   className="text-center text-muted-foreground py-4"
                                 >
-                                  No products
+                                  {t("No products")}
                                 </TableCell>
                               </TableRow>
                             ) : (
@@ -763,8 +767,8 @@ export default function ClientPortalPage({
                   className="mb-4"
                   icon={ShoppingCart}
                   tone="sky"
-                  title="Recent Orders"
-                  description="Your latest orders"
+                  title={t("Recent Orders")}
+                  description={t("Your latest orders")}
                 />
                 <div>
                   {dashboardLoading ? (
@@ -778,7 +782,7 @@ export default function ClientPortalPage({
                     </ul>
                   ) : (dashboard?.recentOrders.length ?? 0) === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No orders yet
+                      {t("No orders yet")}
                     </p>
                   ) : (
                     <ul className={CARD_LIST_DIVIDE_CLASS}>
@@ -823,7 +827,9 @@ export default function ClientPortalPage({
                                   </span>
                                 ) : (
                                   <span className={CARD_LIST_META_CLASS}>
-                                    {order.itemCount} items
+                                    {t("{count} items", {
+                                      count: order.itemCount,
+                                    })}
                                   </span>
                                 )}
                                 {order.categoryId && order.categoryName ? (
@@ -901,7 +907,7 @@ export default function ClientPortalPage({
                     >
                       <Link href="/orders">
                         <ArrowRight className="h-4 w-4 shrink-0" />
-                        View All Orders
+                        {t("View All Orders")}
                       </Link>
                     </Button>
                   </div>
@@ -922,8 +928,8 @@ export default function ClientPortalPage({
                   className="mb-4"
                   icon={FileText}
                   tone="violet"
-                  title="Recent Invoices"
-                  description="Your latest invoices"
+                  title={t("Recent Invoices")}
+                  description={t("Your latest invoices")}
                 />
                 <div>
                   {dashboardLoading ? (
@@ -937,7 +943,7 @@ export default function ClientPortalPage({
                     </ul>
                   ) : (dashboard?.recentInvoices.length ?? 0) === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No invoices yet
+                      {t("No invoices yet")}
                     </p>
                   ) : (
                     <ul className={CARD_LIST_DIVIDE_CLASS}>
@@ -957,10 +963,11 @@ export default function ClientPortalPage({
                               </Link>
                             </CopyableText>
                             <span className={CARD_LIST_META_CLASS}>
-                              Total ${invoice.total.toFixed(2)}
+                              {t("Total")} ${invoice.total.toFixed(2)}
                               {invoice.dueDate && (
                                 <>
-                                  {" · Due "}
+                                  {" · "}
+                                  {t("Due")}{" "}
                                   <ClientCompactDateTime
                                     date={invoice.dueDate}
                                     semantic={
@@ -976,7 +983,7 @@ export default function ClientPortalPage({
                           <div className="flex items-center gap-2 flex-shrink-0 overflow-visible py-1">
                             <InvoiceStatusBadge status={invoice.status} />
                             <span className="text-xs font-normal text-gray-700 dark:text-white">
-                              ${invoice.amountDue.toFixed(2)} due
+                              ${invoice.amountDue.toFixed(2)} {t("due")}
                             </span>
                           </div>
                         </li>
@@ -997,7 +1004,7 @@ export default function ClientPortalPage({
                     >
                       <Link href="/invoices">
                         <ArrowRight className="h-4 w-4 shrink-0" />
-                        View All Invoices
+                        {t("View All Invoices")}
                       </Link>
                     </Button>
                   </div>

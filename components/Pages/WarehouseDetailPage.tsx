@@ -91,6 +91,7 @@ import {
   TYPO_CARD_TITLE,
   TYPO_SUBTITLE,
 } from "@/lib/ui/typography-scale";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type WarehouseDetailPageProps = {
   embedInAdmin?: boolean;
@@ -107,6 +108,7 @@ export default function WarehouseDetailPage({
   initialStockAllocations,
   initialForecasting,
 }: WarehouseDetailPageProps = {}) {
+  const t = useT();
   const params = useParams();
   const router = useRouter();
   const { navigateTo } = useBackWithRefresh("warehouse");
@@ -264,19 +266,19 @@ export default function WarehouseDetailPage({
           <GlassCard variant="rose" className="max-w-md text-center">
             <GlassCardBody>
               <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-                Warehouse Not Found
+                {t("Warehouse Not Found")}
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {warehouseQuery.error instanceof Error
                   ? warehouseQuery.error.message
-                  : "Failed to load warehouse details"}
+                  : t("Failed to load warehouse details")}
               </p>
               <Button
                 onClick={() => navigateTo(warehousesListHref)}
                 className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Warehouses
+                {t("Back to Warehouses")}
               </Button>
             </GlassCardBody>
           </GlassCard>
@@ -314,7 +316,7 @@ export default function WarehouseDetailPage({
                 variant="ghost"
                 size="icon"
                 onClick={() => navigateTo(warehousesListHref)}
-                aria-label="Back to Warehouses"
+                aria-label={t("Back to Warehouses")}
                 className={DETAIL_HEADER_BACK_ICON_CLASS}
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -329,7 +331,7 @@ export default function WarehouseDetailPage({
               ) : (
                 <ClientRelativeTime
                   date={createdAt}
-                  prefix="Created "
+                  prefix={`${t("Created")} `}
                   semantic="created"
                 />
               )
@@ -342,7 +344,7 @@ export default function WarehouseDetailPage({
                 <div className="flex shrink-0 flex-col items-end justify-center gap-0.5 self-center">
                   <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-gray-500 dark:text-white/60">
                     <CheckCircle2 className="h-3 w-3 shrink-0" aria-hidden />
-                    Status
+                    {t("Status")}
                   </span>
                   <ActiveInactiveBadge
                     active={Boolean(warehouse.status)}
@@ -377,7 +379,7 @@ export default function WarehouseDetailPage({
                     {stockSummary.totalProducts}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Products
+                    {t("Products")}
                   </p>
                 </GlassCardBody>
               </GlassCard>
@@ -401,7 +403,7 @@ export default function WarehouseDetailPage({
                     {stockSummary.totalQuantity}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Total Stock
+                    {t("Total Stock")}
                   </p>
                 </GlassCardBody>
               </GlassCard>
@@ -425,7 +427,7 @@ export default function WarehouseDetailPage({
                     {stockSummary.availableQuantity}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Available
+                    {t("Available")}
                   </p>
                 </GlassCardBody>
               </GlassCard>
@@ -449,7 +451,7 @@ export default function WarehouseDetailPage({
                     {stockSummary.reservedQuantity}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Reserved
+                    {t("Reserved")}
                   </p>
                 </GlassCardBody>
               </GlassCard>
@@ -471,9 +473,9 @@ export default function WarehouseDetailPage({
                     <Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
                   </div>
                   <div>
-                    <h3 className={TYPO_CARD_TITLE}>Warehouse Information</h3>
+                    <h3 className={TYPO_CARD_TITLE}>{t("Warehouse Information")}</h3>
                     <p className={TYPO_SUBTITLE}>
-                      Location metadata and audit fields
+                      {t("Location metadata and audit fields")}
                     </p>
                   </div>
                 </div>
@@ -482,7 +484,7 @@ export default function WarehouseDetailPage({
                   {warehouse && (
                     <DetailInfoRow
                       icon={Hash}
-                      label="Warehouse ID:"
+                      label={t("Warehouse ID:")}
                       tone="violet"
                     >
                       <CopyableText value={warehouse.id}>
@@ -492,14 +494,14 @@ export default function WarehouseDetailPage({
                       </CopyableText>
                     </DetailInfoRow>
                   )}
-                  <DetailInfoRow icon={Warehouse} label="Name:" tone="teal">
+                  <DetailInfoRow icon={Warehouse} label={t("Name:")} tone="teal">
                     {warehouse?.name && (
                       <CopyableText value={warehouse.name}>
                         {warehouse.name}
                       </CopyableText>
                     )}
                   </DetailInfoRow>
-                  <DetailInfoRow icon={MapPin} label="Address:" tone="teal">
+                  <DetailInfoRow icon={MapPin} label={t("Address:")} tone="teal">
                     {warehouse?.address ? (
                       <CopyableText value={warehouse.address}>
                         {warehouse.address}
@@ -511,13 +513,13 @@ export default function WarehouseDetailPage({
                     )}
                   </DetailInfoRow>
                   {warehouse?.type && (
-                    <DetailInfoRow icon={Tag} label="Type:" tone="blue">
+                    <DetailInfoRow icon={Tag} label={t("Type:")} tone="blue">
                       <WarehouseTypeBadge type={warehouse.type} size="detail" />
                     </DetailInfoRow>
                   )}
                   <DetailInfoRow
                     icon={CheckCircle2}
-                    label="Status:"
+                    label={t("Status:")}
                     tone="emerald"
                   >
                     <ActiveInactiveBadge
@@ -528,7 +530,7 @@ export default function WarehouseDetailPage({
                   <DetailInfoRowGroup>
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Created:"
+                      label={t("Created:")}
                       tone="orange"
                       loading={dataLoading && !createdAt}
                     >
@@ -545,7 +547,7 @@ export default function WarehouseDetailPage({
                     {updatedAt && (
                       <DetailInfoRow
                         icon={Clock}
-                        label="Updated:"
+                        label={t("Updated:")}
                         tone="violet"
                         loading={false}
                       >
@@ -557,34 +559,34 @@ export default function WarehouseDetailPage({
                     )}
                   </DetailInfoRowGroup>
                   {stockSummary && (
-                    <DetailInfoRow icon={Boxes} label="Allocations:" tone="sky">
+                    <DetailInfoRow icon={Boxes} label={t("Allocations:")} tone="sky">
                       <span className="inline-flex flex-wrap items-center gap-x-1.5">
                         <span className="text-slate-600 dark:text-slate-300">
-                          {stockSummary.totalProducts} Products
+                          {stockSummary.totalProducts} {t("Products")}
                         </span>
                         <span className="text-gray-400 dark:text-white/80">
                           ·
                         </span>
                         <span className="text-sky-600 dark:text-sky-400">
-                          {stockSummary.totalQuantity} Total
+                          {stockSummary.totalQuantity} {t("Total")}
                         </span>
                         <span className="text-gray-400 dark:text-white/80">
                           ·
                         </span>
                         <span className="text-emerald-600 dark:text-emerald-400">
-                          {stockSummary.availableQuantity} Available
+                          {stockSummary.availableQuantity} {t("Available")}
                         </span>
                         <span className="text-gray-400 dark:text-white/80">
                           ·
                         </span>
                         <span className="text-amber-600 dark:text-amber-400">
-                          {stockSummary.reservedQuantity} Reserved
+                          {stockSummary.reservedQuantity} {t("Reserved")}
                         </span>
                       </span>
                     </DetailInfoRow>
                   )}
                   <AuditUserDetailRow
-                    label="Created by:"
+                    label={t("Created by:")}
                     tone="violet"
                     user={warehouse?.creator}
                     loading={dataLoading && !warehouse?.creator}
@@ -598,7 +600,7 @@ export default function WarehouseDetailPage({
                     }
                   />
                   <AuditUserDetailRow
-                    label="Updated by:"
+                    label={t("Updated by:")}
                     tone="blue"
                     user={warehouse?.updater}
                     loading={dataLoading && !warehouse?.updater}
@@ -629,15 +631,15 @@ export default function WarehouseDetailPage({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className={TYPO_CARD_TITLE}>Stock in Warehouse</h3>
+                      <h3 className={TYPO_CARD_TITLE}>{t("Stock in Warehouse")}</h3>
                       {!isLoadingStock && allocationRows.length > 0 ? (
                         <SectionCountBadge>
-                          {allocationRows.length} products
+                          {t("{count} products", { count: allocationRows.length })}
                         </SectionCountBadge>
                       ) : null}
                     </div>
                     <p className={TYPO_SUBTITLE}>
-                      Products allocated to this warehouse
+                      {t("Products allocated to this warehouse")}
                     </p>
                   </div>
                 </div>
@@ -698,10 +700,10 @@ export default function WarehouseDetailPage({
                         <Package className="h-8 w-8 text-violet-500/50 dark:text-violet-400/50" />
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        No stock allocated to this warehouse yet
+                        {t("No stock allocated to this warehouse yet")}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
-                        Use the stock allocation feature to assign products
+                        {t("Use the stock allocation feature to assign products")}
                       </p>
                     </div>
                   )}
@@ -733,7 +735,7 @@ export default function WarehouseDetailPage({
               className={glassDetailBackButtonClass("w-full sm:w-auto gap-2")}
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
-              Back
+              {t("Back")}
             </Button>
             {canManageStock ? (
               <>
@@ -746,7 +748,7 @@ export default function WarehouseDetailPage({
                   className={glassDetailFooterButtonClass("violet")}
                 >
                   <Plus className="h-4 w-4 shrink-0" />
-                  Allocate Stock
+                  {t("Allocate Stock")}
                 </Button>
                 <Button
                   onClick={() => setTransferOpen(true)}
@@ -760,21 +762,21 @@ export default function WarehouseDetailPage({
                   className={glassDetailFooterButtonClass("teal")}
                 >
                   <ArrowRightLeft className="h-4 w-4 shrink-0" />
-                  Transfer Stock
+                  {t("Transfer Stock")}
                 </Button>
                 <Button
                   onClick={handleEdit}
                   className={glassDetailFooterButtonClass("blue")}
                 >
                   <Edit className="h-4 w-4 shrink-0" />
-                  Edit Warehouse
+                  {t("Edit Warehouse")}
                 </Button>
                 <DialogSubmitButton
                   type="button"
                   onClick={() => setDeleteDialogOpen(true)}
                   isPending={isDeleting}
-                  pendingLabel="Deleting…"
-                  label="Delete Warehouse"
+                  pendingLabel={t("Deleting…")}
+                  label={t("Delete Warehouse")}
                   icon={Trash2}
                   hue="rose"
                   className="group w-full sm:w-auto gap-2 !text-white"
@@ -819,10 +821,10 @@ export default function WarehouseDetailPage({
         <AlertDialogWrapper
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
-          title="Are you absolutely sure?"
-          description={`This will permanently delete the warehouse "${warehouse?.name}".`}
-          actionLabel="Delete"
-          actionLoadingLabel="Deleting..."
+          title={t("Are you absolutely sure?")}
+          description={t("This will permanently delete the warehouse \"{name}\".", { name: warehouse?.name ?? "" })}
+          actionLabel={t("Delete")}
+          actionLoadingLabel={t("Deleting...")}
           isLoading={isDeleting}
           onAction={handleConfirmDelete}
           onCancel={() => setDeleteDialogOpen(false)}
@@ -834,10 +836,13 @@ export default function WarehouseDetailPage({
           onOpenChange={(open) => {
             if (!open) setDeleteAllocationTarget(null);
           }}
-          title="Remove warehouse allocation?"
-          description={`Remove ${deleteAllocationTarget?.product?.name ?? "this product"} from ${warehouse?.name ?? "this warehouse"}? Catalog total is unchanged; only the warehouse row is deleted.`}
-          actionLabel="Remove"
-          actionLoadingLabel="Removing..."
+          title={t("Remove warehouse allocation?")}
+          description={t("Remove {product} from {warehouse}? Catalog total is unchanged; only the warehouse row is deleted.", {
+            product: deleteAllocationTarget?.product?.name ?? t("this product"),
+            warehouse: warehouse?.name ?? t("this warehouse"),
+          })}
+          actionLabel={t("Remove")}
+          actionLoadingLabel={t("Removing...")}
           isLoading={isRemovingAllocation}
           onAction={handleConfirmDeleteAllocation}
           onCancel={() => setDeleteAllocationTarget(null)}

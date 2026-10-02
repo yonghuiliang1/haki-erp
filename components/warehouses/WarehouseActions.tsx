@@ -18,6 +18,7 @@ import {
 import { useDeleteWarehouse } from "@/hooks/queries";
 import { AlertDialogWrapper } from "@/components/dialogs";
 import { MoreVertical, Edit, Trash2, Eye } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface WarehouseActionsProps {
   row: { original: Warehouse };
@@ -31,6 +32,7 @@ export default function WarehouseActions({
   onEdit,
   detailBase = "",
 }: WarehouseActionsProps) {
+  const t = useT();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const deleteWarehouseMutation = useDeleteWarehouse();
   const isDeleting = deleteWarehouseMutation.isPending;
@@ -57,7 +59,7 @@ export default function WarehouseActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
@@ -68,7 +70,7 @@ export default function WarehouseActions({
           <DropdownMenuItem asChild>
             <Link href={detailHref} className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -76,7 +78,7 @@ export default function WarehouseActions({
             className="flex items-center gap-2"
           >
             <Edit className="h-4 w-4" />
-            Edit Warehouse
+            {t("Edit Warehouse")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setDeleteDialogOpen(true)}
@@ -84,7 +86,7 @@ export default function WarehouseActions({
             className="flex items-center gap-2 text-red-600 dark:text-red-400"
           >
             <Trash2 className="h-4 w-4" />
-            {isDeleting ? "Deleting..." : "Delete Warehouse"}
+            {isDeleting ? t("Deleting...") : t("Delete Warehouse")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -92,10 +94,10 @@ export default function WarehouseActions({
       <AlertDialogWrapper
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Are you absolutely sure?"
-        description={`This will permanently delete the warehouse "${row.original.name}".`}
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        title={t("Are you absolutely sure?")}
+        description={t("This will permanently delete the warehouse \"{name}\".", { name: row.original.name })}
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={isDeleting}
         onAction={handleDelete}
         onCancel={() => setDeleteDialogOpen(false)}

@@ -54,6 +54,7 @@ import {
 } from "@/lib/ui/chart-point-label";
 import type { WarehouseStockSummary } from "@/types/stock-allocation";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const PIE_COLORS = ["#06b6d4", "#0ea5e9", "#10b981", "#8b5cf6", "#f59e0b"];
 
@@ -66,6 +67,7 @@ export function BusinessInsightsWarehouseSection({
   rows,
   loading,
 }: BusinessInsightsWarehouseSectionProps) {
+  const t = useT();
   const metrics = useMemo(() => buildWarehouseRollupMetrics(rows), [rows]);
   const quantityChartData = useMemo(
     () => buildWarehouseQuantityChartData(rows),
@@ -75,52 +77,61 @@ export function BusinessInsightsWarehouseSection({
 
   return (
     <div className="flex flex-col gap-6 text-xs sm:text-sm">
-      <SectionTitleRow title="Warehouse stock rollup" icon={Warehouse} />
+      <SectionTitleRow title={t("Warehouse stock rollup")} icon={Warehouse} />
       <p className="text-xs text-gray-600 dark:text-white/80 -mt-4">
-        Allocated inventory across locations
+        {t("Allocated inventory across locations")}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
         <AnalyticsCard
-          title="Locations with stock"
+          title={t("Locations with stock")}
           value={metrics.warehousesWithStock}
           icon={Warehouse}
           variant="teal"
-          description={`${metrics.warehouseCount} warehouses total`}
+          description={t("{count} warehouses total", {
+            count: metrics.warehouseCount,
+          })}
           valueLoading={loading}
         />
         <AnalyticsCard
-          title="Allocated units"
+          title={t("Allocated units")}
           value={metrics.totalQuantity}
           icon={Package}
           variant="sky"
-          description={`${metrics.totalSkus} SKU rows`}
+          description={t("{count} SKU rows", { count: metrics.totalSkus })}
           valueLoading={loading}
         />
         <AnalyticsCard
-          title="Reserved units"
+          title={t("Reserved units")}
           value={metrics.totalReserved}
           icon={Package}
           variant="amber"
-          description="Committed on active orders"
+          description={t("Committed on active orders")}
           valueLoading={loading}
         />
         <AnalyticsCard
-          title="Inventory value"
+          title={t("Inventory value")}
           value={formatStableCurrency(Math.round(metrics.totalValue))}
           icon={DollarSign}
           variant="emerald"
           description={
             metrics.topWarehouse
-              ? `Top: ${metrics.topWarehouse.name} (${metrics.concentrationPct}%)`
-              : "No allocations yet"
+              ? t("Top: {name} ({pct}%)", {
+                  name: metrics.topWarehouse.name,
+                  pct: metrics.concentrationPct,
+                })
+              : t("No allocations yet")
           }
           valueLoading={loading}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        <ChartCard title="Quantity by warehouse" icon={Warehouse} variant="sky">
+        <ChartCard
+          title={t("Quantity by warehouse")}
+          icon={Warehouse}
+          variant="sky"
+        >
           <DeferredChartSection
             loading={loading}
             hasData={quantityChartData.length > 0}
@@ -151,7 +162,7 @@ export function BusinessInsightsWarehouseSection({
         </ChartCard>
 
         <ChartCard
-          title="Stock share by warehouse"
+          title={t("Stock share by warehouse")}
           icon={PieChartIcon}
           variant="teal"
         >
@@ -186,41 +197,47 @@ export function BusinessInsightsWarehouseSection({
         </ChartCard>
       </div>
 
-      <ChartCard title="Warehouse Breakdown" icon={Package} variant="violet">
+      <ChartCard
+        title={t("Warehouse Breakdown")}
+        icon={Package}
+        variant="violet"
+      >
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Warehouse</TableHead>
-              <TableHead>SKUs</TableHead>
+              <TableHead>{t("Warehouse")}</TableHead>
+              <TableHead>{t("SKUs")}</TableHead>
               <TableHead>
                 <span className="inline-flex items-center gap-1">
-                  Quantity
+                  {t("Quantity")}
                   <HelpTooltip
-                    content="Total allocated units at this warehouse"
+                    content={t("Total allocated units at this warehouse")}
                     side="top"
-                    ariaLabel="Quantity column help"
+                    ariaLabel={t("Quantity column help")}
                     className="shrink-0"
                   />
                 </span>
               </TableHead>
               <TableHead>
                 <span className="inline-flex items-center gap-1">
-                  Reserved
+                  {t("Reserved")}
                   <HelpTooltip
-                    content="Units reserved for open orders (amber/rose when elevated)"
+                    content={t(
+                      "Units reserved for open orders (amber/rose when elevated)",
+                    )}
                     side="top"
-                    ariaLabel="Reserved column help"
+                    ariaLabel={t("Reserved column help")}
                     className="shrink-0"
                   />
                 </span>
               </TableHead>
               <TableHead>
                 <span className="inline-flex items-center gap-1">
-                  Value
+                  {t("Value")}
                   <HelpTooltip
-                    content="Estimated inventory value from allocated stock"
+                    content={t("Estimated inventory value from allocated stock")}
                     side="top"
-                    ariaLabel="Value column help"
+                    ariaLabel={t("Value column help")}
                     className="shrink-0"
                   />
                 </span>
@@ -234,8 +251,9 @@ export function BusinessInsightsWarehouseSection({
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className={CARD_EMPTY_MESSAGE_CLASS}>
-                    No warehouse allocations yet. Allocate stock from a
-                    warehouse detail page.
+                    {t(
+                      "No warehouse allocations yet. Allocate stock from a warehouse detail page.",
+                    )}
                   </TableCell>
                 </TableRow>
               ) : (

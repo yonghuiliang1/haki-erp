@@ -19,6 +19,7 @@ import Papa from "papaparse";
 import ExcelJS from "exceljs";
 import type { CatalogStatusFilter } from "@/lib/ui/catalog-filter-tokens";
 import { formatStableDate } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 type StatusFilter = CatalogStatusFilter;
 
@@ -44,6 +45,7 @@ export default function WarehouseFilters({
   setPagination,
 }: WarehouseFiltersProps) {
   const { toast } = useToast();
+  const t = useT();
 
   /**
    * Filter warehouses based on current filters
@@ -72,23 +74,22 @@ export default function WarehouseFilters({
     try {
       if (filteredWarehouses.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
-            "There are no warehouses to export with the current filters.",
+          title: t("No Data to Export"),
+          description: t("There are no warehouses to export with the current filters."),
           variant: "destructive",
         });
         return;
       }
 
       const csvData = filteredWarehouses.map((warehouse) => ({
-        Name: warehouse.name,
-        Status: warehouse.status ? "Active" : "Inactive",
-        Address: warehouse.address || "-",
-        Type: warehouse.type || "-",
-        "Created At": warehouse.createdAt
+        [t("Name")]: warehouse.name,
+        [t("Status")]: warehouse.status ? t("Active") : t("Inactive"),
+        [t("Address")]: warehouse.address || "-",
+        [t("Type")]: warehouse.type || "-",
+        [t("Created At")]: warehouse.createdAt
           ? formatStableDate(warehouse.createdAt)
           : "-",
-        "Updated At": warehouse.updatedAt
+        [t("Updated At")]: warehouse.updatedAt
           ? formatStableDate(warehouse.updatedAt)
           : "-",
       }));
@@ -108,17 +109,19 @@ export default function WarehouseFilters({
       document.body.removeChild(link);
 
       toast({
-        title: "Export Successful",
-        description: `${filteredWarehouses.length} warehouse(s) exported to CSV`,
+        title: t("Export Successful"),
+        description: t("{count} warehouse(s) exported to CSV", {
+          count: filteredWarehouses.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export warehouses to CSV",
+        title: t("Export Failed"),
+        description: t("Failed to export warehouses to CSV"),
         variant: "destructive",
       });
     }
-  }, [filteredWarehouses, toast]);
+  }, [filteredWarehouses, toast, t]);
 
   /**
    * Export filtered warehouses to Excel
@@ -127,23 +130,22 @@ export default function WarehouseFilters({
     try {
       if (filteredWarehouses.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
-            "There are no warehouses to export with the current filters.",
+          title: t("No Data to Export"),
+          description: t("There are no warehouses to export with the current filters."),
           variant: "destructive",
         });
         return;
       }
 
       const excelData = filteredWarehouses.map((warehouse) => ({
-        Name: warehouse.name,
-        Status: warehouse.status ? "Active" : "Inactive",
-        Address: warehouse.address || "-",
-        Type: warehouse.type || "-",
-        "Created At": warehouse.createdAt
+        [t("Name")]: warehouse.name,
+        [t("Status")]: warehouse.status ? t("Active") : t("Inactive"),
+        [t("Address")]: warehouse.address || "-",
+        [t("Type")]: warehouse.type || "-",
+        [t("Created At")]: warehouse.createdAt
           ? formatStableDate(warehouse.createdAt)
           : "-",
-        "Updated At": warehouse.updatedAt
+        [t("Updated At")]: warehouse.updatedAt
           ? formatStableDate(warehouse.updatedAt)
           : "-",
       }));
@@ -152,12 +154,12 @@ export default function WarehouseFilters({
       const worksheet = workbook.addWorksheet("Warehouses");
 
       worksheet.columns = [
-        { header: "Name", key: "Name", width: 25 },
-        { header: "Status", key: "Status", width: 12 },
-        { header: "Address", key: "Address", width: 40 },
-        { header: "Type", key: "Type", width: 15 },
-        { header: "Created At", key: "Created At", width: 12 },
-        { header: "Updated At", key: "Updated At", width: 12 },
+        { header: t("Name"), key: t("Name"), width: 25 },
+        { header: t("Status"), key: t("Status"), width: 12 },
+        { header: t("Address"), key: t("Address"), width: 40 },
+        { header: t("Type"), key: t("Type"), width: 15 },
+        { header: t("Created At"), key: t("Created At"), width: 12 },
+        { header: t("Updated At"), key: t("Updated At"), width: 12 },
       ];
 
       worksheet.addRows(excelData);
@@ -186,17 +188,19 @@ export default function WarehouseFilters({
       document.body.removeChild(link);
 
       toast({
-        title: "Export Successful",
-        description: `${filteredWarehouses.length} warehouse(s) exported to Excel`,
+        title: t("Export Successful"),
+        description: t("{count} warehouse(s) exported to Excel", {
+          count: filteredWarehouses.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export warehouses to Excel",
+        title: t("Export Failed"),
+        description: t("Failed to export warehouses to Excel"),
         variant: "destructive",
       });
     }
-  }, [filteredWarehouses, toast]);
+  }, [filteredWarehouses, toast, t]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -206,7 +210,7 @@ export default function WarehouseFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by name or address..."
+            placeholder={t("Search by name or address...")}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -239,7 +243,7 @@ export default function WarehouseFilters({
 
         <div className="flex-shrink-0">
           <ExportMenuButton
-            label="Export Warehouses"
+            label={t("Export Warehouses")}
             accent="teal"
             onExportCsv={exportToCSV}
             onExportExcel={exportToExcel}

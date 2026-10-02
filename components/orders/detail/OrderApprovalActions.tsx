@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { glassDetailFooterButtonClass } from "@/components/shared";
 import { useApproveOrder } from "@/hooks/queries";
 import type { Order } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 type ReviewAction = "approve" | "reject";
 
@@ -42,6 +43,7 @@ export function OrderApprovalActions({
   const approveOrderMutation = useApproveOrder();
   const [pendingReview, setPendingReview] = useState<ReviewAction | null>(null);
   const [comment, setComment] = useState("");
+  const t = useT();
 
   // Only a pending order awaits a decision, and only an admin can give one.
   if (!canReview || order.status !== "pending") return null;
@@ -80,7 +82,7 @@ export function OrderApprovalActions({
         className={glassDetailFooterButtonClass("emerald")}
       >
         <CheckCircle2 className="h-4 w-4 shrink-0" />
-        Approve
+        {t("Approve")}
       </Button>
 
       <Button
@@ -89,7 +91,7 @@ export function OrderApprovalActions({
         className={glassDetailFooterButtonClass("rose")}
       >
         <XCircle className="h-4 w-4 shrink-0" />
-        Reject
+        {t("Reject")}
       </Button>
 
       <Dialog
@@ -101,12 +103,16 @@ export function OrderApprovalActions({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {isApproving ? "Approve Order" : "Reject Order"}
+              {isApproving ? t("Approve Order") : t("Reject Order")}
             </DialogTitle>
             <DialogDescription>
               {isApproving
-                ? `Approving ${order.orderNumber} reserves stock for every line.`
-                : `${order.orderNumber} goes back to sales for revision.`}
+                ? t("Approving {number} reserves stock for every line.", {
+                    number: order.orderNumber,
+                  })
+                : t("{number} goes back to sales for revision.", {
+                    number: order.orderNumber,
+                  })}
             </DialogDescription>
           </DialogHeader>
 
@@ -115,8 +121,8 @@ export function OrderApprovalActions({
             onChange={(event) => setComment(event.target.value)}
             placeholder={
               isApproving
-                ? "Optional note for the approval record"
-                : "Reason for rejection (optional)"
+                ? t("Optional note for the approval record")
+                : t("Reason for rejection (optional)")
             }
             rows={3}
             disabled={isSubmitting}
@@ -128,14 +134,14 @@ export function OrderApprovalActions({
               onClick={closeDialog}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button onClick={submitReview} disabled={isSubmitting}>
               {isSubmitting
-                ? "Submitting…"
+                ? t("Submitting…")
                 : isApproving
-                  ? "Approve"
-                  : "Reject"}
+                  ? t("Approve")
+                  : t("Reject")}
             </Button>
           </DialogFooter>
         </DialogContent>

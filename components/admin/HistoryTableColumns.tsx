@@ -23,6 +23,7 @@ import { ArrowUpDown, Eye } from "lucide-react";
 import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
 import Link from "next/link";
 import { ClientDateTime } from "@/components/shared";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import type { ImportHistoryForPage } from "@/types";
 
@@ -31,7 +32,14 @@ type SortableHeaderProps = {
   label: string;
 };
 
+/** Inline text rendered as a client component so non-component code can translate. */
+function TranslatedText({ text }: { text: string }) {
+  const t = useT();
+  return <>{t(text)}</>;
+}
+
 function SortableHeader({ column, label }: SortableHeaderProps) {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -48,20 +56,20 @@ function SortableHeader({ column, label }: SortableHeaderProps) {
             "flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white",
             isSorted && "text-primary",
           )}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -124,7 +132,7 @@ export function createHistoryColumns(
     },
     {
       id: "successRows",
-      header: "Success",
+      header: () => <TranslatedText text="Success" />,
       cell: ({ row }) => (
         <span className="text-green-600 dark:text-green-400">
           {row.original.successRows}
@@ -133,7 +141,7 @@ export function createHistoryColumns(
     },
     {
       id: "failedRows",
-      header: "Failed",
+      header: () => <TranslatedText text="Failed" />,
       cell: ({ row }) => (
         <span className="text-red-600 dark:text-red-400">
           {row.original.failedRows}
@@ -142,7 +150,7 @@ export function createHistoryColumns(
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <TranslatedText text="Actions" />,
       cell: ({ row }) => {
         const record = row.original;
         const href = detailHrefBase
@@ -152,7 +160,7 @@ export function createHistoryColumns(
           <Button variant="ghost" size="sm" asChild>
             <Link href={href} className="gap-2">
               <Eye className="h-4 w-4" />
-              View
+              <TranslatedText text="View" />
             </Link>
           </Button>
         );

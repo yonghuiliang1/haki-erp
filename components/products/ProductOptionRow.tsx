@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * REQ-0048 — inline product thumb + label for order Select (matches ProductTableColumns).
  * REQ-0059 — ProductThumb extracted for reuse on detail-page line items / allocation rows.
@@ -9,6 +11,8 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { AvatarInlineLink } from "@/components/shared/AvatarInlineLink";
 import type { Product } from "@/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 
 const thumbSize = {
   sm: "h-8 w-8",
@@ -86,7 +90,10 @@ export type ProductOptionRowProps = {
 /** Readable meta on light popover surfaces (allocate/transfer product picker). */
 const PRODUCT_OPTION_META_POPOVER_CLASS = "text-gray-600 dark:text-gray-300";
 
-function formatCatalogMeta(props: ProductOptionRowProps): string | null {
+function formatCatalogMeta(
+  props: ProductOptionRowProps,
+  t: TranslateFn,
+): string | null {
   const parts: string[] = [];
   if (props.categoryName) parts.push(props.categoryName);
   if (props.supplierName) parts.push(props.supplierName);
@@ -96,7 +103,7 @@ function formatCatalogMeta(props: ProductOptionRowProps): string | null {
     props.availableQuantity !== undefined
       ? props.availableQuantity
       : props.quantity;
-  if (stock !== undefined) parts.push(`Stock: ${stock}`);
+  if (stock !== undefined) parts.push(t("Stock: {count}", { count: stock }));
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
@@ -113,15 +120,19 @@ export function ProductOptionRow({
   metaOnDark = false,
   className,
 }: ProductOptionRowProps) {
+  const t = useT();
   const meta = showMeta
-    ? formatCatalogMeta({
-        name,
-        price,
-        quantity,
-        availableQuantity,
-        categoryName,
-        supplierName,
-      })
+    ? formatCatalogMeta(
+        {
+          name,
+          price,
+          quantity,
+          availableQuantity,
+          categoryName,
+          supplierName,
+        },
+        t,
+      )
     : null;
 
   return (
@@ -232,6 +243,7 @@ export function DialogProductOptionRow({
   metaOnDark = false,
   className,
 }: DialogProductOptionRowProps) {
+  const t = useT();
   const skuText = (sku ?? "").trim();
   const cat = (categoryName ?? "").trim();
   const ownerLabel = (ownerName ?? "").trim();
@@ -316,7 +328,7 @@ export function DialogProductOptionRow({
                 )}
               >
                 <Lock className="h-3 w-3 shrink-0" aria-hidden />
-                {reservedN} reserved
+                {t("{count} reserved", { count: reservedN })}
               </span>
             </>
           ) : null}

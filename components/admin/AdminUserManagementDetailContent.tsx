@@ -75,6 +75,7 @@ import {
   shouldShowMyActivityTip,
 } from "@/lib/ui/user-overview-copy";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 import { DEMO_SEED_USERS } from "@/lib/auth/demo-seed-users";
 
 const PROTECTED_EMAILS = DEMO_SEED_USERS.map((u) => u.email.toLowerCase());
@@ -105,6 +106,7 @@ export type AdminUserManagementDetailContentProps = {
 export default function AdminUserManagementDetailContent({
   initialUser,
 }: AdminUserManagementDetailContentProps = {}) {
+  const t = useT();
   const params = useParams();
   const { navigateTo, handleBack } = useBackWithRefresh("user");
   const { user: currentUser } = useAuth();
@@ -172,12 +174,12 @@ export default function AdminUserManagementDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to User Management
+            {t("Back to User Management")}
           </Button>
           <GlassCard variant="violet">
             <div className="py-8 text-center">
               <p className="text-muted-foreground">
-                {error instanceof Error ? error.message : "User not found"}
+                {error instanceof Error ? error.message : t("User not found")}
               </p>
             </div>
           </GlassCard>
@@ -196,12 +198,14 @@ export default function AdminUserManagementDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to User Management
+            {t("Back to User Management")}
           </Button>
           <GlassCard variant="violet">
             <div className="py-8 text-center">
               <p className="text-muted-foreground">
-                The user you are looking for does not exist or was removed.
+                {t(
+                "The user you are looking for does not exist or was removed.",
+              )}
               </p>
             </div>
           </GlassCard>
@@ -240,7 +244,7 @@ export default function AdminUserManagementDetailContent({
               <ArrowLeft className="h-5 w-5" />
             </Button>
           }
-          title="User Details"
+          title={t("User Details")}
           description={
             dataLoading ? (
               <DataSlotPulse variant="text-sm" className="w-48" />
@@ -254,8 +258,10 @@ export default function AdminUserManagementDetailContent({
 
         <GlassCard variant="violet">
           <SectionCardHeader
-            title="Profile"
-            description="View and update name. Email and username are read-only."
+            title={t("Profile")}
+            description={t(
+              "View and update name. Email and username are read-only.",
+            )}
             icon={User}
             tone="violet"
             className="mb-4"
@@ -263,18 +269,18 @@ export default function AdminUserManagementDetailContent({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
               <div className="space-y-2">
-                <DetailInfoRow icon={Mail} label="Email:" tone="blue" loading={dataLoading}>
+                <DetailInfoRow icon={Mail} label={t("Email:")} tone="blue" loading={dataLoading}>
                   {!dataLoading && u!.email}
                 </DetailInfoRow>
-                <DetailInfoRow icon={AtSign} label="Username:" tone="violet" loading={dataLoading}>
+                <DetailInfoRow icon={AtSign} label={t("Username:")} tone="violet" loading={dataLoading}>
                   {!dataLoading && getDisplayUsername(u!)}
                 </DetailInfoRow>
-                <DetailInfoRow icon={Calendar} label="Joined:" tone="orange" loading={dataLoading}>
+                <DetailInfoRow icon={Calendar} label={t("Joined:")} tone="orange" loading={dataLoading}>
                   {!dataLoading && (
                     <ClientDateTime date={new Date(u!.createdAt)} semantic="created" />
                   )}
                 </DetailInfoRow>
-                <DetailInfoRow icon={Calendar} label="Last Updated:" tone="amber" loading={dataLoading}>
+                <DetailInfoRow icon={Calendar} label={t("Last Updated:")} tone="amber" loading={dataLoading}>
                   {!dataLoading &&
                     (u!.updatedAt ? (
                       <ClientDateTime date={new Date(u!.updatedAt)} semantic="updated" />
@@ -286,7 +292,7 @@ export default function AdminUserManagementDetailContent({
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="um-name" className={TYPO_BODY_MUTED}>
-                    Name
+                    {t("Name")}
                   </Label>
                   {isProtectedResolved ? (
                     <p className={cn("font-medium mt-1", TYPO_BODY)}>
@@ -317,7 +323,7 @@ export default function AdminUserManagementDetailContent({
                           {isUpdating ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
-                            "Save"
+                            t("Save")
                           )}
                         </Button>
                       )}
@@ -331,8 +337,8 @@ export default function AdminUserManagementDetailContent({
 
         <GlassCard variant="violet">
           <SectionCardHeader
-            title="Role"
-            description="Changes apply immediately"
+            title={t("Role")}
+            description={t("Changes apply immediately")}
             icon={Shield}
             tone="violet"
             className="mb-4"
@@ -374,10 +380,10 @@ export default function AdminUserManagementDetailContent({
                   <SelectContent>
                     {ROLE_OPTIONS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
+                        {t(opt.label)}
                       </SelectItem>
                     ))}
-                    <SelectItem value="null">(none)</SelectItem>
+                    <SelectItem value="null">{t("(none)")}</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -388,7 +394,7 @@ export default function AdminUserManagementDetailContent({
         {(dataLoading || overview) && (
           <GlassCard variant="sky">
             <SectionCardHeader
-              title="Overview"
+              title={t("Overview")}
               // REQ-0160 — role-aware blurb; KPI numbers unchanged
               description={getUserOverviewDescription(u?.role)}
               icon={DollarSign}
@@ -409,7 +415,7 @@ export default function AdminUserManagementDetailContent({
                       overview!.orderCount
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Orders</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Orders")}</p>
                 </div>
               </Link>
               <Link
@@ -425,7 +431,7 @@ export default function AdminUserManagementDetailContent({
                       overview!.invoiceCount
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Invoices</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Invoices")}</p>
                 </div>
               </Link>
               <div className="flex items-center gap-2 p-2 rounded-xl border border-violet-200/40 dark:border-white/10 bg-white/30 dark:bg-white/5">
@@ -438,7 +444,7 @@ export default function AdminUserManagementDetailContent({
                       formatStableCurrency(overview!.totalRevenue ?? 0)
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Total Revenue</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Total Revenue")}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-xl border border-emerald-200/40 dark:border-white/10 bg-white/30 dark:bg-white/5">
@@ -451,7 +457,7 @@ export default function AdminUserManagementDetailContent({
                       formatStableCurrency(overview!.totalSpent)
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Total Spent</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Total Spent")}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-xl border border-amber-200/40 dark:border-white/10 bg-white/30 dark:bg-white/5">
@@ -464,7 +470,7 @@ export default function AdminUserManagementDetailContent({
                       formatStableCurrency(overview!.totalDue)
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Total Due</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Total Due")}</p>
                 </div>
               </div>
             </div>
@@ -482,7 +488,7 @@ export default function AdminUserManagementDetailContent({
                       overview!.productCount
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Products</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Products")}</p>
                 </div>
               </Link>
               <Link
@@ -498,7 +504,7 @@ export default function AdminUserManagementDetailContent({
                       overview!.supplierCount
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Suppliers</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Suppliers")}</p>
                 </div>
               </Link>
               <Link
@@ -514,7 +520,7 @@ export default function AdminUserManagementDetailContent({
                       overview!.categoryCount
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Categories</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Categories")}</p>
                 </div>
               </Link>
               <Link
@@ -530,7 +536,7 @@ export default function AdminUserManagementDetailContent({
                       overview!.warehouseCount
                     )}
                   </p>
-                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>Warehouses</p>
+                  <p className={cn("text-xs", TYPO_BODY_MUTED)}>{t("Warehouses")}</p>
                 </div>
               </Link>
             </div>
@@ -540,14 +546,15 @@ export default function AdminUserManagementDetailContent({
         {/* REQ-0160 — own store-owner account: Self-only tip (homepage sky link pattern) */}
         {shouldShowMyActivityTip({ isOwner, role: u?.role }) && (
           <p className={cn(TYPO_SUBTITLE, "text-gray-600 dark:text-white/70")}>
-            Overview counts are store-owner scope (owned orders and catalog). For
-            your personal (self-only) orders and invoices, visit{" "}
+            {t(
+              "Overview counts are store-owner scope (owned orders and catalog). For your personal (self-only) orders and invoices, visit",
+            )}{" "}
             <Link
               href="/admin/my-activity"
               prefetch
               className="font-medium text-sky-600 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300"
             >
-              My Activity
+              {t("My Activity")}
             </Link>
             .
           </p>
@@ -559,15 +566,15 @@ export default function AdminUserManagementDetailContent({
             className={glassDetailBackButtonClass("w-full sm:w-auto gap-2 px-8")}
           >
             <ArrowLeft className="h-4 w-4 shrink-0" />
-            Back
+            {t("Back")}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <DialogSubmitButton
                 type="button"
                 isPending={isDeleting}
-                pendingLabel="Deleting…"
-                label="Delete User"
+                pendingLabel={t("Deleting…")}
+                label={t("Delete User")}
                 hue="rose"
                 disabled={!canDeleteResolved || isUpdating}
                 className="w-full sm:w-auto gap-2 px-8"
@@ -575,16 +582,16 @@ export default function AdminUserManagementDetailContent({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete user?</AlertDialogTitle>
+                <AlertDialogTitle>{t("Delete user?")}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete{" "}
+                  {t("Are you sure you want to delete")}{" "}
                   <span className="font-medium">{u?.name ?? "—"}</span> (
-                  {u?.email ?? "—"})? This action cannot be undone.
+                  {u?.email ?? "—"})? {t("This action cannot be undone.")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={isDeleting}>
-                  Cancel
+                  {t("Cancel")}
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDelete}
@@ -594,10 +601,10 @@ export default function AdminUserManagementDetailContent({
                   {isDeleting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Deleting...
+                      {t("Deleting...")}
                     </>
                   ) : (
-                    "Delete"
+                    t("Delete")
                   )}
                 </AlertDialogAction>
               </AlertDialogFooter>

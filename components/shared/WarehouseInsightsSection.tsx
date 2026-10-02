@@ -40,6 +40,7 @@ import {
   YAxis,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type WarehouseInsightsSectionProps = {
   insights: WarehouseInsights;
@@ -62,9 +63,10 @@ export function WarehouseInsightsSection({
   showUrgentForecastTable = false,
   className,
 }: WarehouseInsightsSectionProps) {
+  const t = useT();
   const stockChartData = [
-    { name: "Available", value: insights.stockBreakdown.available },
-    { name: "Reserved", value: insights.stockBreakdown.reserved },
+    { name: t("Available"), value: insights.stockBreakdown.available },
+    { name: t("Reserved"), value: insights.stockBreakdown.reserved },
   ].filter((row) => row.value > 0);
 
   const categoryChartData = insights.categoryMix.map((row) => ({
@@ -91,16 +93,16 @@ export function WarehouseInsightsSection({
             <Boxes className="h-4 w-4 text-gray-700 dark:text-white" />
           </div>
           <div>
-            <h3 className={TYPO_CARD_TITLE}>Warehouse Insights</h3>
+            <h3 className={TYPO_CARD_TITLE}>{t("Warehouse Insights")}</h3>
             <p className={TYPO_SUBTITLE}>
-              Stock allocation signals for this warehouse
+              {t("Stock allocation signals for this warehouse")}
             </p>
           </div>
         </div>
         <div className="space-y-2 mt-4">
           <DetailInfoRow
             icon={Package}
-            label="SKUs in warehouse:"
+            label={t("SKUs in warehouse:")}
             tone="sky"
             loading={dataLoading}
           >
@@ -108,7 +110,7 @@ export function WarehouseInsightsSection({
           </DetailInfoRow>
           <DetailInfoRow
             icon={TrendingUp}
-            label="Total units:"
+            label={t("Total units:")}
             tone="violet"
             loading={dataLoading}
           >
@@ -116,7 +118,7 @@ export function WarehouseInsightsSection({
           </DetailInfoRow>
           <DetailInfoRow
             icon={Boxes}
-            label="Available units:"
+            label={t("Available units:")}
             tone="emerald"
             loading={dataLoading}
           >
@@ -124,7 +126,7 @@ export function WarehouseInsightsSection({
           </DetailInfoRow>
           <DetailInfoRow
             icon={AlertTriangle}
-            label="Low-stock SKUs:"
+            label={t("Low-stock SKUs:")}
             tone="amber"
             loading={dataLoading}
           >
@@ -134,8 +136,8 @@ export function WarehouseInsightsSection({
       </GlassCard>
 
       <ChartCard
-        title="Stock Allocation"
-        description="Available vs reserved units"
+        title={t("Stock Allocation")}
+        description={t("Available vs reserved units")}
         icon={PieChartIcon}
         variant="amber"
       >
@@ -174,8 +176,8 @@ export function WarehouseInsightsSection({
 
       {categoryChartData.length > 0 && (
         <ChartCard
-          title="Category Mix"
-          description="SKU count by product category"
+          title={t("Category Mix")}
+          description={t("SKU count by product category")}
           icon={BarChart3}
           variant="sky"
           className="lg:col-span-2"
@@ -214,7 +216,7 @@ export function WarehouseInsightsSection({
                 <Bar
                   dataKey="count"
                   fill="hsl(var(--chart-2))"
-                  name="SKUs"
+                  name={t("SKUs")}
                   radius={[4, 4, 0, 0]}
                   label={createChartBarLabelRenderer(formatChartCountLabel)}
                 />

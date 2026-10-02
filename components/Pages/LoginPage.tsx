@@ -28,12 +28,14 @@ import {
   AUTH_FORM_STAGGER_BASE,
 } from "@/components/auth/auth-animation";
 import { Loader2, Zap } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Login page client component (uses useSearchParams for OAuth/redirect).
  * REQ-0030 — shared AuthPageShell, role Select icons, stagger animations.
  */
 export default function LoginPage() {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("");
@@ -61,44 +63,56 @@ export default function LoginPage() {
   useEffect(() => {
     const error = searchParams.get("error");
     if (error) {
-      let errorMessage = "An error occurred during Google sign-in.";
+      let errorMessage = t("An error occurred during Google sign-in.");
 
       switch (error) {
         case "oauth_not_configured":
-          errorMessage =
-            "Google OAuth is not configured. Please contact support.";
+          errorMessage = t(
+            "Google OAuth is not configured. Please contact support.",
+          );
           break;
         case "oauth_failed":
-          errorMessage =
-            "Google sign-in was cancelled or failed. Please try again.";
+          errorMessage = t(
+            "Google sign-in was cancelled or failed. Please try again.",
+          );
           break;
         case "invalid_state":
-          errorMessage = "Invalid OAuth state. Please try again.";
+          errorMessage = t("Invalid OAuth state. Please try again.");
           break;
         case "no_code":
-          errorMessage = "OAuth authorization code missing. Please try again.";
+          errorMessage = t(
+            "OAuth authorization code missing. Please try again.",
+          );
           break;
         case "token_exchange_failed":
-          errorMessage = "Failed to exchange OAuth token. Please try again.";
+          errorMessage = t(
+            "Failed to exchange OAuth token. Please try again.",
+          );
           break;
         case "fetch_user_failed":
-          errorMessage =
-            "Failed to fetch user information from Google. Please try again.";
+          errorMessage = t(
+            "Failed to fetch user information from Google. Please try again.",
+          );
           break;
         case "no_email":
-          errorMessage = "Google account email is required. Please try again.";
+          errorMessage = t(
+            "Google account email is required. Please try again.",
+          );
           break;
         case "oauth_processing_failed":
         case "oauth_error":
-          errorMessage =
-            "An error occurred during OAuth processing. Please try again.";
+          errorMessage = t(
+            "An error occurred during OAuth processing. Please try again.",
+          );
           break;
         default:
-          errorMessage = `OAuth error: ${error}. Please try again.`;
+          errorMessage = t("OAuth error: {error}. Please try again.", {
+            error,
+          });
       }
 
       toast({
-        title: "Google Sign-In Failed",
+        title: t("Google Sign-In Failed"),
         description: errorMessage,
         variant: "destructive",
       });
@@ -132,8 +146,8 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Error initiating Google OAuth:", error);
       toast({
-        title: "OAuth Error",
-        description: "Failed to initiate Google sign-in. Please try again.",
+        title: t("OAuth Error"),
+        description: t("Failed to initiate Google sign-in. Please try again."),
         variant: "destructive",
       });
     }
@@ -168,9 +182,9 @@ export default function LoginPage() {
       };
       const serverMessage = axiosErr?.response?.data?.error;
       toast({
-        title: "Login Failed",
+        title: t("Login Failed"),
         description:
-          serverMessage || "Invalid email or password. Please try again.",
+          serverMessage || t("Invalid email or password. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -193,17 +207,17 @@ export default function LoginPage() {
       <AuthFormCard variant="login" className="w-full">
         <AuthAnimatedBlock delayMs={formRowDelay(0)} className="space-y-2 mb-6">
           <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white text-center">
-            Welcome Back
+            {t("Welcome Back")}
           </h2>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-white/80 text-center">
-            Sign in to your account to continue
+            {t("Sign in to your account to continue")}
           </p>
         </AuthAnimatedBlock>
 
         <form onSubmit={handleSubmit} className="space-y-4 mb-6">
           <AuthAnimatedBlock delayMs={formRowDelay(1)} className="space-y-2">
             <label className="text-sm font-medium text-gray-700 dark:text-white/80">
-              Test Accounts To Login With
+              {t("Test Accounts To Login With")}
             </label>
             <LoginRoleSelect
               selectedRole={selectedRole}
@@ -217,7 +231,7 @@ export default function LoginPage() {
               htmlFor="email"
               className="text-sm font-medium text-gray-700 dark:text-white/80"
             >
-              Email
+              {t("Email")}
             </label>
             <Input
               id="email"
@@ -236,14 +250,14 @@ export default function LoginPage() {
               htmlFor="password"
               className="text-sm font-medium text-gray-700 dark:text-white/80"
             >
-              Password
+              {t("Password")}
             </label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder={t("Enter your password")}
               required
               disabled={formDisabled}
               className={cn("w-full", AUTH_FORM_FIELD_SKY)}
@@ -263,17 +277,17 @@ export default function LoginPage() {
               {isNavigatingToHome ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading Dashboard…
+                  {t("Loading Dashboard…")}
                 </>
               ) : isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing In…
+                  {t("Signing In…")}
                 </>
               ) : (
                 <>
                   <Zap className="mr-2 h-4 w-4" />
-                  Sign In
+                  {t("Sign In")}
                 </>
               )}
             </Button>
@@ -286,7 +300,7 @@ export default function LoginPage() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-transparent px-2 text-gray-600 dark:text-white/80">
-              Or continue with
+              {t("Or continue with")}
             </span>
           </div>
         </AuthAnimatedBlock>
@@ -321,7 +335,7 @@ export default function LoginPage() {
                 fill="#EA4335"
               />
             </svg>
-            Continue with Google
+            {t("Continue with Google")}
           </Button>
         </AuthAnimatedBlock>
 
@@ -330,12 +344,12 @@ export default function LoginPage() {
           className="text-center text-sm"
         >
           <p className="text-gray-600 dark:text-white/80">
-            Don&apos;t have an account?{" "}
+            {t("Don't have an account?")}{" "}
             <Link
               href="/register"
               className="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors font-medium"
             >
-              Sign up
+              {t("Sign up")}
             </Link>
           </p>
         </AuthAnimatedBlock>
@@ -346,7 +360,7 @@ export default function LoginPage() {
   return (
     <AuthPageShell
       illustrationSrc="/stock_inventory.svg"
-      illustrationAlt="Stock Inventory Illustration"
+      illustrationAlt={t("Stock Inventory Illustration")}
       left={leftPanel}
       right={rightPanel}
     />

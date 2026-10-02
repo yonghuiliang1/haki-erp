@@ -53,6 +53,7 @@ import {
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { useFinanceReport, useSalesPerformance, useUpdateSalesPerformance } from "@/hooks/queries";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import type {
   FinanceReport,
@@ -89,6 +90,7 @@ export default function AdminFinanceContent({
   initialReport,
   initialPerformance,
 }: AdminFinanceContentProps) {
+  const t = useT();
   const reportQuery = useFinanceReport(initialReport);
   const report = reportQuery.data ?? initialReport;
   const performanceQuery = useSalesPerformance(initialPerformance);
@@ -114,41 +116,43 @@ export default function AdminFinanceContent({
           as="h2"
           icon={BarChart3}
           tone="teal"
-          title="Finance & Performance"
-          description="Monthly sales, purchase cost and profit; rankings; salesperson performance."
+          title={t("Finance & Performance")}
+          description={t(
+            "Monthly sales, purchase cost and profit; rankings; salesperson performance.",
+          )}
         />
 
         {/* KPI cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch">
           <StatisticsCard
             compact
-            title="Total Sales"
+            title={t("Total Sales")}
             value={formatStableCurrency(report.totals.sales)}
-            description="Approved orders and beyond"
+            description={t("Approved orders and beyond")}
             icon={DollarSign}
             variant="sky"
           />
           <StatisticsCard
             compact
-            title="Purchase Cost"
+            title={t("Purchase Cost")}
             value={formatStableCurrency(report.totals.purchaseCost)}
-            description="Received purchase orders"
+            description={t("Received purchase orders")}
             icon={Wallet}
             variant="amber"
           />
           <StatisticsCard
             compact
-            title="Gross Profit"
+            title={t("Gross Profit")}
             value={formatStableCurrency(report.totals.profit)}
-            description="Sales minus purchase cost"
+            description={t("Sales minus purchase cost")}
             icon={LineChart}
             variant="emerald"
           />
           <StatisticsCard
             compact
-            title="Profit Margin"
+            title={t("Profit Margin")}
             value={`${margin.toFixed(1)}%`}
-            description="Profit / sales"
+            description={t("Profit / sales")}
             icon={Percent}
             variant="violet"
           />
@@ -159,10 +163,10 @@ export default function AdminFinanceContent({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Month</TableHead>
-                <TableHead className="text-right">Sales</TableHead>
-                <TableHead className="text-right">Purchase Cost</TableHead>
-                <TableHead className="text-right">Profit</TableHead>
+                <TableHead>{t("Month")}</TableHead>
+                <TableHead className="text-right">{t("Sales")}</TableHead>
+                <TableHead className="text-right">{t("Purchase Cost")}</TableHead>
+                <TableHead className="text-right">{t("Profit")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -195,7 +199,7 @@ export default function AdminFinanceContent({
                     colSpan={4}
                     className="text-center text-muted-foreground py-8"
                   >
-                    No financial data yet.
+                    {t("No financial data yet.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -209,16 +213,16 @@ export default function AdminFinanceContent({
             <div className="flex items-center gap-2 px-4 pt-4 pb-2">
               <Trophy className="h-4 w-4 text-amber-500" />
               <h3 className="text-sm font-medium text-gray-700 dark:text-white">
-                Top Customers
+                {t("Top Customers")}
               </h3>
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead className="text-right">Orders</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
+                  <TableHead>{t("Customer")}</TableHead>
+                  <TableHead>{t("Country")}</TableHead>
+                  <TableHead className="text-right">{t("Orders")}</TableHead>
+                  <TableHead className="text-right">{t("Revenue")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -246,15 +250,15 @@ export default function AdminFinanceContent({
             <div className="flex items-center gap-2 px-4 pt-4 pb-2">
               <ShoppingBag className="h-4 w-4 text-sky-500" />
               <h3 className="text-sm font-medium text-gray-700 dark:text-white">
-                Top Products
+                {t("Top Products")}
               </h3>
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead className="text-right">Sold</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
+                  <TableHead>{t("Product")}</TableHead>
+                  <TableHead className="text-right">{t("Sold")}</TableHead>
+                  <TableHead className="text-right">{t("Revenue")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -285,7 +289,7 @@ export default function AdminFinanceContent({
         <div className="flex items-center gap-2 pt-2">
           <Users className="h-4 w-4 text-violet-500" />
           <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-            Sales Performance
+            {t("Sales Performance")}
           </h3>
         </div>
 
@@ -293,13 +297,13 @@ export default function AdminFinanceContent({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Salesperson</TableHead>
+                <TableHead>{t("Salesperson")}</TableHead>
                 {performance.months.map((month) => (
                   <TableHead key={month} className="text-right">
                     {month}
                   </TableHead>
                 ))}
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right">{t("Total")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -308,8 +312,8 @@ export default function AdminFinanceContent({
                   <TableCell className="text-sm text-gray-700 dark:text-white">
                     {row.salesName}
                     <span className="block text-[10px] text-gray-500 dark:text-gray-400">
-                      {row.entryCount} order
-                      {row.entryCount === 1 ? "" : "s"}
+                      {row.entryCount}{" "}
+                      {t(row.entryCount === 1 ? "order" : "orders")}
                     </span>
                   </TableCell>
                   {performance.months.map((month) => (
@@ -333,7 +337,7 @@ export default function AdminFinanceContent({
                     colSpan={performance.months.length + 2}
                     className="text-center text-muted-foreground py-8"
                   >
-                    No performance entries yet.
+                    {t("No performance entries yet.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -346,12 +350,12 @@ export default function AdminFinanceContent({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Order</TableHead>
-                <TableHead>Salesperson</TableHead>
-                <TableHead>Attribution</TableHead>
-                <TableHead>Note</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Adjust</TableHead>
+                <TableHead>{t("Order")}</TableHead>
+                <TableHead>{t("Salesperson")}</TableHead>
+                <TableHead>{t("Attribution")}</TableHead>
+                <TableHead>{t("Note")}</TableHead>
+                <TableHead className="text-right">{t("Amount")}</TableHead>
+                <TableHead className="text-right">{t("Adjust")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -380,7 +384,7 @@ export default function AdminFinanceContent({
                       className="h-8 rounded-lg border border-violet-400/30 bg-violet-500/10 px-2.5 text-xs text-violet-600 dark:text-violet-300 hover:bg-violet-500/20"
                     >
                       <ArrowRightLeft className="h-3.5 w-3.5" />
-                      Move
+                      {t("Move")}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -414,6 +418,7 @@ function PerformanceAdjustDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useT();
   const updateMutation = useUpdateSalesPerformance();
   const [year, setYear] = useState(entry.year);
   const [month, setMonth] = useState(entry.month);
@@ -435,12 +440,12 @@ function PerformanceAdjustDialog({
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Move Performance Entry</DialogTitle>
+          <DialogTitle>{t("Move Performance Entry")}</DialogTitle>
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-white/80">Year</label>
+            <label className="text-sm text-white/80">{t("Year")}</label>
             <Select
               value={String(year)}
               onValueChange={(value) => setYear(Number(value))}
@@ -467,7 +472,7 @@ function PerformanceAdjustDialog({
             </Select>
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-white/80">Month</label>
+            <label className="text-sm text-white/80">{t("Month")}</label>
             <DeferredSelectGate
               enabled={open}
               placeholder={
@@ -517,12 +522,12 @@ function PerformanceAdjustDialog({
 
         <div className="flex flex-col gap-2">
           <label className="text-sm text-white/80">
-            Reason (kept on the entry)
+            {t("Reason (kept on the entry)")}
           </label>
           <Input
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="e.g. shipment landed next month"
+            placeholder={t("e.g. shipment landed next month")}
             className={cn("h-11", DIALOG_FORM_FIELD_VIOLET)}
           />
         </div>
@@ -533,10 +538,10 @@ function PerformanceAdjustDialog({
             onClick={() => onOpenChange(false)}
             disabled={updateMutation.isPending}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={updateMutation.isPending}>
-            {updateMutation.isPending ? "Saving…" : "Save"}
+            {updateMutation.isPending ? t("Saving…") : t("Save")}
           </Button>
         </DialogFooter>
       </DialogContent>

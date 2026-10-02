@@ -19,6 +19,7 @@ import { TableBodyPulseRows } from "@/components/ui/table-data-skeleton";
 import { DenseCatalogProductCell } from "@/components/shared/DenseCatalogProductCell";
 import { ForecastUrgencyBadge } from "@/lib/ui/semantic-badges";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import type { CategoryForecastUrgentRow } from "@/types/category";
 
 export type UrgentReorderForecastTableProps = {
@@ -54,6 +55,7 @@ export function UrgentReorderForecastTable({
   supplierHref: supplierHrefProp,
   className,
 }: UrgentReorderForecastTableProps) {
+  const t = useT();
   const defaults = defaultCatalogHrefs(productHref);
   const categoryHref = categoryHrefProp ?? defaults.categoryHref;
   const supplierHref = supplierHrefProp ?? defaults.supplierHref;
@@ -68,7 +70,7 @@ export function UrgentReorderForecastTable({
         as="h3"
         icon={AlertTriangle}
         iconClassName="text-rose-600 dark:text-rose-400"
-        title="Urgent Reorder Forecast"
+        title={t("Urgent Reorder Forecast")}
         count={!loading ? rows?.length : undefined}
       />
       {/* No overflow wrapper — badge glow must not clip (REQ-0223); page scrolls if needed */}
@@ -76,10 +78,10 @@ export function UrgentReorderForecastTable({
         <table className="w-full caption-bottom text-xs">
           <TableHeader>
             <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Available</TableHead>
-              <TableHead>Days left</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("Product")}</TableHead>
+              <TableHead>{t("Available")}</TableHead>
+              <TableHead>{t("Days left")}</TableHead>
+              <TableHead>{t("Status")}</TableHead>
             </TableRow>
           </TableHeader>
           {loading ? (

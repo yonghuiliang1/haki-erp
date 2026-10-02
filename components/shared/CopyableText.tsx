@@ -16,6 +16,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export interface CopyableTextProps {
   /** Raw text written to the clipboard */
@@ -38,6 +39,7 @@ export function CopyableText({
   ariaLabel,
 }: CopyableTextProps) {
   const [copied, setCopied] = useState(false);
+  const t = useT();
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clear pending timer on unmount so setCopied never fires on a dead component
@@ -67,7 +69,7 @@ export function CopyableText({
       <button
         type="button"
         onClick={handleCopy}
-        aria-label={ariaLabel ?? `Copy ${value}`}
+        aria-label={ariaLabel ?? t("Copy {value}", { value })}
         className={cn(
           "shrink-0 rounded p-0.5 transition-colors",
           "text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200",

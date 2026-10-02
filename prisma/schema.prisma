@@ -250,6 +250,8 @@ model User {
   // Role for access control. Internal staff: admin, sales, finance, warehouse, purchase.
   // External portals: supplier, client. Null is treated as "user" (legacy default).
   role             String? // admin | sales | finance | warehouse | purchase | supplier | client | user
+  // UI language preference: zh | en. Null falls back to the cookie / default locale.
+  locale           String?
   // Email notification preferences
   emailPreferences Json? // Email notification preferences stored as JSON
   // Structure: {

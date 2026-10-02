@@ -40,6 +40,7 @@ import {
   DIALOG_SELECT_ITEM_CLASS,
 } from "@/components/shared";
 import { Plus, Eye, EyeOff, UserPlus } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import { useCreateUser } from "@/hooks/queries";
 import {
@@ -88,6 +89,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default function CreateUserDialog() {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const createUserMutation = useCreateUser();
@@ -144,7 +146,7 @@ export default function CreateUserDialog() {
           )}
         >
           <Plus className="h-4 w-4" />
-          Create User
+          {t("Create User")}
         </Button>
       </DialogTrigger>
       <DialogContent className="p-2 sm:p-4 sm:px-8 poppins max-h-[90vh] overflow-y-auto border-blue-400/30 dark:border-blue-400/30 shadow-[0_30px_80px_rgba(59,130,246,0.35)] dark:shadow-[0_30px_80px_rgba(59,130,246,0.25)]">
@@ -153,10 +155,10 @@ export default function CreateUserDialog() {
             <div className="p-2 rounded-xl border border-blue-300/30 bg-blue-100/50 dark:border-blue-400/30 dark:bg-blue-500/20">
               <UserPlus className="h-5 w-5 text-sky-600 dark:text-sky-400" />
             </div>
-            Create New User
+            {t("Create New User")}
           </DialogTitle>
           <DialogDescription className="text-white/70">
-            Add a new user to the system with their details and role.
+            {t("Add a new user to the system with their details and role.")}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
@@ -166,7 +168,7 @@ export default function CreateUserDialog() {
                 htmlFor="name"
                 className="text-sm font-medium text-white/80"
               >
-                Full Name *
+                {t("Full Name *")}
               </Label>
               <Input
                 id="name"
@@ -185,7 +187,7 @@ export default function CreateUserDialog() {
                 htmlFor="username"
                 className="text-sm font-medium text-white/80"
               >
-                Username
+                {t("Username")}
               </Label>
               <Input
                 id="username"
@@ -207,7 +209,7 @@ export default function CreateUserDialog() {
               htmlFor="email"
               className="text-sm font-medium text-white/80"
             >
-              Email Address *
+              {t("Email Address *")}
             </Label>
             <Input
               id="email"
@@ -227,7 +229,7 @@ export default function CreateUserDialog() {
               htmlFor="password"
               className="text-sm font-medium text-white/80"
             >
-              Password *
+              {t("Password *")}
             </Label>
             <div className="relative">
               <Input
@@ -259,7 +261,7 @@ export default function CreateUserDialog() {
 
           <div className="space-y-2">
             <Label htmlFor="role" className="text-sm font-medium text-white/80">
-              User Role
+              {t("User Role")}
             </Label>
             <DeferredSelectGate
               enabled={open}
@@ -271,8 +273,10 @@ export default function CreateUserDialog() {
                   )}
                   aria-hidden
                 >
-                  {ROLE_OPTIONS.find((o) => o.value === selectedRole)?.label ??
-                    "Select role"}
+                  {t(
+                    ROLE_OPTIONS.find((o) => o.value === selectedRole)?.label ??
+                      "Select role",
+                  )}
                 </div>
               }
             >
@@ -287,7 +291,7 @@ export default function CreateUserDialog() {
                   <SelectTrigger
                     className={cn("h-11 w-full", DIALOG_FORM_FIELD_BLUE)}
                   >
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder={t("Select role")} />
                   </SelectTrigger>
                   <SelectContent
                     className={cn(
@@ -304,7 +308,7 @@ export default function CreateUserDialog() {
                         value={opt.value}
                         className={cn(DIALOG_SELECT_ITEM_CLASS, opt.color)}
                       >
-                        {opt.label}
+                        {t(opt.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -324,14 +328,14 @@ export default function CreateUserDialog() {
                 className={cn("w-full sm:w-auto px-8", GLASS_GHOST_BUTTON)}
                 disabled={isPending}
               >
-                Cancel
+                {t("Cancel")}
               </Button>
             </DialogClose>
             <DialogSubmitButton
               type="submit"
               isPending={isPending}
-              pendingLabel="Creating…"
-              label="Create User"
+              pendingLabel={t("Creating…")}
+              label={t("Create User")}
               hue="blue"
             />
           </DialogFooter>

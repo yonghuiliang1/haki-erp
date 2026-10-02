@@ -23,6 +23,7 @@ import {
   type GlassBadgeHue,
 } from "@/lib/ui/glass-badge-styles";
 import { TYPO_CARD_TITLE, TYPO_SUBTITLE } from "@/lib/ui/typography-scale";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface Order {
   status: string;
@@ -107,6 +108,7 @@ export function CarrierGlassBadge({
   carrier?: string | null;
   className?: string;
 }) {
+  const t = useT();
   const meta = getCarrierBadgeMeta(carrier);
   return (
     <span
@@ -116,7 +118,7 @@ export function CarrierGlassBadge({
         className,
       )}
     >
-      {meta.name}
+      {t(meta.name)}
     </span>
   );
 }
@@ -125,6 +127,7 @@ export default function OrderTrackingInfo({
   order,
   className,
 }: OrderTrackingInfoProps) {
+  const t = useT();
   const isCancelledOrRefunded =
     order.status === "cancelled" || order.paymentStatus === "refunded";
 
@@ -172,8 +175,8 @@ export default function OrderTrackingInfo({
               className={cn(TYPO_CARD_TITLE, "text-gray-700 dark:text-white")}
             >
               {order.status === "delivered"
-                ? "Package Delivered"
-                : "Shipping Information"}
+                ? t("Package Delivered")
+                : t("Shipping Information")}
             </h3>
           </div>
           <CarrierGlassBadge carrier={order.trackingCarrier} />
@@ -185,10 +188,14 @@ export default function OrderTrackingInfo({
           )}
         >
           {order.status === "delivered" && order.deliveredAt
-            ? `Delivered on ${formatStableDate(order.deliveredAt)}`
+            ? t("Delivered on {date}", {
+                date: formatStableDate(order.deliveredAt),
+              })
             : order.shippedAt
-              ? `Shipped on ${formatStableDate(order.shippedAt)}`
-              : "Your package is on its way"}
+              ? t("Shipped on {date}", {
+                  date: formatStableDate(order.shippedAt),
+                })
+              : t("Your package is on its way")}
         </p>
       </div>
       <div className="space-y-4 flex-1 flex flex-col justify-end">
@@ -196,7 +203,7 @@ export default function OrderTrackingInfo({
           <Package className="h-5 w-5 text-gray-500 dark:text-white/80 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-600 dark:text-gray-300">
-              Tracking Number
+              {t("Tracking Number")}
             </p>
             <p className="font-mono font-normal text-sm text-gray-700 dark:text-white truncate">
               {order.trackingNumber ? (
@@ -221,7 +228,7 @@ export default function OrderTrackingInfo({
                 className="gap-2 inline-flex items-center justify-center"
               >
                 <MapPin className="h-4 w-4 shrink-0" />
-                Track Package
+                {t("Track Package")}
                 <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </Button>
@@ -238,7 +245,7 @@ export default function OrderTrackingInfo({
                 className="gap-2 inline-flex items-center justify-center"
               >
                 <FileText className="h-4 w-4 shrink-0" />
-                Download Label PDF
+                {t("Download Label PDF")}
                 <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </Button>

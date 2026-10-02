@@ -84,6 +84,7 @@ import {
   APP_SHELL_DETAIL_CLASS,
   DETAIL_PAGE_HEADER_SPACING_CLASS,
 } from "@/lib/ui/shell-layout-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type SupplierDetailPageProps = {
   embedInAdmin?: boolean;
@@ -97,6 +98,7 @@ export default function SupplierDetailPage({
   initialSupplier,
   initialForecasting,
 }: SupplierDetailPageProps = {}) {
+  const t = useT();
   const params = useParams();
   const router = useRouter();
   const { handleBack, navigateTo } = useBackWithRefresh("supplier");
@@ -204,16 +206,16 @@ export default function SupplierDetailPage({
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2">
           <div className="text-center">
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-              Supplier Not Found
+              {t("Supplier Not Found")}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               {supplierQuery.error instanceof Error
                 ? supplierQuery.error.message
-                : "Failed to load supplier details"}
+                : t("Failed to load supplier details")}
             </p>
             <Button onClick={() => router.push("/")} variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t("Back to Home")}
             </Button>
           </div>
         </div>
@@ -293,7 +295,7 @@ export default function SupplierDetailPage({
               ) : (
                 <ClientRelativeTime
                   date={createdAt}
-                  prefix="Created "
+                  prefix={`${t("Created")} `}
                   semantic="created"
                 />
               )
@@ -306,7 +308,7 @@ export default function SupplierDetailPage({
                 <div className="flex shrink-0 flex-col items-end justify-center gap-0.5 self-center">
                   <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-gray-500 dark:text-white/60">
                     <CheckCircle2 className="h-3 w-3 shrink-0" aria-hidden />
-                    Status
+                    {t("Status")}
                   </span>
                   <ActiveInactiveBadge
                     active={Boolean(supplier.status)}
@@ -328,9 +330,9 @@ export default function SupplierDetailPage({
                     <Truck className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
-                    <h3 className={TYPO_CARD_TITLE}>Supplier Information</h3>
+                    <h3 className={TYPO_CARD_TITLE}>{t("Supplier Information")}</h3>
                     <p className={TYPO_SUBTITLE}>
-                      Supplier metadata and audit fields
+                      {t("Supplier metadata and audit fields")}
                     </p>
                   </div>
                 </div>
@@ -338,7 +340,7 @@ export default function SupplierDetailPage({
                   {!dataLoading && supplier && (
                     <DetailInfoRow
                       icon={Hash}
-                      label="Supplier ID:"
+                      label={t("Supplier ID:")}
                       tone="violet"
                     >
                       <CopyableText value={supplier.id}>
@@ -348,7 +350,7 @@ export default function SupplierDetailPage({
                   )}
                   <DetailInfoRow
                     icon={Truck}
-                    label="Name:"
+                    label={t("Name:")}
                     tone="orange"
                     loading={dataLoading}
                   >
@@ -359,28 +361,28 @@ export default function SupplierDetailPage({
                     )}
                   </DetailInfoRow>
                   {!dataLoading && supplier && (
-                    <DetailInfoRow icon={Truck} label="Status:" tone="emerald">
+                    <DetailInfoRow icon={Truck} label={t("Status:")} tone="emerald">
                       <ActiveInactiveBadge active={Boolean(supplier.status)} />
                     </DetailInfoRow>
                   )}
                   {!dataLoading && supplier?.description && (
                     <DetailInfoRow
                       icon={FileText}
-                      label="Description:"
+                      label={t("Description:")}
                       tone="amber"
                     >
                       {supplier.description}
                     </DetailInfoRow>
                   )}
                   {!dataLoading && supplier?.notes && (
-                    <DetailInfoRow icon={StickyNote} label="Notes:" tone="teal">
+                    <DetailInfoRow icon={StickyNote} label={t("Notes:")} tone="teal">
                       {supplier.notes}
                     </DetailInfoRow>
                   )}
                   <DetailInfoRowGroup>
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Created:"
+                      label={t("Created:")}
                       tone="teal"
                       loading={dataLoading && !createdAt}
                     >
@@ -391,7 +393,7 @@ export default function SupplierDetailPage({
                     {(dataLoading || updatedAt) && (
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Updated:"
+                        label={t("Updated:")}
                         tone="sky"
                         loading={dataLoading && !updatedAt}
                       >
@@ -402,7 +404,7 @@ export default function SupplierDetailPage({
                     )}
                   </DetailInfoRowGroup>
                   <AuditUserDetailRow
-                    label="Created by:"
+                    label={t("Created by:")}
                     tone="violet"
                     user={supplier?.creator}
                     loading={dataLoading && !supplier?.creator}
@@ -416,7 +418,7 @@ export default function SupplierDetailPage({
                     }
                   />
                   <AuditUserDetailRow
-                    label="Updated by:"
+                    label={t("Updated by:")}
                     tone="blue"
                     user={supplier?.updater}
                     loading={dataLoading && !supplier?.updater}
@@ -441,16 +443,16 @@ export default function SupplierDetailPage({
                     <BarChart3 className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
-                    <h3 className={TYPO_CARD_TITLE}>Statistics</h3>
+                    <h3 className={TYPO_CARD_TITLE}>{t("Statistics")}</h3>
                     <p className={TYPO_SUBTITLE}>
-                      Summary of products and sales data
+                      {t("Summary of products and sales data")}
                     </p>
                   </div>
                 </div>
                 <div className="space-y-2 mt-4">
                   <DetailInfoRow
                     icon={Package}
-                    label="Total Products:"
+                    label={t("Total Products:")}
                     tone="sky"
                     loading={dataLoading}
                   >
@@ -458,7 +460,7 @@ export default function SupplierDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={Package}
-                    label="Total Quantity Sold:"
+                    label={t("Total Quantity Sold:")}
                     tone="violet"
                     loading={dataLoading}
                   >
@@ -466,7 +468,7 @@ export default function SupplierDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={DollarSign}
-                    label="Total Revenue:"
+                    label={t("Total Revenue:")}
                     tone="emerald"
                     loading={dataLoading}
                   >
@@ -478,7 +480,7 @@ export default function SupplierDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={ShoppingCart}
-                    label="Orders Containing Products:"
+                    label={t("Orders Containing Products:")}
                     tone="amber"
                     loading={dataLoading}
                   >
@@ -486,7 +488,7 @@ export default function SupplierDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={Wallet}
-                    label="Inventory value (list price):"
+                    label={t("Inventory value (list price):")}
                     tone="blue"
                     loading={dataLoading}
                   >
@@ -496,7 +498,7 @@ export default function SupplierDetailPage({
                           {formatStableCurrency(stats.totalValue ?? 0)}
                         </span>
                         <span className={cn("text-xs", TYPO_BODY_MUTED)}>
-                          (price × on-hand qty)
+                          {t("(price × on-hand qty)")}
                         </span>
                       </span>
                     )}
@@ -513,10 +515,10 @@ export default function SupplierDetailPage({
               dataLoading={false}
               isAdminRole={isAdminRole}
               forecastLoading={forecastLoading}
-              title="Supplier Insights"
-              subtitle="Derived demand and inventory signals"
-              salesChartTitle="Sales Trend (6 months)"
-              salesChartDescription="Revenue from supplier order lines"
+              title={t("Supplier Insights")}
+              subtitle={t("Derived demand and inventory signals")}
+              salesChartTitle={t("Sales Trend (6 months)")}
+              salesChartDescription={t("Revenue from supplier order lines")}
               salesChartData={salesChartData}
               stockChartData={stockChartData}
               urgentReorderCount={supplierForecast?.urgentReorderCount}
@@ -549,8 +551,8 @@ export default function SupplierDetailPage({
                 icon={Truck}
                 iconClassName="text-sky-600 dark:text-sky-400"
                 iconTile
-                title="Products from this Supplier"
-                subtitle="Catalog products linked to this supplier"
+                title={t("Products from this Supplier")}
+                subtitle={t("Catalog products linked to this supplier")}
                 count={
                   !dataLoading && products.length > 0
                     ? products.length
@@ -560,7 +562,7 @@ export default function SupplierDetailPage({
               <CatalogDetailProductGrid
                 loading={dataLoading}
                 products={products}
-                emptyMessage="No products from this supplier yet."
+                emptyMessage={t("No products from this supplier yet.")}
                 productHref={productHref}
                 ownerProductsHref={ownerProductsHref}
                 supplierHref={supplierHref}
@@ -577,8 +579,8 @@ export default function SupplierDetailPage({
                 icon={ShoppingCart}
                 iconClassName="text-violet-600 dark:text-violet-400"
                 iconTile
-                title="Recent Orders"
-                subtitle="Latest orders for products from this supplier"
+                title={t("Recent Orders")}
+                subtitle={t("Latest orders for products from this supplier")}
                 count={
                   !dataLoading && recentOrders.length > 0
                     ? recentOrders.length
@@ -588,7 +590,7 @@ export default function SupplierDetailPage({
               <CatalogDetailRecentOrdersList
                 loading={dataLoading}
                 orders={recentOrders}
-                emptyMessage="No recent orders for products from this supplier."
+                emptyMessage={t("No recent orders for products from this supplier.")}
                 orderHref={orderHref}
                 productHref={productHref}
                 ownerProductsHref={ownerProductsHref}
@@ -606,7 +608,7 @@ export default function SupplierDetailPage({
               className={glassDetailBackButtonClass("w-full sm:w-auto gap-2")}
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
-              Back
+              {t("Back")}
             </Button>
             <Button
               onClick={handleEditSupplier}
@@ -614,7 +616,7 @@ export default function SupplierDetailPage({
               className={glassDetailFooterButtonClass("blue")}
             >
               <Edit className="h-4 w-4 shrink-0" />
-              Edit Supplier
+              {t("Edit Supplier")}
             </Button>
             <Button
               onClick={handleDuplicateSupplier}
@@ -622,14 +624,14 @@ export default function SupplierDetailPage({
               className={glassDetailFooterButtonClass("violet")}
             >
               <Copy className="h-4 w-4 shrink-0" />
-              {isCopying ? "Duplicating..." : "Create Duplicate"}
+              {isCopying ? t("Duplicating...") : t("Create Duplicate")}
             </Button>
             <DialogSubmitButton
               type="button"
               onClick={() => setDeleteDialogOpen(true)}
               isPending={isDeleting}
-              pendingLabel="Deleting…"
-              label="Delete Supplier"
+              pendingLabel={t("Deleting…")}
+              label={t("Delete Supplier")}
               icon={Trash2}
               hue="rose"
               disabled={disableCrud || isGlobalDemo}
@@ -641,10 +643,10 @@ export default function SupplierDetailPage({
           <AlertDialogWrapper
             open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
-            title="Are you absolutely sure?"
-            description={`This action cannot be undone. This will permanently delete the supplier "${supplier?.name}".`}
-            actionLabel="Delete"
-            actionLoadingLabel="Deleting..."
+            title={t("Are you absolutely sure?")}
+            description={t("This action cannot be undone. This will permanently delete the supplier \"{name}\".", { name: supplier?.name ?? "" })}
+            actionLabel={t("Delete")}
+            actionLoadingLabel={t("Deleting...")}
             isLoading={isDeleting}
             onAction={handleConfirmDeleteSupplier}
             onCancel={() => setDeleteDialogOpen(false)}

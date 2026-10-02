@@ -33,6 +33,7 @@ import {
   buildOrderLineWarehousePickOptions,
   type OrderLineAllocationRow,
 } from "@/lib/orders/order-line-stock-validation";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderLineWarehouseSelectProps = {
   productId: string;
@@ -97,6 +98,7 @@ export function OrderLineWarehouseSelect({
   allocationRows,
   allocationsLoading,
 }: OrderLineWarehouseSelectProps) {
+  const t = useT();
   const options = useMemo(
     () => buildOrderLineWarehousePickOptions(allocationRows, value),
     [allocationRows, value],
@@ -135,7 +137,7 @@ export function OrderLineWarehouseSelect({
     return (
       <div className="flex flex-col gap-2">
         <DialogFormLabel icon={Warehouse} optional>
-          Warehouse
+          {t("Warehouse")}
         </DialogFormLabel>
         <div
           className={cn(
@@ -143,7 +145,7 @@ export function OrderLineWarehouseSelect({
             "h-11 rounded-md flex items-center px-3 text-sm text-white/50",
           )}
         >
-          Select product first
+          {t("Select product first")}
         </div>
         {feedback}
       </div>
@@ -154,7 +156,7 @@ export function OrderLineWarehouseSelect({
     return (
       <div className="flex flex-col gap-2">
         <DialogFormLabel icon={Warehouse} optional>
-          Warehouse
+          {t("Warehouse")}
         </DialogFormLabel>
         <div
           className={cn(DIALOG_FORM_FIELD_VIOLET, "h-11 rounded-md animate-pulse")}
@@ -168,7 +170,7 @@ export function OrderLineWarehouseSelect({
     return (
       <div className="flex flex-col gap-2">
         <DialogFormLabel icon={Warehouse} optional>
-          Warehouse
+          {t("Warehouse")}
         </DialogFormLabel>
         <div
           className={cn(
@@ -176,7 +178,7 @@ export function OrderLineWarehouseSelect({
             "h-11 rounded-md flex items-center px-3 text-sm text-white/50",
           )}
         >
-          Not warehouse-tracked
+          {t("Not warehouse-tracked")}
         </div>
         {feedback}
       </div>
@@ -192,13 +194,13 @@ export function OrderLineWarehouseSelect({
       className="flex-1"
     />
   ) : (
-    <span className="text-sm text-white/80">Auto-assign warehouses</span>
+    <span className="text-sm text-white/80">{t("Auto-assign warehouses")}</span>
   );
 
   return (
     <div className="flex flex-col gap-2">
       <DialogFormLabel icon={Warehouse} optional>
-        Warehouse
+        {t("Warehouse")}
       </DialogFormLabel>
       <DeferredSelectGate
         enabled={dialogOpen}
@@ -227,7 +229,7 @@ export function OrderLineWarehouseSelect({
                 "h-auto min-h-11 gap-2 py-2 text-sm",
               )}
             >
-              <SelectValue placeholder="Auto-assign warehouses">
+              <SelectValue placeholder={t("Auto-assign warehouses")}>
                 {isManualPick && selectedOption ? (
                   <DialogWarehouseOptionRow
                     name={selectedOption.name}
@@ -237,7 +239,7 @@ export function OrderLineWarehouseSelect({
                     className="flex-1"
                   />
                 ) : (
-                  "Auto-assign warehouses"
+                  t("Auto-assign warehouses")
                 )}
               </SelectValue>
             </SelectTrigger>
@@ -251,7 +253,7 @@ export function OrderLineWarehouseSelect({
                 value={AUTO_WAREHOUSE_VALUE}
                 className={DIALOG_SELECT_ITEM_CLASS}
               >
-                Auto-assign warehouses
+                {t("Auto-assign warehouses")}
               </SelectItem>
               {options.map((o) => (
                 <SelectItem

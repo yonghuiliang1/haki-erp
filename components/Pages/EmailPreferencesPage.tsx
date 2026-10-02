@@ -25,6 +25,7 @@ import {
   useUpdateEmailPreferences,
 } from "@/hooks/queries";
 import { isDataSlotLoading } from "@/lib/react-query";
+import { useT } from "@/lib/i18n/locale-context";
 import type { EmailPreferences } from "@/types";
 import {
   Mail,
@@ -55,6 +56,7 @@ export default function EmailPreferencesPage({
   embedded,
   initialPreferences,
 }: EmailPreferencesPageProps = {}) {
+  const t = useT();
   const { user } = useAuth();
   const preferencesQuery = useEmailPreferences(initialPreferences);
   const preferences = preferencesQuery.data ?? initialPreferences;
@@ -173,8 +175,10 @@ export default function EmailPreferencesPage({
           as="h1"
           icon={Mail}
           tone="sky"
-          title="Email Preferences"
-          description="Manage your email notification preferences. Choose which types of emails you want to receive."
+          title={t("Email Preferences")}
+          description={t(
+            "Manage your email notification preferences. Choose which types of emails you want to receive.",
+          )}
           className={DETAIL_PAGE_HEADER_SPACING_CLASS}
         />
 
@@ -183,14 +187,18 @@ export default function EmailPreferencesPage({
             <SectionCardHeader
               icon={Mail}
               tone="sky"
-              title="Notification Settings"
-              description="Toggle email notifications on or off. Changes are saved automatically."
+              title={t("Notification Settings")}
+              description={t(
+                "Toggle email notifications on or off. Changes are saved automatically.",
+              )}
               className="mb-4"
               titleTrailing={
                 <HelpTooltip
-                  content="Toggle each type of email on or off. Changes are saved automatically."
+                  content={t(
+                    "Toggle each type of email on or off. Changes are saved automatically.",
+                  )}
                   side="top"
-                  ariaLabel="Notification settings help"
+                  ariaLabel={t("Notification settings help")}
                   className="shrink-0"
                 />
               }
@@ -214,10 +222,10 @@ export default function EmailPreferencesPage({
                           htmlFor={item.key}
                           className="text-xs sm:text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
                         >
-                          {item.label}
+                          {t(item.label)}
                         </Label>
                         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">
-                          {item.description}
+                          {t(item.description)}
                         </p>
                       </div>
                     </div>
@@ -246,7 +254,7 @@ export default function EmailPreferencesPage({
                   className={cn(GLASS_BUTTON_ICON_HOVER, GLASS_GHOST_BUTTON)}
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset to Defaults
+                  {t("Reset to Defaults")}
                 </Button>
                 <Button
                   onClick={handleSaveAll}
@@ -258,7 +266,9 @@ export default function EmailPreferencesPage({
                   )}
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {updateMutation.isPending ? "Saving..." : "Save All Changes"}
+                  {updateMutation.isPending
+                    ? t("Saving...")
+                    : t("Save All Changes")}
                 </Button>
               </div>
             )}
@@ -270,20 +280,23 @@ export default function EmailPreferencesPage({
             <SectionCardHeader
               icon={Info}
               tone="violet"
-              title="About Email Preferences"
+              title={t("About Email Preferences")}
               className="mb-3"
             />
             <div className="space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
               <p>
-                • All preferences are saved automatically when you toggle them.
+                {t(
+                  "• All preferences are saved automatically when you toggle them.",
+                )}
               </p>
-              <p>• You can always change these settings later.</p>
+              <p>{t("• You can always change these settings later.")}</p>
               <p>
-                • Critical system alerts may still be sent regardless of
-                preferences.
+                {t(
+                  "• Critical system alerts may still be sent regardless of preferences.",
+                )}
               </p>
               <p>
-                • Email notifications are sent to:{" "}
+                {t("• Email notifications are sent to: ")}
                 <span className="font-medium text-gray-700 dark:text-white">
                   {user?.email}
                 </span>

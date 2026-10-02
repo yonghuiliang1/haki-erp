@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { PageContentWrapper, PageSectionHeader } from "@/components/shared";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { ProductStockStatusBadge } from "@/lib/ui/semantic-badges";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import type {
   InventoryBoard,
@@ -55,6 +56,7 @@ function stockStateBadgeKey(state: InventoryStockState): string {
 export default function AdminInventoryContent({
   initialBoard,
 }: AdminInventoryContentProps) {
+  const t = useT();
   const { summary, rows } = initialBoard;
   const [filter, setFilter] = useState<StockFilter>("all");
   const [search, setSearch] = useState("");
@@ -80,46 +82,50 @@ export default function AdminInventoryContent({
           as="h2"
           icon={Boxes}
           tone="teal"
-          title="Stock Board"
-          description="On-hand, reserved, and available stock with low-stock alerts."
+          title={t("Stock Board")}
+          description={t(
+            "On-hand, reserved, and available stock with low-stock alerts.",
+          )}
         />
 
         {/* KPI cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch">
           <StatisticsCard
             compact
-            title="On-hand"
+            title={t("On-hand")}
             value={summary.totalQuantity}
-            description={`${summary.totalProducts} products`}
+            description={t("{count} products", {
+              count: summary.totalProducts,
+            })}
             icon={Boxes}
             variant="sky"
           />
           <StatisticsCard
             compact
-            title="Reserved"
+            title={t("Reserved")}
             value={summary.totalReserved}
-            description="Locked by open orders"
+            description={t("Locked by open orders")}
             icon={ShieldCheck}
             variant="amber"
           />
           <StatisticsCard
             compact
-            title="Available"
+            title={t("Available")}
             value={summary.totalAvailable}
-            description="On-hand minus reserved"
+            description={t("On-hand minus reserved")}
             icon={PackageCheck}
             variant="emerald"
           />
           <StatisticsCard
             compact
-            title="Alerts"
+            title={t("Alerts")}
             value={summary.lowStockCount + summary.outOfStockCount}
-            description="Low or out of stock"
+            description={t("Low or out of stock")}
             icon={AlertTriangle}
             variant="rose"
             badges={[
-              { label: "Low", value: summary.lowStockCount },
-              { label: "Out", value: summary.outOfStockCount },
+              { label: t("Low"), value: summary.lowStockCount },
+              { label: t("Out"), value: summary.outOfStockCount },
             ]}
           />
         </div>
@@ -135,7 +141,7 @@ export default function AdminInventoryContent({
                 onClick={() => setFilter(option.value)}
                 className="rounded-full"
               >
-                {option.label}
+                {t(option.label)}
               </Button>
             ))}
           </div>
@@ -144,7 +150,7 @@ export default function AdminInventoryContent({
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search product, SKU, category…"
+              placeholder={t("Search product, SKU, category…")}
               className="pl-9 rounded-xl"
             />
           </div>
@@ -155,13 +161,13 @@ export default function AdminInventoryContent({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">On-hand</TableHead>
-                <TableHead className="text-right">Reserved</TableHead>
-                <TableHead className="text-right">Available</TableHead>
-                <TableHead className="text-right">Reorder Point</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t("Product")}</TableHead>
+                <TableHead>{t("Category")}</TableHead>
+                <TableHead className="text-right">{t("On-hand")}</TableHead>
+                <TableHead className="text-right">{t("Reserved")}</TableHead>
+                <TableHead className="text-right">{t("Available")}</TableHead>
+                <TableHead className="text-right">{t("Reorder Point")}</TableHead>
+                <TableHead>{t("Status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -174,7 +180,7 @@ export default function AdminInventoryContent({
                     colSpan={7}
                     className="text-center text-muted-foreground py-8"
                   >
-                    No products match the current filter.
+                    {t("No products match the current filter.")}
                   </TableCell>
                 </TableRow>
               )}

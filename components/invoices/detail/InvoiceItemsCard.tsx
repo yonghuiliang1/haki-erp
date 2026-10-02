@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { TYPO_CARD_TITLE, TYPO_SUBTITLE } from "@/lib/ui/typography-scale";
 import { GlassCard } from "@/components/orders/detail/order-detail-primitives";
 import type { OrderReviewContext } from "@/lib/server/order-review-context-data";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type InvoiceItemsCardProps = {
   invoice?: Invoice;
@@ -37,6 +38,7 @@ export function InvoiceItemsCard({
   initialReviewContext,
   className,
 }: InvoiceItemsCardProps) {
+  const t = useT();
   const itemCount = invoice?.linkedOrderItems?.length ?? 0;
   const shouldShow =
     dataLoading || (invoice?.linkedOrderItems != null && itemCount > 0);
@@ -50,7 +52,12 @@ export function InvoiceItemsCard({
   ) : (
     <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
       <span>
-        {itemCount} item{itemCount !== 1 ? "s" : ""} on this invoice
+        {t(
+          itemCount !== 1
+            ? "{count} items on this invoice"
+            : "{count} item on this invoice",
+          { count: itemCount },
+        )}
       </span>
       {subtitleDate ? (
         <>
@@ -74,7 +81,7 @@ export function InvoiceItemsCard({
   return (
     <GlassCard variant="sky" className={cn("h-full", className)}>
       <SectionCardHeader
-        title="Order Items"
+        title={t("Order Items")}
         description={description}
         icon={Package}
         tone="sky"
@@ -123,7 +130,7 @@ export function InvoiceItemsCard({
                 | "partial"
                 | "refunded",
             }}
-            emptyMessage="No items on linked order"
+            emptyMessage={t("No items on linked order")}
           />
         )}
       </div>

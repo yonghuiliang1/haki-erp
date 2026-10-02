@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import {
   filterCommandPopoverClass,
@@ -28,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { FilterCommandCheckboxItem } from "@/lib/ui/filter-command-item";
 import { ReviewStatusBadge } from "@/lib/ui/semantic-badges";
 import type { ProductReviewStatus } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 type ReviewStatusOption = {
   value: ProductReviewStatus;
@@ -50,6 +53,7 @@ export function ReviewStatusDropDown({
   setSelectedStatuses,
 }: ReviewStatusDropDownProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useT();
 
   function handleToggle(value: string) {
     setSelectedStatuses((prev) =>
@@ -70,7 +74,7 @@ export function ReviewStatusDropDown({
             className="h-10 rounded-[28px] border border-rose-400/30 dark:border-rose-400/30 bg-gradient-to-r from-rose-500/25 via-rose-500/15 to-rose-500/10 dark:from-rose-500/25 dark:via-rose-500/15 dark:to-rose-500/10 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(225,29,72,0.2)] backdrop-blur-md transition duration-200 hover:border-rose-300/40 hover:from-rose-500/35 hover:via-rose-500/25 hover:to-rose-500/15 dark:hover:border-rose-300/40 dark:hover:from-rose-500/35 dark:hover:via-rose-500/25 dark:hover:to-rose-500/15"
           >
             <Star className="h-4 w-4 mr-1" />
-            Status
+            {t("Status")}
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -84,7 +88,7 @@ export function ReviewStatusDropDown({
         >
           <Command className="p-1 bg-transparent">
             <CommandInput
-              placeholder="Filter by status..."
+              placeholder={t("Filter by status...")}
               className="bg-transparent border-0 focus:ring-0 focus:outline-none text-gray-700 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/40"
             />
             <CommandList>
@@ -99,14 +103,14 @@ export function ReviewStatusDropDown({
                   >
                     <ReviewStatusBadge
                       status={status.value}
-                      label={status.label}
+                      label={t(status.label)}
                     />
                   </FilterCommandCheckboxItem>
                 ))}
               </CommandGroup>
             </CommandList>
             <CommandEmpty className="text-gray-600 dark:text-white/80 text-sm text-center p-5">
-              No status found.
+              {t("No status found.")}
             </CommandEmpty>
             <div className="flex flex-col gap-2 text-[23px]">
               <Separator className="bg-gray-300/50 dark:bg-white/10" />
@@ -115,7 +119,7 @@ export function ReviewStatusDropDown({
                 className="text-[12px] mb-1 text-gray-700 dark:text-white/80 hover:text-gray-700 dark:hover:text-white hover:bg-rose-100 dark:hover:bg-white/10"
                 onClick={clearFilters}
               >
-                Clear Filters
+                {t("Clear Filters")}
               </Button>
             </div>
           </Command>

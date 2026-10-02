@@ -25,6 +25,7 @@ import {
   DIALOG_SELECT_ITEM_CLASS,
 } from "@/components/shared";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** Settlement currencies offered for export orders. */
 export const ORDER_CURRENCIES = ["USD", "EUR", "CNY"] as const;
@@ -54,6 +55,7 @@ function TradeSelectPlaceholder({ label }: { label: string }) {
 export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
   const { control, setValue } = useFormContext();
   const { data: customers = [] } = useCustomers();
+  const t = useT();
 
   const customerId = useWatch({ control, name: "customerId" }) as
     | string
@@ -67,14 +69,14 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
 
   const customerLabel =
     customers.find((customer) => customer.id === customerId)?.name ??
-    "Select Customer";
+    t("Select Customer");
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {/* Customer master record (name · country in options) */}
       <div className="flex flex-col gap-2 sm:col-span-2">
         <label className={cn("text-sm", DIALOG_FORM_SUB_LABEL)}>
-          Customer
+          {t("Customer")}
         </label>
         <DeferredSelectGate
           enabled={dialogOpen}
@@ -91,7 +93,7 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
               <SelectTrigger
                 className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}
               >
-                <SelectValue placeholder="Select Customer" />
+                <SelectValue placeholder={t("Select Customer")} />
               </SelectTrigger>
               <SelectContent
                 className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -116,10 +118,12 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
 
       {/* Settlement currency */}
       <div className="flex flex-col gap-2">
-        <label className={cn("text-sm", DIALOG_FORM_SUB_LABEL)}>Currency</label>
+        <label className={cn("text-sm", DIALOG_FORM_SUB_LABEL)}>{t("Currency")}</label>
         <DeferredSelectGate
           enabled={dialogOpen}
-          placeholder={<TradeSelectPlaceholder label={currency ?? "Select"} />}
+          placeholder={
+            <TradeSelectPlaceholder label={currency ?? t("Select")} />
+          }
         >
           {({ selectRemountKey }) => (
             <Select
@@ -132,7 +136,7 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
               <SelectTrigger
                 className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}
               >
-                <SelectValue placeholder="Select Currency" />
+                <SelectValue placeholder={t("Select Currency")} />
               </SelectTrigger>
               <SelectContent
                 className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -158,7 +162,7 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
       {/* Exchange rate against CNY */}
       <FormNumberField
         name="exchangeRate"
-        label="Exchange Rate (CNY)"
+        label={t("Exchange Rate (CNY)")}
         placeholder="7.05"
         thousandSeparator={false}
         decimalScale={4}
@@ -169,12 +173,12 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
       {/* Incoterms */}
       <div className="flex flex-col gap-2">
         <label className={cn("text-sm", DIALOG_FORM_SUB_LABEL)}>
-          Trade Terms
+          {t("Trade Terms")}
         </label>
         <DeferredSelectGate
           enabled={dialogOpen}
           placeholder={
-            <TradeSelectPlaceholder label={tradeTerms ?? "Select"} />
+            <TradeSelectPlaceholder label={tradeTerms ?? t("Select")} />
           }
         >
           {({ selectRemountKey }) => (
@@ -188,7 +192,7 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
               <SelectTrigger
                 className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}
               >
-                <SelectValue placeholder="Select Trade Terms" />
+                <SelectValue placeholder={t("Select Trade Terms")} />
               </SelectTrigger>
               <SelectContent
                 className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -214,7 +218,7 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
       {/* Customs declaration number */}
       <FormField
         name="customsNo"
-        label="Customs No."
+        label={t("Customs No.")}
         placeholder="HG-202603-1201"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}
@@ -223,14 +227,14 @@ export function OrderTradeFields({ dialogOpen }: OrderTradeFieldsProps) {
       {/* Ports */}
       <FormField
         name="portOfLoading"
-        label="Port of Loading"
+        label={t("Port of Loading")}
         placeholder="Ningbo"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}
       />
       <FormField
         name="portOfDischarge"
-        label="Port of Discharge"
+        label={t("Port of Discharge")}
         placeholder="Los Angeles"
         labelClassName={DIALOG_FORM_SUB_LABEL}
         inputClassName={DIALOG_FORM_FIELD_VIOLET}

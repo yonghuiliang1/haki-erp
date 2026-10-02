@@ -36,6 +36,7 @@ import { useSyncDialogOpenState } from "@/hooks/use-sync-dialog-open-state";
 import { WarehouseTypeBadge } from "@/lib/ui/semantic-badges";
 import { WAREHOUSE_TYPE_OPTIONS } from "@/lib/ui/warehouse-type-styles";
 import { Warehouse } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface WarehouseDialogProps {
   children?: React.ReactNode;
@@ -52,6 +53,7 @@ export default function WarehouseDialog({
   editingWarehouse: externalEditingWarehouse,
   onEditWarehouse,
 }: WarehouseDialogProps = {}) {
+  const t = useT();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -143,43 +145,43 @@ export default function WarehouseDialog({
         <DialogHeaderBrand
           icon={Building2}
           tone="teal"
-          title={editingWarehouse ? "Edit Warehouse" : "Add Warehouse"}
+          title={editingWarehouse ? t("Edit Warehouse") : t("Add Warehouse")}
           description={
             editingWarehouse
-              ? "Update warehouse details below."
-              : "Enter the details for the new warehouse location."
+              ? t("Update warehouse details below.")
+              : t("Enter the details for the new warehouse location.")
           }
         />
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
             <DialogFormLabel htmlFor="warehouse-name" icon={Building2} required>
-              Warehouse Name
+              {t("Warehouse Name")}
             </DialogFormLabel>
             <Input
               id="warehouse-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Main Warehouse, NYC Distribution Center"
+              placeholder={t("e.g. Main Warehouse, NYC Distribution Center")}
               required
               className={cn("h-11", DIALOG_FORM_FIELD_TEAL)}
             />
           </div>
           <div className="space-y-2">
             <DialogFormLabel htmlFor="warehouse-address" icon={MapPin} optional>
-              Address
+              {t("Address")}
             </DialogFormLabel>
             <Textarea
               id="warehouse-address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Full street address, city, state, ZIP code"
+              placeholder={t("Full street address, city, state, ZIP code")}
               rows={3}
               className={cn("resize-none", DIALOG_FORM_FIELD_TEAL)}
             />
           </div>
           <div className="space-y-2">
             <DialogFormLabel htmlFor="warehouse-type" icon={Layers} optional>
-              Warehouse Type
+              {t("Warehouse Type")}
             </DialogFormLabel>
             {/* REQ-0186 — solid trigger / opaque items (ticket Status Select parity) */}
             <DeferredSelectGate
@@ -199,7 +201,7 @@ export default function WarehouseDialog({
                       contrast="solid"
                     />
                   ) : (
-                    <span className="text-white/60">Select type</span>
+                    <span className="text-white/60">{t("Select type")}</span>
                   )}
                 </div>
               }
@@ -215,7 +217,7 @@ export default function WarehouseDialog({
                     id="warehouse-type"
                     className={cn("h-11 w-full", DIALOG_FORM_FIELD_TEAL)}
                   >
-                    <SelectValue placeholder="Select type">
+                    <SelectValue placeholder={t("Select type")}>
                       {type ? (
                         <WarehouseTypeBadge
                           type={type}
@@ -261,12 +263,12 @@ export default function WarehouseDialog({
                 htmlFor="warehouse-status"
                 className="cursor-pointer"
               >
-                Active Status
+                {t("Active Status")}
               </DialogFormLabel>
               <span className="text-xs text-white/50">
                 {status
-                  ? "Warehouse is currently active"
-                  : "Warehouse is inactive"}
+                  ? t("Warehouse is currently active")
+                  : t("Warehouse is inactive")}
               </span>
             </div>
           </div>
@@ -279,16 +281,16 @@ export default function WarehouseDialog({
                 disabled={isSubmitting}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
             </DialogClose>
             <DialogSubmitButton
               isPending={isSubmitting}
               pendingLabel={
-                editingWarehouse ? "Saving…" : "Creating warehouse…"
+                editingWarehouse ? t("Saving…") : t("Creating warehouse…")
               }
               label={
-                editingWarehouse ? "Update Warehouse" : "Create Warehouse"
+                editingWarehouse ? t("Update Warehouse") : t("Create Warehouse")
               }
               icon={Plus}
               hue="teal"

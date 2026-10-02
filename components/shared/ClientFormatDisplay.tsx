@@ -19,6 +19,7 @@ import {
   type SemanticDateKind,
 } from "@/lib/ui/semantic-date-styles";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 type DateInput = Date | string | number;
 
@@ -50,6 +51,7 @@ export function ClientCompactDateTime({
   className,
   semantic,
 }: ClientCompactDateTimeProps) {
+  const t = useT();
   const mounted = useMounted();
   const label = useMemo(() => {
     if (!mounted) return formatStableCompactDateTime(date);
@@ -59,7 +61,7 @@ export function ClientCompactDateTime({
   return (
     <span
       className={cn(semanticDateClass(semantic), className)}
-      title={mounted ? "Local time" : undefined}
+      title={mounted ? t("Local time") : undefined}
     >
       {label}
     </span>

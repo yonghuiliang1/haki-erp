@@ -34,6 +34,7 @@ import {
 } from "@/hooks/queries";
 import { useAuth } from "@/contexts";
 import { AlertDialogWrapper } from "@/components/dialogs";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface InvoiceActionsProps {
   invoice: Invoice;
@@ -53,6 +54,7 @@ export default function InvoiceActions({
   detailHrefBase,
 }: InvoiceActionsProps) {
   const { user } = useAuth();
+  const t = useT();
   const deleteInvoiceMutation = useDeleteInvoice();
   const deleteOrderMutation = useDeleteOrder();
   const sendInvoiceMutation = useSendInvoice();
@@ -119,7 +121,7 @@ export default function InvoiceActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
@@ -137,7 +139,7 @@ export default function InvoiceActions({
               className="flex items-center gap-2"
             >
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </Link>
           </DropdownMenuItem>
           {/* REQ-0210 — cancelled invoices are read-only */}
@@ -148,7 +150,7 @@ export default function InvoiceActions({
               className="flex items-center gap-2"
             >
               <Edit className="h-4 w-4" />
-              Edit Invoice
+              {t("Edit Invoice")}
             </DropdownMenuItem>
           )}
           {invoice.status === "draft" && (
@@ -158,7 +160,7 @@ export default function InvoiceActions({
               className="flex items-center gap-2"
             >
               <Send className="h-4 w-4" />
-              {isSending ? "Sending..." : "Send Invoice"}
+              {isSending ? t("Sending...") : t("Send Invoice")}
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -169,7 +171,7 @@ export default function InvoiceActions({
               className="flex items-center gap-2"
             >
               <ShoppingCart className="h-4 w-4" />
-              View Order
+              {t("View Order")}
             </Link>
           </DropdownMenuItem>
           {!disableInvoiceMutations && invoice.status !== "cancelled" && (
@@ -179,7 +181,7 @@ export default function InvoiceActions({
               disabled={isCancellingOrder}
             >
               <XCircle className="h-4 w-4" />
-              {isCancellingOrder ? "Cancelling..." : "Cancel Order"}
+              {isCancellingOrder ? t("Cancelling...") : t("Cancel Order")}
             </DropdownMenuItem>
           )}
           {invoice.status !== "cancelled" && (
@@ -191,7 +193,7 @@ export default function InvoiceActions({
                 disabled={isDeleting || disableInvoiceMutations}
               >
                 <Trash2 className="h-4 w-4" />
-                {isDeleting ? "Deleting..." : "Delete Invoice"}
+                {isDeleting ? t("Deleting...") : t("Delete Invoice")}
               </DropdownMenuItem>
             </>
           )}
@@ -202,10 +204,13 @@ export default function InvoiceActions({
       <AlertDialogWrapper
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Invoice"
-        description={`Are you sure you want to delete invoice ${invoice.invoiceNumber}? This action cannot be undone.`}
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        title={t("Delete Invoice")}
+        description={t(
+          "Are you sure you want to delete invoice {invoice}? This action cannot be undone.",
+          { invoice: invoice.invoiceNumber },
+        )}
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={isDeleting}
         onAction={handleDeleteInvoice}
         onCancel={() => setDeleteDialogOpen(false)}
@@ -215,10 +220,13 @@ export default function InvoiceActions({
       <AlertDialogWrapper
         open={sendDialogOpen}
         onOpenChange={setSendDialogOpen}
-        title="Send Invoice"
-        description={`Are you sure you want to send invoice ${invoice.invoiceNumber} via email?`}
-        actionLabel="Send"
-        actionLoadingLabel="Sending..."
+        title={t("Send Invoice")}
+        description={t(
+          "Are you sure you want to send invoice {invoice} via email?",
+          { invoice: invoice.invoiceNumber },
+        )}
+        actionLabel={t("Send")}
+        actionLoadingLabel={t("Sending...")}
         isLoading={isSending}
         onAction={handleSendInvoice}
         onCancel={() => setSendDialogOpen(false)}
@@ -229,10 +237,13 @@ export default function InvoiceActions({
       <AlertDialogWrapper
         open={cancelOrderDialogOpen}
         onOpenChange={setCancelOrderDialogOpen}
-        title="Cancel Order"
-        description={`Are you sure you want to cancel the order linked to invoice ${invoice.invoiceNumber}? Stock will be restored and the invoice cancelled. This action cannot be undone.`}
-        actionLabel="Cancel Order"
-        actionLoadingLabel="Cancelling..."
+        title={t("Cancel Order")}
+        description={t(
+          "Are you sure you want to cancel the order linked to invoice {invoice}? Stock will be restored and the invoice cancelled. This action cannot be undone.",
+          { invoice: invoice.invoiceNumber },
+        )}
+        actionLabel={t("Cancel Order")}
+        actionLoadingLabel={t("Cancelling...")}
         isLoading={isCancellingOrder}
         onAction={handleCancelOrder}
         onCancel={() => setCancelOrderDialogOpen(false)}

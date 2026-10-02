@@ -17,6 +17,7 @@ import { useDeferredRadixSelect } from "@/hooks/use-deferred-radix-select";
 import { Dispatch, SetStateAction } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   PAGE_SIZE_OPTIONS,
   PAGINATION_SELECT_VARIANTS,
@@ -49,6 +50,7 @@ export default function PaginationSelector({
   layout = "stacked",
   className,
 }: PaginationSelectorProps) {
+  const t = useT();
   const { showSelect, selectRemountKey } = useDeferredRadixSelect({ enabled });
   const styles = PAGINATION_SELECT_VARIANTS[variant];
 
@@ -101,7 +103,7 @@ export default function PaginationSelector({
   if (layout === "inline") {
     return (
       <div className={cn("flex items-center gap-2", className)}>
-        <div className={labelClass}>Rows per page</div>
+        <div className={labelClass}>{t("Rows per page")}</div>
         {control}
       </div>
     );
@@ -111,7 +113,7 @@ export default function PaginationSelector({
     <div
       className={cn("flex flex-col sm:flex-row items-center gap-2", className)}
     >
-      <div className={labelClass}>Rows per page</div>
+      <div className={labelClass}>{t("Rows per page")}</div>
       {control}
     </div>
   );

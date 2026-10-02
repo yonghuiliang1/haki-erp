@@ -17,6 +17,7 @@ import {
 import { getCustomerDisplay, getCustomerEmail } from "./order-detail-primitives";
 import { enrichPartyPerson } from "@/lib/navigation/enrich-party-person";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderPartiesCardProps = {
   order?: Order;
@@ -31,6 +32,7 @@ export function OrderPartiesCard({
   isAdminRole = false,
 }: OrderPartiesCardProps) {
   const { user } = useAuth();
+  const t = useT();
   const viewerUserId = user?.id;
   const enrichOpts = { isAdminRole, viewerUserId };
 
@@ -78,7 +80,7 @@ export function OrderPartiesCard({
         headerIcon={Package}
         orderedBy={orderedBy}
         customer={customer}
-        customerLabel="Customer / Ship to"
+        customerLabel={t("Customer / Ship to")}
         productOwners={productOwners}
       />
     </GlassCard>

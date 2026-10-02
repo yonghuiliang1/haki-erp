@@ -29,6 +29,7 @@ import {
   APP_SHELL_DETAIL_CLASS,
   DETAIL_PAGE_HEADER_SPACING_CLASS,
 } from "@/lib/ui/shell-layout-styles";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import { useBackWithRefresh } from "@/hooks/use-back-with-refresh";
 import {
@@ -58,6 +59,7 @@ export default function AdminHistoryDetailContent({
   backHref = "/admin/activity-history",
   initialRecord,
 }: AdminHistoryDetailContentProps = {}) {
+  const t = useT();
   const params = useParams();
   const { navigateTo } = useBackWithRefresh("history");
   const id = params?.id as string;
@@ -80,7 +82,7 @@ export default function AdminHistoryDetailContent({
         className={glassDetailBackButtonClass("w-full sm:w-auto gap-2 px-8")}
       >
         <ArrowLeft className="h-4 w-4 shrink-0" />
-        Back
+        {t("Back")}
       </Button>
     </div>
   );
@@ -95,11 +97,11 @@ export default function AdminHistoryDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to History
+            {t("Back to History")}
           </Button>
           <GlassCard variant="rose">
             <p className="py-8 text-center text-gray-600 dark:text-white/80">
-              {error instanceof Error ? error.message : "Record not found"}
+              {error instanceof Error ? error.message : t("Record not found")}
             </p>
           </GlassCard>
           {footerBackRow}
@@ -118,12 +120,13 @@ export default function AdminHistoryDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to History
+            {t("Back to History")}
           </Button>
           <GlassCard variant="rose">
             <p className="py-8 text-center text-gray-600 dark:text-white/80">
-              The import record you are looking for does not exist or was
-              removed.
+              {t(
+              "The import record you are looking for does not exist or was removed.",
+            )}
             </p>
           </GlassCard>
           {footerBackRow}
@@ -153,7 +156,7 @@ export default function AdminHistoryDetailContent({
               <ArrowLeft className="h-5 w-5" />
             </Button>
           }
-          title="Import History Details"
+          title={t("Import History Details")}
           description={
             dataLoading ? (
               <DataSlotPulse variant="text-sm" className="w-48" />
@@ -170,12 +173,12 @@ export default function AdminHistoryDetailContent({
             <SectionCardHeader
               icon={FileText}
               tone="violet"
-              title="Import Information"
+              title={t("Import Information")}
             />
             <div className="space-y-2 mt-4">
               <DetailInfoRow
                 icon={Layers}
-                label="Import Type:"
+                label={t("Import Type:")}
                 tone="violet"
                 loading={dataLoading}
               >
@@ -189,7 +192,7 @@ export default function AdminHistoryDetailContent({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={FileText}
-                label="File Name:"
+                label={t("File Name:")}
                 tone="sky"
                 loading={dataLoading}
               >
@@ -201,7 +204,7 @@ export default function AdminHistoryDetailContent({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={HardDrive}
-                label="File Size:"
+                label={t("File Size:")}
                 tone="blue"
                 loading={dataLoading}
               >
@@ -209,7 +212,7 @@ export default function AdminHistoryDetailContent({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={CheckCircle}
-                label="Status:"
+                label={t("Status:")}
                 tone="emerald"
                 loading={dataLoading}
               >
@@ -219,7 +222,7 @@ export default function AdminHistoryDetailContent({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={Calendar}
-                label="Date:"
+                label={t("Date:")}
                 tone="orange"
                 loading={dataLoading}
               >
@@ -231,7 +234,7 @@ export default function AdminHistoryDetailContent({
                 )}
               </DetailInfoRow>
               {!dataLoading && r!.completedAt && (
-                <DetailInfoRow icon={Calendar} label="Completed:" tone="amber">
+                <DetailInfoRow icon={Calendar} label={t("Completed:")} tone="amber">
                   <ClientDateTime
                     date={new Date(r!.completedAt)}
                     semantic="completed"
@@ -242,11 +245,11 @@ export default function AdminHistoryDetailContent({
           </GlassCard>
 
           <GlassCard variant="teal">
-            <SectionCardHeader icon={Layers} tone="teal" title="Row Summary" />
+            <SectionCardHeader icon={Layers} tone="teal" title={t("Row Summary")} />
             <div className="space-y-2 mt-4">
               <DetailInfoRow
                 icon={Layers}
-                label="Total Rows:"
+                label={t("Total Rows:")}
                 tone="teal"
                 loading={dataLoading}
               >
@@ -254,7 +257,7 @@ export default function AdminHistoryDetailContent({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={CheckCircle}
-                label="Successful:"
+                label={t("Successful:")}
                 tone="emerald"
                 loading={dataLoading}
               >
@@ -266,7 +269,7 @@ export default function AdminHistoryDetailContent({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={XCircle}
-                label="Failed:"
+                label={t("Failed:")}
                 tone="rose"
                 loading={dataLoading}
               >
@@ -285,8 +288,12 @@ export default function AdminHistoryDetailContent({
             <SectionCardHeader
               icon={AlertCircle}
               tone="rose"
-              title={`Error Details (${r.errors!.length} failed row(s))`}
-              description="Row-level errors from the import. Use these to fix the file and re-import."
+              title={t("Error Details ({count} failed row(s))", {
+                count: r.errors!.length,
+              })}
+              description={t(
+                "Row-level errors from the import. Use these to fix the file and re-import.",
+              )}
             />
             <div className="space-y-2 max-h-[400px] overflow-y-auto mt-4">
               {r.errors!.map((err, idx) => (
@@ -295,7 +302,7 @@ export default function AdminHistoryDetailContent({
                   className="rounded-lg border border-destructive/30 bg-destructive/5 dark:bg-destructive/10 p-2 text-sm"
                 >
                   <span className="font-mono font-medium">
-                    Row {err.rowNumber}
+                    {t("Row {row}", { row: err.rowNumber })}
                   </span>
                   {err.field && (
                     <span className="text-gray-500 dark:text-gray-300 mx-2">

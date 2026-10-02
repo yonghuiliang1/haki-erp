@@ -84,6 +84,7 @@ import SupportTicketDialog from "@/components/support-tickets/SupportTicketDialo
 import SupportTicketReplyThread from "@/components/support-tickets/SupportTicketReplyThread";
 import { resolveDetailAuditUserHref } from "@/lib/navigation/audit-user-href";
 import { computeTicketMessageStats } from "@/lib/support-tickets/ticket-message-stats";
+import { useT } from "@/lib/i18n/locale-context";
 import type {
   ProductOwnerOption,
   SupportTicket,
@@ -101,6 +102,7 @@ export default function SupportTicketDetailContent({
   initialReplies,
   productOwners = [],
 }: SupportTicketDetailContentProps) {
+  const tr = useT();
   const { user } = useAuth();
   const [editOpen, setEditOpen] = useState(false);
   const { navigateTo, handleBack } = useBackWithRefresh("support-ticket");
@@ -145,8 +147,14 @@ export default function SupportTicketDetailContent({
   const descPreview = (ticket.description ?? "").trim();
   const deleteDescription =
     descPreview.length > 80
-      ? `This will permanently delete the ticket "${ticket.subject}": ${descPreview.slice(0, 80)}…`
-      : `This will permanently delete the ticket "${ticket.subject}". This action cannot be undone.`;
+      ? tr('This will permanently delete the ticket "{subject}": {preview}', {
+          subject: ticket.subject,
+          preview: `${descPreview.slice(0, 80)}…`,
+        })
+      : tr(
+          'This will permanently delete the ticket "{subject}". This action cannot be undone.',
+          { subject: ticket.subject },
+        );
 
   const handleDelete = () => {
     deleteMutation.mutate(ticket.id, {
@@ -175,7 +183,7 @@ export default function SupportTicketDetailContent({
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             }
-            title="Support Ticket Details"
+            title={tr("Support Ticket Details")}
             description={
               dataLoading ? (
                 <DataSlotPulse variant="text-md" className="w-64" />
@@ -189,8 +197,8 @@ export default function SupportTicketDetailContent({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 items-stretch">
             <GlassCard variant="amber">
 <SectionCardHeader
-                  title="Status"
-                  description="Workflow state — managed by support staff"
+                  title={tr("Status")}
+                  description={tr("Workflow state — managed by support staff")}
                   icon={CircleDot}
                   tone="amber"
                   className="mb-4"
@@ -207,8 +215,8 @@ export default function SupportTicketDetailContent({
 
             <GlassCard variant="rose">
 <SectionCardHeader
-                  title="Priority"
-                  description="Urgency — edit via Edit Ticket"
+                  title={tr("Priority")}
+                  description={tr("Urgency — edit via Edit Ticket")}
                   icon={Flag}
                   tone="rose"
                   className="mb-4"
@@ -229,8 +237,8 @@ export default function SupportTicketDetailContent({
 
             <GlassCard variant="sky">
 <SectionCardHeader
-                  title="Messages"
-                  description="Opening description + thread replies"
+                  title={tr("Messages")}
+                  description={tr("Opening description + thread replies")}
                   icon={MessagesSquare}
                   tone="sky"
                   className="mb-4"
@@ -240,18 +248,18 @@ export default function SupportTicketDetailContent({
                 ) : (
                   <div className="flex flex-col gap-1 text-sm">
                     <span className={DETAIL_DATA_VALUE_CLASS}>
-                      Total{" "}
+                      {tr("Total")}{" "}
                       <span className="text-sky-600 dark:text-sky-300 font-medium">
                         {messageStats.total}
                       </span>
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      From creator{" "}
+                      {tr("From creator")}{" "}
                       <span className="text-sky-600 dark:text-sky-300">
                         {messageStats.fromCreator}
                       </span>
                       {" · "}
-                      From staff{" "}
+                      {tr("From staff")}{" "}
                       <span className="text-emerald-600 dark:text-emerald-300">
                         {messageStats.fromStaff}
                       </span>
@@ -265,8 +273,8 @@ export default function SupportTicketDetailContent({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 items-stretch">
             <GlassCard variant="sky">
 <SectionCardHeader
-                  title="Ticket information"
-                  description="Creator, Send-to, dates, and ticket number"
+                  title={tr("Ticket information")}
+                  description={tr("Creator, Send-to, dates, and ticket number")}
                   icon={Hash}
                   tone="sky"
                   className="mb-4"
@@ -277,7 +285,7 @@ export default function SupportTicketDetailContent({
                   <div className="space-y-2">
                     <DetailInfoRow
                       icon={Hash}
-                      label="Ticket #:"
+                      label={tr("Ticket #:")}
                       tone="sky"
                       valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                     >
@@ -290,7 +298,7 @@ export default function SupportTicketDetailContent({
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={MessageSquare}
-                      label="Subject:"
+                      label={tr("Subject:")}
                       tone="emerald"
                       valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                     >
@@ -300,7 +308,7 @@ export default function SupportTicketDetailContent({
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={User}
-                      label="Creator:"
+                      label={tr("Creator:")}
                       tone="sky"
                       valueClassName="min-w-0"
                     >
@@ -319,7 +327,7 @@ export default function SupportTicketDetailContent({
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={UserRoundPen}
-                      label="Sent to:"
+                      label={tr("Sent to:")}
                       tone="teal"
                       valueClassName="min-w-0"
                     >
@@ -341,14 +349,14 @@ export default function SupportTicketDetailContent({
                         />
                       ) : (
                         <span className="text-sm text-muted-foreground">
-                          — No specific owner —
+                          {tr("— No specific owner —")}
                         </span>
                       )}
                     </DetailInfoRow>
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 [&>*]:flex-1 [&>*]:min-w-0">
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Created:"
+                        label={tr("Created:")}
                         tone="orange"
                         valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                       >
@@ -360,7 +368,7 @@ export default function SupportTicketDetailContent({
                       {t.updatedAt ? (
                         <DetailInfoRow
                           icon={Calendar}
-                          label="Updated:"
+                          label={tr("Updated:")}
                           tone="amber"
                           valueClassName={cn(
                             "text-sm",
@@ -380,8 +388,8 @@ export default function SupportTicketDetailContent({
 
             <GlassCard variant="amber">
 <SectionCardHeader
-                  title="Description"
-                  description="Message submitted with the ticket"
+                  title={tr("Description")}
+                  description={tr("Message submitted with the ticket")}
                   icon={MessageSquare}
                   tone="amber"
                   className="mb-4"
@@ -405,8 +413,10 @@ export default function SupportTicketDetailContent({
           {!dataLoading && hasRelated ? (
             <GlassCard variant="sky">
               <SectionCardHeader
-                title="Related Product"
-                description="Linked product, order, or supplier for quick overview"
+                title={tr("Related Product")}
+                description={tr(
+                  "Linked product, order, or supplier for quick overview",
+                )}
                 icon={Package}
                 tone="sky"
                 className="mb-4"
@@ -435,7 +445,7 @@ export default function SupportTicketDetailContent({
                   {t.orderId ? (
                     <DetailInfoRow
                       icon={Boxes}
-                      label="Order:"
+                      label={tr("Order:")}
                       tone="emerald"
                       valueClassName="min-w-0"
                     >
@@ -464,7 +474,7 @@ export default function SupportTicketDetailContent({
                   {t.supplierId ? (
                     <DetailInfoRow
                       icon={Building2}
-                      label="Supplier:"
+                      label={tr("Supplier:")}
                       tone="amber"
                       valueClassName="min-w-0"
                     >
@@ -505,7 +515,7 @@ export default function SupportTicketDetailContent({
               )}
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
-              Back
+              {tr("Back")}
             </Button>
             {canMutate ? (
               <Button
@@ -518,7 +528,7 @@ export default function SupportTicketDetailContent({
                 )}
               >
                 <Pencil className="h-4 w-4 shrink-0" />
-                Edit Ticket
+                {tr("Edit Ticket")}
               </Button>
             ) : null}
             {canMutate ? (
@@ -527,8 +537,8 @@ export default function SupportTicketDetailContent({
                   <DialogSubmitButton
                     type="button"
                     isPending={isDeleting}
-                    pendingLabel="Deleting…"
-                    label="Delete Ticket"
+                    pendingLabel={tr("Deleting…")}
+                    label={tr("Delete Ticket")}
                     icon={Trash2}
                     hue="rose"
                     disabled={actionsDisabled}
@@ -537,21 +547,21 @@ export default function SupportTicketDetailContent({
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete support ticket?</AlertDialogTitle>
+                    <AlertDialogTitle>{tr("Delete support ticket?")}</AlertDialogTitle>
                     <AlertDialogDescription>
                       {deleteDescription}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel disabled={isDeleting}>
-                      Cancel
+                      {tr("Cancel")}
                     </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDelete}
                       disabled={isDeleting}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      {isDeleting ? "Deleting..." : "Delete"}
+                      {isDeleting ? tr("Deleting...") : tr("Delete")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

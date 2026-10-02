@@ -24,6 +24,7 @@ import { FilterCommandCheckboxItem } from "@/lib/ui/filter-command-item";
 import { Separator } from "@/components/ui/separator";
 import { useCategories } from "@/hooks/queries";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 
 type CategoryDropDownProps = {
   selectedCategory: string[];
@@ -37,6 +38,7 @@ export function CategoryDropDown({
   setSelectedCategory,
   categoriesOverride,
 }: CategoryDropDownProps) {
+  const t = useT();
   const [open, setOpen] = React.useState(false);
   const { data: categories = [] } = useCategories(undefined, {
     enabled: categoriesOverride == null,
@@ -69,7 +71,7 @@ export function CategoryDropDown({
             className="h-10 w-full sm:w-auto rounded-[28px] border border-sky-400/30 dark:border-sky-400/30 bg-gradient-to-r from-sky-500/25 via-sky-500/15 to-sky-500/10 dark:from-sky-500/25 dark:via-sky-500/15 dark:to-sky-500/10 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(2,132,199,0.2)] backdrop-blur-md transition duration-200 hover:border-sky-300/40 hover:from-sky-500/35 hover:via-sky-500/25 hover:to-sky-500/15 dark:hover:border-sky-300/40 dark:hover:from-sky-500/35 dark:hover:via-sky-500/25 dark:hover:to-sky-500/15"
           >
             <FolderTree className="h-4 w-4 mr-1" aria-hidden />
-            Categories
+            {t("Categories")}
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -83,12 +85,12 @@ export function CategoryDropDown({
         >
           <Command className="p-1 bg-transparent">
             <CommandInput
-              placeholder="Category"
+              placeholder={t("Category")}
               className="bg-transparent border-0 focus:ring-0 focus:outline-none text-gray-700 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/40"
             />
             <CommandList>
               <CommandEmpty className="text-gray-600 dark:text-white/80 text-sm text-center p-5">
-                No category found.
+                {t("No category found.")}
               </CommandEmpty>
               <CommandGroup>
                 {userCategories.map((category) => (
@@ -115,7 +117,7 @@ export function CategoryDropDown({
                 variant={"ghost"}
                 className="text-[12px] mb-1 text-gray-700 dark:text-white/80 hover:text-gray-700 dark:hover:text-white hover:bg-sky-100 dark:hover:bg-white/10"
               >
-                Clear Filters
+                {t("Clear Filters")}
               </Button>
             </div>
           </Command>

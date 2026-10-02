@@ -51,6 +51,7 @@ import {
   useSyncSsrQueryData,
 } from "@/lib/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/lib/i18n/locale-context";
 import type { Order } from "@/types";
 import type { OrderReviewContext } from "@/lib/server/order-review-context-data";
 import { cn } from "@/lib/utils";
@@ -107,6 +108,7 @@ export default function AdminOrderDetailContent({
   initialOrder,
   initialReviewContext,
 }: AdminOrderDetailContentProps = {}) {
+  const t = useT();
   const params = useParams();
   const searchParams = useSearchParams();
   const orderId = params?.id as string;
@@ -138,8 +140,8 @@ export default function AdminOrderDetailContent({
   const handleAddTracking = useCallback(() => {
     if (!orderId || !manualTrackingNumber.trim()) {
       toast({
-        title: "Tracking required",
-        description: "Please enter a tracking number.",
+        title: t("Tracking required"),
+        description: t("Please enter a tracking number."),
         variant: "destructive",
       });
       return;
@@ -160,15 +162,15 @@ export default function AdminOrderDetailContent({
           setManualTrackingNumber("");
           setManualCarrier("usps");
           toast({
-            title: "Tracking added",
-            description: "Order status set to shipped.",
+            title: t("Tracking added"),
+            description: t("Order status set to shipped."),
           });
         },
         onError: (err) => {
           toast({
-            title: "Update failed",
+            title: t("Update failed"),
             description:
-              err instanceof Error ? err.message : "Failed to add tracking.",
+              err instanceof Error ? err.message : t("Failed to add tracking."),
             variant: "destructive",
           });
         },
@@ -180,6 +182,7 @@ export default function AdminOrderDetailContent({
     manualCarrier,
     updateOrderMutation,
     toast,
+    t,
   ]);
 
   const handleUpdateOrder = useCallback(() => {
@@ -194,21 +197,21 @@ export default function AdminOrderDetailContent({
       onSuccess: () => {
         setCancelDialogOpen(false);
         toast({
-          title: "Order cancelled",
-          description: "Stock restored and related pages updated.",
+          title: t("Order cancelled"),
+          description: t("Stock restored and related pages updated."),
         });
       },
       onError: (err) => {
         setCancelDialogOpen(false);
         toast({
-          title: "Cancel failed",
+          title: t("Cancel failed"),
           description:
-            err instanceof Error ? err.message : "Failed to cancel order.",
+            err instanceof Error ? err.message : t("Failed to cancel order."),
           variant: "destructive",
         });
       },
     });
-  }, [order, deleteOrderMutation, toast]);
+  }, [order, deleteOrderMutation, toast, t]);
 
   const handleRefund = useCallback(() => {
     if (!orderId) return;
@@ -217,21 +220,22 @@ export default function AdminOrderDetailContent({
       onSuccess: () => {
         setRefundDialogOpen(false);
         toast({
-          title: "Order refunded and cancelled",
-          description:
+          title: t("Order refunded and cancelled"),
+          description: t(
             "Stripe refund issued, stock restored, and all related data updated.",
+          ),
         });
       },
       onError: (err) => {
         toast({
-          title: "Refund failed",
+          title: t("Refund failed"),
           description:
-            err instanceof Error ? err.message : "Failed to process refund.",
+            err instanceof Error ? err.message : t("Failed to process refund."),
           variant: "destructive",
         });
       },
     });
-  }, [orderId, deleteOrderMutation, toast]);
+  }, [orderId, deleteOrderMutation, toast, t]);
 
   if (isError) {
     return (
@@ -243,11 +247,11 @@ export default function AdminOrderDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Orders
+            {t("Back to Orders")}
           </Button>
           <div className="rounded-[20px] border border-gray-200/50 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-md p-4 sm:p-6 text-center">
             <p className="text-muted-foreground">
-              {error instanceof Error ? error.message : "Order not found"}
+              {error instanceof Error ? error.message : t("Order not found")}
             </p>
           </div>
         </div>
@@ -265,11 +269,13 @@ export default function AdminOrderDetailContent({
             className={cn("gap-2", GLASS_GHOST_BUTTON)}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Orders
+            {t("Back to Orders")}
           </Button>
           <div className="rounded-[20px] border border-gray-200/50 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-md p-4 sm:p-6 text-center">
             <p className="text-muted-foreground">
-              The order you are looking for does not exist or was removed.
+              {t(
+              "The order you are looking for does not exist or was removed.",
+            )}
             </p>
           </div>
         </div>
@@ -352,7 +358,7 @@ export default function AdminOrderDetailContent({
                   <FileText className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                  Order Information
+                  {t("Order Information")}
                 </h3>
               </div>
               <div className="space-y-2">
@@ -360,14 +366,14 @@ export default function AdminOrderDetailContent({
                   <>
                     <DetailInfoRow
                       icon={Package}
-                      label="Order Status:"
+                      label={t("Order Status:")}
                       tone="sky"
                     >
                       <OrderStatusBadge status={order.status} />
                     </DetailInfoRow>
                     <DetailInfoRow
                       icon={CreditCard}
-                      label="Payment Status:"
+                      label={t("Payment Status:")}
                       tone="emerald"
                     >
                       <PaymentStatusBadge status={order.paymentStatus} />
@@ -375,7 +381,7 @@ export default function AdminOrderDetailContent({
                     {order.invoiceForOrder && (
                       <DetailInfoRow
                         icon={FileText}
-                        label="Invoice:"
+                        label={t("Invoice:")}
                         tone="violet"
                       >
                         <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
@@ -395,7 +401,7 @@ export default function AdminOrderDetailContent({
                               {Number(order.invoiceForOrder.amountDue).toFixed(
                                 2,
                               )}{" "}
-                              due
+                              {t("due")}
                             </span>
                           )}
                         </span>
@@ -404,11 +410,12 @@ export default function AdminOrderDetailContent({
                     {order.paymentStatus === "partial" && (
                       <DetailInfoRow
                         icon={CreditCard}
-                        label="Payment:"
+                        label={t("Payment:")}
                         tone="amber"
                       >
-                        Partial payment — total{" "}
-                        {formatStableCurrency(order.total)}
+                        {t("Partial payment — total {amount}", {
+                          amount: formatStableCurrency(order.total),
+                        })}
                         {order.invoiceForOrder && (
                           <>
                             {" · "}
@@ -416,7 +423,7 @@ export default function AdminOrderDetailContent({
                               href={`/admin/invoices/${order.invoiceForOrder.id}`}
                               className="text-sky-600 dark:text-sky-400 hover:underline"
                             >
-                              View invoice for payment breakdown
+                              {t("View invoice for payment breakdown")}
                             </Link>
                           </>
                         )}
@@ -427,7 +434,7 @@ export default function AdminOrderDetailContent({
                 <DetailInfoRowGroup>
                   <DetailInfoRow
                     icon={Calendar}
-                    label="Created:"
+                    label={t("Created:")}
                     tone="orange"
                     loading={dataLoading && !createdAt}
                   >
@@ -438,7 +445,7 @@ export default function AdminOrderDetailContent({
                   {(dataLoading || updatedAt) && (
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Updated:"
+                      label={t("Updated:")}
                       tone="amber"
                       loading={dataLoading && !updatedAt}
                     >
@@ -449,7 +456,7 @@ export default function AdminOrderDetailContent({
                   )}
                 </DetailInfoRowGroup>
                 <AuditUserDetailRow
-                  label="Created by:"
+                  label={t("Created by:")}
                   tone="violet"
                   user={order?.creator}
                   loading={dataLoading && !order?.creator}
@@ -460,7 +467,7 @@ export default function AdminOrderDetailContent({
                   }
                 />
                 <AuditUserDetailRow
-                  label="Updated by:"
+                  label={t("Updated by:")}
                   tone="blue"
                   user={order?.updater}
                   loading={dataLoading && !order?.updater}
@@ -471,7 +478,7 @@ export default function AdminOrderDetailContent({
                   }
                 />
                 {!dataLoading && order?.notes && (
-                  <DetailInfoRow icon={FileText} label="Notes:" tone="teal">
+                  <DetailInfoRow icon={FileText} label={t("Notes:")} tone="teal">
                     {order.notes}
                   </DetailInfoRow>
                 )}
@@ -505,7 +512,7 @@ export default function AdminOrderDetailContent({
                       <Truck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                      Shipping & Tracking
+                      {t("Shipping & Tracking")}
                     </h3>
                   </div>
                   {canShipLabel ? (
@@ -520,7 +527,7 @@ export default function AdminOrderDetailContent({
                             )}
                           >
                             <Truck className="h-4 w-4 shrink-0" />
-                            Generate Shipping Label
+                            {t("Generate Shipping Label")}
                           </Button>
                         }
                       />
@@ -533,7 +540,7 @@ export default function AdminOrderDetailContent({
                   {/* overflow-visible — glass CTA glow must not clip */}
                   <div className="border-t border-emerald-200/30 dark:border-emerald-400/20 pt-4 overflow-visible">
                     <h4 className="text-sm font-medium text-gray-700 dark:text-white mb-3">
-                      Or enter tracking manually
+                      {t("Or enter tracking manually")}
                     </h4>
                     <div className="flex flex-col gap-3 overflow-visible">
                       <div className="flex flex-col sm:flex-row gap-2 overflow-visible">
@@ -543,11 +550,11 @@ export default function AdminOrderDetailContent({
                             className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                           >
                             <Hash className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                            Tracking Number
+                            {t("Tracking Number")}
                           </label>
                           <Input
                             id="admin-trackingNumber"
-                            placeholder="Enter tracking number"
+                            placeholder={t("Enter tracking number")}
                             value={manualTrackingNumber}
                             onChange={(e) =>
                               setManualTrackingNumber(e.target.value)
@@ -562,7 +569,7 @@ export default function AdminOrderDetailContent({
                             className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                           >
                             <Truck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                            Carrier
+                            {t("Carrier")}
                           </label>
                           <DeferredSelectGate
                             placeholder={
@@ -571,8 +578,10 @@ export default function AdminOrderDetailContent({
                                 className="h-10 rounded-xl border border-gray-300/30 dark:border-white/10 flex items-center px-2 text-sm text-gray-700 dark:text-white/80"
                                 aria-hidden
                               >
-                                {CARRIERS.find((c) => c.value === manualCarrier)
-                                  ?.label ?? manualCarrier}
+                                {t(
+                                  CARRIERS.find((c) => c.value === manualCarrier)
+                                    ?.label ?? manualCarrier,
+                                )}
                               </div>
                             }
                           >
@@ -588,15 +597,17 @@ export default function AdminOrderDetailContent({
                                   className="rounded-xl border-gray-300/30 dark:border-white/10"
                                 >
                                   <SelectValue>
-                                    {CARRIERS.find(
-                                      (c) => c.value === manualCarrier,
-                                    )?.label ?? manualCarrier}
+                                    {t(
+                                      CARRIERS.find(
+                                        (c) => c.value === manualCarrier,
+                                      )?.label ?? manualCarrier,
+                                    )}
                                   </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
                                   {CARRIERS.map((c) => (
                                     <SelectItem key={c.value} value={c.value}>
-                                      {c.label}
+                                      {t(c.label)}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -621,13 +632,14 @@ export default function AdminOrderDetailContent({
                           ) : (
                             <Pencil className="h-4 w-4" />
                           )}
-                          Add Tracking Number
+                          {t("Add Tracking Number")}
                         </Button>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-300 mt-2">
-                      Manually enter tracking. Order status will be updated to
-                      &quot;shipped&quot;.
+                      {t(
+                        'Manually enter tracking. Order status will be updated to "shipped".',
+                      )}
                     </p>
                   </div>
                 </GlassCard>
@@ -655,10 +667,10 @@ export default function AdminOrderDetailContent({
         <AlertDialogWrapper
           open={cancelDialogOpen}
           onOpenChange={setCancelDialogOpen}
-          title="Cancel Order"
+          title={t("Cancel Order")}
           description={getOrderCancelConfirmDescription(order)}
-          actionLabel="Cancel Order"
-          actionLoadingLabel="Cancelling..."
+          actionLabel={t("Cancel Order")}
+          actionLoadingLabel={t("Cancelling...")}
           isLoading={isCancelling}
           onAction={handleConfirmCancelOrder}
           onCancel={() => setCancelDialogOpen(false)}
@@ -669,10 +681,10 @@ export default function AdminOrderDetailContent({
         <AlertDialogWrapper
           open={refundDialogOpen}
           onOpenChange={setRefundDialogOpen}
-          title="Process Refund"
+          title={t("Process Refund")}
           description={getOrderRefundConfirmDescription(order)}
-          actionLabel="Process Refund"
-          actionLoadingLabel="Processing..."
+          actionLabel={t("Process Refund")}
+          actionLoadingLabel={t("Processing...")}
           isLoading={isRefunding}
           onAction={handleRefund}
           onCancel={() => setRefundDialogOpen(false)}

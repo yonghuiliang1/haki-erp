@@ -20,6 +20,7 @@ import type { OrderReviewContext } from "@/lib/server/order-review-context-data"
 import { orderHasFeeAdjustments } from "@/lib/orders/proportional-line-amount";
 import { DETAIL_DATA_VALUE_CLASS } from "@/lib/ui/typography-scale";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type ProductLineItemsListProps = {
   items: OrderItem[];
@@ -117,8 +118,9 @@ export function ProductLineItemsList({
   relatedOrder = null,
   initialReviewContext,
 }: ProductLineItemsListProps) {
+  const t = useT();
   if (items.length === 0) {
-    return <p className="text-muted-foreground">{emptyMessage}</p>;
+    return <p className="text-muted-foreground">{t(emptyMessage)}</p>;
   }
 
   const invoice = order?.invoiceForOrder;
@@ -180,12 +182,12 @@ export function ProductLineItemsList({
                 key="category"
                 href={categoryHref}
                 icon={Tag}
-                label="Category:"
+                label={t("Category:")}
               >
-                {item.categoryName ?? "View category"}
+                {item.categoryName ?? t("View category")}
               </CatalogLink>
             ) : (
-              <CatalogText key="category" icon={Tag} label="Category:">
+              <CatalogText key="category" icon={Tag} label={t("Category:")}>
                 {item.categoryName ?? "—"}
               </CatalogText>
             ),
@@ -197,17 +199,17 @@ export function ProductLineItemsList({
             item.supplierId ? (
               <span key="supplier" className={META_LABEL}>
                 <Truck className="h-3 w-3 shrink-0 text-gray-500 dark:text-gray-300" />
-                Supplier:{" "}
+                {t("Supplier:")}{" "}
                 <AvatarInlineLink
                   seed={item.supplierId}
-                  label={item.supplierName ?? "View supplier"}
+                  label={item.supplierName ?? t("View supplier")}
                   href={supplierHref}
                   size={18}
                   linkClassName="text-xs"
                 />
               </span>
             ) : (
-              <CatalogText key="supplier" icon={Truck} label="Supplier:">
+              <CatalogText key="supplier" icon={Truck} label={t("Supplier:")}>
                 {item.supplierName ?? "—"}
               </CatalogText>
             ),
@@ -221,12 +223,12 @@ export function ProductLineItemsList({
                 key="warehouse"
                 href={warehouseHref}
                 icon={Warehouse}
-                label="Warehouse:"
+                label={t("Warehouse:")}
               >
                 {item.warehouseName}
               </CatalogLink>
             ) : (
-              <CatalogText key="warehouse" icon={Warehouse} label="Warehouse:">
+              <CatalogText key="warehouse" icon={Warehouse} label={t("Warehouse:")}>
                 {item.warehouseName}
               </CatalogText>
             ),
@@ -315,7 +317,7 @@ export function ProductLineItemsList({
                   )}
                   <span className={cn(META_LABEL, "shrink-0")}>
                     <Hash className="h-3 w-3 shrink-0" />
-                    SKU:{" "}
+                    {t("SKU")}:{" "}
                     {item.sku ? (
                       <CopyableText value={item.sku}>
                         <span
@@ -340,7 +342,7 @@ export function ProductLineItemsList({
                 >
                   <Package className="h-3 w-3 shrink-0" />
                   <span>
-                    Qty:{" "}
+                    {t("Qty")}:{" "}
                     <span className={cn("text-xs", DETAIL_DATA_VALUE_CLASS)}>
                       {item.quantity}
                     </span>
@@ -371,7 +373,7 @@ export function ProductLineItemsList({
                 <div className="mt-2 w-full min-w-0">
                   <ProductReviewsSection
                     productId={item.productId}
-                    productName={item.productName ?? "Product"}
+                    productName={item.productName ?? t("Product")}
                     productSku={item.sku ?? undefined}
                     orderId={order.id}
                     compact

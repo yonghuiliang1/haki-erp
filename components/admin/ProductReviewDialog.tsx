@@ -34,6 +34,7 @@ import {
   productSupplierLabel,
 } from "@/components/products/ProductOptionRow";
 import { getRatingDisplay } from "@/lib/ui/review-rating-display";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import { useCreateProductReview, useProducts } from "@/hooks/queries";
 
@@ -50,6 +51,7 @@ export default function ProductReviewDialog({
   onOpenChange,
   trigger,
 }: ProductReviewDialogProps) {
+  const t = useT();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen! : internalOpen;
@@ -118,8 +120,10 @@ export default function ProductReviewDialog({
         <DialogHeaderBrand
           icon={Star}
           tone="amber"
-          title="Add Product Review"
-          description="Add a review for a product. Select product, rating (1–5), and comment."
+          title={t("Add Product Review")}
+          description={t(
+            "Add a review for a product. Select product, rating (1–5), and comment.",
+          )}
         />
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
@@ -128,7 +132,7 @@ export default function ProductReviewDialog({
               icon={Package}
               required
             >
-              Product
+              {t("Product")}
             </DialogFormLabel>
             <DeferredSelectGate
               enabled={open}
@@ -163,7 +167,7 @@ export default function ProductReviewDialog({
                       metaOnDark
                     />
                   ) : (
-                    "Select product to review"
+                    t("Select product to review")
                   )}
                 </div>
               }
@@ -182,7 +186,7 @@ export default function ProductReviewDialog({
                       DIALOG_FORM_FIELD_AMBER,
                     )}
                   >
-                    <SelectValue placeholder="Select product to review">
+                    <SelectValue placeholder={t("Select product to review")}>
                       {selectedProduct ? (
                         <DialogProductOptionRow
                           name={selectedProduct.name}
@@ -249,7 +253,7 @@ export default function ProductReviewDialog({
               icon={Star}
               required
             >
-              Rating
+              {t("Rating")}
             </DialogFormLabel>
             <DeferredSelectGate
               enabled={open}
@@ -264,7 +268,7 @@ export default function ProductReviewDialog({
                   <span className="flex items-center gap-2">
                     {renderStars(rating)}
                     <span className={ratingLabelClass(rating)}>
-                      ({rating} star{rating !== 1 ? "s" : ""})
+                      ({rating} {t(rating !== 1 ? "stars" : "star")})
                     </span>
                   </span>
                 </div>
@@ -285,7 +289,7 @@ export default function ProductReviewDialog({
                       <span className="flex items-center gap-2">
                         {renderStars(rating)}
                         <span className={ratingLabelClass(rating)}>
-                          ({rating} star{rating !== 1 ? "s" : ""})
+                          ({rating} {t(rating !== 1 ? "stars" : "star")})
                         </span>
                       </span>
                     </SelectValue>
@@ -305,7 +309,7 @@ export default function ProductReviewDialog({
                         <span className="flex items-center gap-2">
                           {renderStars(r)}
                           <span className={ratingLabelClass(r)}>
-                            ({r} star{r !== 1 ? "s" : ""})
+                            ({r} {t(r !== 1 ? "stars" : "star")})
                           </span>
                         </span>
                       </SelectItem>
@@ -321,11 +325,11 @@ export default function ProductReviewDialog({
               icon={Star}
               required
             >
-              Review Comment
+              {t("Review Comment")}
             </DialogFormLabel>
             <Textarea
               id="product-review-comment"
-              placeholder="Write your review about the product..."
+              placeholder={t("Write your review about the product...")}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               disabled={isPending}
@@ -351,13 +355,13 @@ export default function ProductReviewDialog({
                 disabled={isPending}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
             </DialogClose>
             <DialogSubmitButton
               isPending={isPending}
-              pendingLabel="Adding review…"
-              label="Add Review"
+              pendingLabel={t("Adding review…")}
+              label={t("Add Review")}
               icon={Star}
               hue="amber"
               disabled={!productId.trim() || !comment.trim()}

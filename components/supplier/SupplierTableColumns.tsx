@@ -29,6 +29,13 @@ import {
   catalogProductSharePercent,
 } from "@/lib/catalog/catalog-product-share";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
+
+/** Inline translated text for non-component render fns (table header/cell). */
+function T({ k }: { k: string }) {
+  const t = useT();
+  return <>{t(k)}</>;
+}
 
 const PAGE_BODY_TEXT = "text-gray-700 dark:text-white";
 const PAGE_HEADER_TEXT = "text-gray-700 dark:text-white";
@@ -62,6 +69,7 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
   label,
   textClass,
 }) => {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -77,20 +85,20 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
           className={`flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal ${textClass} ${
             isSorted && "text-primary"
           }`}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -287,7 +295,7 @@ export const createSupplierColumns = (
           typeof dateValue === "string" ? new Date(dateValue) : dateValue;
 
         if (!date || isNaN(date.getTime())) {
-          return <span className={bodyText}>Unknown Date</span>;
+          return <span className={bodyText}><T k="Unknown Date" /></span>;
         }
 
         return <ClientDate date={date} semantic="created" />;
@@ -323,7 +331,7 @@ export const createSupplierColumns = (
     },
     {
       id: "actions",
-      header: () => <span className={headerText}>Actions</span>,
+      header: () => <span className={headerText}><T k="Actions" /></span>,
       cell: ({ row }) => {
         return (
           <SupplierActions

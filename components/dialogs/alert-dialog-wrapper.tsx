@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Alert Dialog Wrapper Props
@@ -115,7 +116,7 @@ export interface AlertDialogWrapperProps extends Omit<
 export function AlertDialogWrapper({
   title,
   description,
-  cancelLabel = "Cancel",
+  cancelLabel,
   actionLabel,
   actionLoadingLabel,
   isLoading = false,
@@ -131,6 +132,7 @@ export function AlertDialogWrapper({
   onOpenChange,
   ...alertDialogProps
 }: AlertDialogWrapperProps) {
+  const t = useT();
   const displayActionLabel = isLoading
     ? actionLoadingLabel || `${actionLabel}...`
     : actionLabel;
@@ -169,7 +171,7 @@ export function AlertDialogWrapper({
             disabled={isLoading}
             className="w-full sm:w-auto"
           >
-            {cancelLabel}
+            {cancelLabel ?? t("Cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {

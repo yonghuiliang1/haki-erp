@@ -9,6 +9,7 @@ import {
   Warehouse,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Business Insights sidebar: grouped header + Overview, Distribution, Trends, Alerts.
@@ -39,11 +40,12 @@ export default function BusinessInsightsSidebar({
   onValueChange,
   collapsed = false,
 }: BusinessInsightsSidebarProps) {
+  const t = useT();
   if (collapsed) {
     return (
       <nav
         className="flex min-h-0 flex-col items-center px-2 gap-1"
-        aria-label="Insights sections"
+        aria-label={t("Insights sections")}
       >
         {TAB_ITEMS.map((item) => {
           const Icon = item.icon;
@@ -53,8 +55,8 @@ export default function BusinessInsightsSidebar({
               key={item.value}
               type="button"
               onClick={() => onValueChange(item.value)}
-              aria-label={item.label}
-              title={item.label}
+              aria-label={t(item.label)}
+              title={t(item.label)}
               className={cn(
                 "flex items-center justify-center rounded-lg w-9 h-9 transition-colors",
                 isActive
@@ -73,11 +75,11 @@ export default function BusinessInsightsSidebar({
   return (
     <nav
       className="flex min-h-0 flex-col p-2 gap-1"
-      aria-label="Insights sections"
+      aria-label={t("Insights sections")}
     >
       {/* Grouped header — same style as AdminSidebar */}
       <p className="px-2 pt-2  text-xs font-normal uppercase tracking-wider text-muted-foreground">
-        Product & Business Insights
+        {t("Product & Business Insights")}
       </p>
       {TAB_ITEMS.map((item) => {
         const Icon = item.icon;
@@ -95,7 +97,7 @@ export default function BusinessInsightsSidebar({
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
-            <span className="min-w-0 flex-1 truncate">{item.label}</span>
+            <span className="min-w-0 flex-1 truncate">{t(item.label)}</span>
           </button>
         );
       })}

@@ -32,6 +32,7 @@ import { useClampPaginationIndex } from "@/hooks/use-clamp-pagination-index";
 import { Button } from "@/components/ui/button";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface OrderTableProps {
   data: Order[];
@@ -57,6 +58,7 @@ export const OrderTable = React.memo(function OrderTable({
   selectedPaymentStatuses,
 }: OrderTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const t = useT();
 
   const filteredData = useMemo(() => {
     const filtered = data.filter((order) => {
@@ -154,7 +156,7 @@ export const OrderTable = React.memo(function OrderTable({
                     colSpan={columns.length}
                     className="text-center text-gray-700 dark:text-white"
                   >
-                    No orders found.
+                    {t("No orders found.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -194,7 +196,10 @@ export const OrderTable = React.memo(function OrderTable({
             <GrFormPrevious />
           </Button>
           <span className="text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+            {t("Page {page} of {total}", {
+              page: pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </span>
           <Button
             variant="outline"

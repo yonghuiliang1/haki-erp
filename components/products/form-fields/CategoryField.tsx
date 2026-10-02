@@ -19,6 +19,7 @@ import { LuGitPullRequestDraft } from "react-icons/lu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useCategories } from "@/hooks/queries";
+import { useT } from "@/lib/i18n/locale-context";
 
 type ProductCategoryProps = {
   selectedCategory: string;
@@ -30,6 +31,7 @@ export function ProductCategory({
   setSelectedCategory,
 }: ProductCategoryProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useT();
   // Use TanStack Query for data fetching
   const { data: categories = [] } = useCategories();
 
@@ -47,15 +49,15 @@ export function ProductCategory({
         <PopoverTrigger asChild>
           <Button variant={"secondary"} className="h-10">
             <LuGitPullRequestDraft />
-            Categories
+            {t("Categories")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 w-56 poppins" side="bottom" align="end">
           <Command className="p-1">
-            <CommandInput placeholder="Category" />
+            <CommandInput placeholder={t("Category")} />
             <CommandList>
               <CommandEmpty className="text-slate-500 text-sm text-center p-5">
-                No category found.
+                {t("No category found.")}
               </CommandEmpty>
               <CommandGroup>
                 {categories.map((category) => (
@@ -81,7 +83,7 @@ export function ProductCategory({
                 variant={"ghost"}
                 className="text-[12px] mb-1"
               >
-                Clear Filters
+                {t("Clear Filters")}
               </Button>
             </div>
           </Command>

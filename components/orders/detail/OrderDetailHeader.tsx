@@ -17,6 +17,7 @@ import {
   DETAIL_HEADER_BACK_ICON_CLASS,
 } from "@/components/shared";
 import { DETAIL_PAGE_HEADER_SPACING_CLASS } from "@/lib/ui/shell-layout-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderDetailHeaderProps = {
   orderNumber?: string;
@@ -33,6 +34,7 @@ export function OrderDetailHeader({
   backHref,
   onBack,
 }: OrderDetailHeaderProps) {
+  const t = useT();
   const backButton = backHref ? (
     <Button
       variant="ghost"
@@ -64,7 +66,7 @@ export function OrderDetailHeader({
       tone="sky"
       title={
         <>
-          Order{" "}
+          {t("Order")}{" "}
           {dataLoading ? (
             <DataSlotPulse
               variant="text-lg"
@@ -85,7 +87,7 @@ export function OrderDetailHeader({
         ) : (
           <ClientRelativeTime
             date={createdAt}
-            prefix="Created "
+            prefix={t("Created ")}
             semantic="created"
           />
         )

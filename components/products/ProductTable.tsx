@@ -30,6 +30,7 @@ import { LuGitPullRequestDraft } from "react-icons/lu";
 import { IoMdClose } from "react-icons/io";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { FaCheck } from "react-icons/fa";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -86,6 +87,7 @@ export const ProductTable = React.memo(function ProductTable({
   selectedStatuses,
   selectedSuppliers,
 }: DataTableProps<Product, unknown>) {
+  const t = useT();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const filteredData = useMemo(() => {
@@ -188,7 +190,7 @@ export const ProductTable = React.memo(function ProductTable({
                     colSpan={columns.length}
                     className="text-center text-gray-700 dark:text-white"
                   >
-                    No products added/found.
+                    {t("No products added/found.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -228,7 +230,10 @@ export const ProductTable = React.memo(function ProductTable({
             <GrFormPrevious />
           </Button>
           <span className="text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+            {t("Page {page} of {total}", {
+              page: pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </span>
           <Button
             variant="outline"

@@ -19,6 +19,8 @@ import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
 import { cn } from "@/lib/utils";
 import { UserRoleBadge } from "@/lib/ui/semantic-badges";
 import { AvatarInlineLink, ClientDate } from "@/components/shared";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 import type { UserForAdmin } from "@/types";
 
 type SortableHeaderProps = {
@@ -27,6 +29,7 @@ type SortableHeaderProps = {
 };
 
 function SortableHeader({ column, label }: SortableHeaderProps) {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -43,20 +46,20 @@ function SortableHeader({ column, label }: SortableHeaderProps) {
             "flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white",
             isSorted && "text-primary",
           )}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -80,8 +83,10 @@ function getDisplayUsername(user: UserForAdmin): string {
 export function createUserManagementColumns(
   detailHrefBase?: string,
   currentUserId?: string | null,
+  t?: TranslateFn,
 ): ColumnDef<UserForAdmin>[] {
   const base = detailHrefBase ?? "/admin/user-management";
+  const tr = t ?? ((text: string) => text);
   return [
     {
       accessorKey: "name",
@@ -116,7 +121,7 @@ export function createUserManagementColumns(
     },
     {
       accessorKey: "username",
-      header: "Username",
+      header: tr("Username"),
       cell: ({ row }) => {
         const display = getDisplayUsername(row.original);
         return (
@@ -148,7 +153,7 @@ export function createUserManagementColumns(
     },
     {
       id: "actions",
-      header: "Actions",
+      header: tr("Actions"),
       cell: ({ row }) => {
         const u = row.original;
         const href = `${base}/${u.id}`;
@@ -165,7 +170,7 @@ export function createUserManagementColumns(
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 rounded-lg"
-                aria-label="Actions"
+                aria-label={tr("Actions")}
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
@@ -174,26 +179,26 @@ export function createUserManagementColumns(
               <DropdownMenuItem asChild>
                 <Link href={href} className="gap-2 cursor-pointer">
                   <Eye className="h-4 w-4" />
-                  View Detail
+                  {tr("View Detail")}
                 </Link>
               </DropdownMenuItem>
               {canEdit ? (
                 <DropdownMenuItem asChild>
                   <Link href={href} className="gap-2 cursor-pointer">
                     <Pencil className="h-4 w-4" />
-                    Edit User
+                    {tr("Edit User")}
                   </Link>
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem disabled className="gap-2">
                   <Pencil className="h-4 w-4" />
-                  Edit User
+                  {tr("Edit User")}
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem disabled={!canDelete} className="gap-2">
                 <Trash2 className="h-4 w-4" />
-                Delete User
+                {tr("Delete User")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

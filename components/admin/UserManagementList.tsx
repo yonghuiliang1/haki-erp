@@ -21,6 +21,7 @@ import CreateUserDialog from "./CreateUserDialog";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { Users, Shield, Truck, UserCircle } from "lucide-react";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 import type { UserForAdmin, DashboardStats } from "@/types";
 
 export type UserManagementListProps = {
@@ -36,6 +37,7 @@ export default function UserManagementList({
   initialUsers,
   initialStats,
 }: UserManagementListProps = {}) {
+  const t = useT();
   const isMountedRef = useRef(false);
   const [isMounted, setIsMounted] = useState(false);
   const usersQuery = useUsers(initialUsers);
@@ -71,8 +73,9 @@ export default function UserManagementList({
       createUserManagementColumns(
         detailHrefBase ?? "/admin/user-management",
         user?.id ?? null,
+        t,
       ),
-    [detailHrefBase, user?.id],
+    [detailHrefBase, user?.id, t],
   );
 
   // REQ-0125: dashboard role cards unsettled; patched table rows use loading only
@@ -99,42 +102,44 @@ export default function UserManagementList({
         as="h2"
         icon={Users}
         tone="violet"
-        title="User Management"
-        description="Manage users and roles. View and update name, role, and profile."
+        title={t("User Management")}
+        description={t(
+          "Manage users and roles. View and update name, role, and profile.",
+        )}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 pb-6 items-stretch">
         <StatisticsCard
-          title="Total Users"
+          title={t("Total Users")}
           value={roleCounts.total}
-          description="All registered users"
+          description={t("All registered users")}
           icon={Users}
           variant="violet"
           valueLoading={cardsDataLoading}
           badgeValuesLoading={cardsDataLoading}
         />
         <StatisticsCard
-          title="Admins"
+          title={t("Admins")}
           value={roleCounts.admin}
-          description="Users with role admin"
+          description={t("Users with role admin")}
           icon={Shield}
           variant="blue"
           valueLoading={cardsDataLoading}
           badgeValuesLoading={cardsDataLoading}
         />
         <StatisticsCard
-          title="Suppliers"
+          title={t("Suppliers")}
           value={roleCounts.supplier}
-          description="Users with role supplier"
+          description={t("Users with role supplier")}
           icon={Truck}
           variant="emerald"
           valueLoading={cardsDataLoading}
           badgeValuesLoading={cardsDataLoading}
         />
         <StatisticsCard
-          title="Clients"
+          title={t("Clients")}
           value={roleCounts.client}
-          description="Users with role client"
+          description={t("Users with role client")}
           icon={UserCircle}
           variant="amber"
           valueLoading={cardsDataLoading}

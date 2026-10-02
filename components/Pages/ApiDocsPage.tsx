@@ -33,6 +33,7 @@ import { CopyCodeButton } from "@/components/shared";
 import type { SectionHeaderTone } from "@/lib/ui/section-header-tones";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import { DETAIL_PAGE_HEADER_SPACING_CLASS } from "@/lib/ui/shell-layout-styles";
 
 /** Slug for tab value from section name */
@@ -44,6 +45,7 @@ function getTabValue(name: string): string {
 }
 
 export default function ApiDocsPage() {
+  const t = useT();
   // SSR-safe default; client upgrades to window.origin without mount skeleton (REQ-0094).
   const envBase =
     process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
@@ -1099,8 +1101,10 @@ export default function ApiDocsPage() {
             className={DETAIL_PAGE_HEADER_SPACING_CLASS}
             icon={BookOpen}
             tone="blue"
-            title="Stock API Documentation"
-            description="Comprehensive API documentation for the Stock inventory management system. All endpoints require authentication via JWT token."
+            title={t("Stock API Documentation")}
+            description={t(
+              "Comprehensive API documentation for the Stock inventory management system. All endpoints require authentication via JWT token.",
+            )}
           />
 
           {/* Quick Info Cards — render immediately (REQ-0094 shell-first) */}
@@ -1112,7 +1116,7 @@ export default function ApiDocsPage() {
                   <SectionCardHeader
                     icon={Code2}
                     tone="blue"
-                    title="Base URL"
+                    title={t("Base URL")}
                     className="mb-3"
                   />
                   <code className="block bg-white/50 dark:bg-white/5 border border-gray-300/30 dark:border-white/10 px-2 py-2 rounded-xl text-sm font-mono text-gray-700 dark:text-white/80 break-all">
@@ -1127,11 +1131,11 @@ export default function ApiDocsPage() {
                   <SectionCardHeader
                     icon={Key}
                     tone="violet"
-                    title="Auth"
+                    title={t("Auth")}
                     className="mb-3"
                   />
                   <p className="text-sm text-gray-600 dark:text-white/80">
-                    Session cookie (HTTP-only). Send{" "}
+                    {t("Session cookie (HTTP-only). Send")}{" "}
                     <code className="text-xs bg-violet-500/10 px-1 py-0.5 rounded">
                       credentials: &quot;include&quot;
                     </code>
@@ -1145,12 +1149,13 @@ export default function ApiDocsPage() {
                   <SectionCardHeader
                     icon={Zap}
                     tone="amber"
-                    title="Rate Limit"
+                    title={t("Rate Limit")}
                     className="mb-3"
                   />
                   <p className="text-sm text-gray-600 dark:text-white/80">
-                    100 req/min (standard), 10 req/min (import), 5 req/min
-                    (auth)
+                    {t(
+                      "100 req/min (standard), 10 req/min (import), 5 req/min (auth)",
+                    )}
                   </p>
                 </GlassCardBody>
               </GlassCard>
@@ -1170,7 +1175,7 @@ export default function ApiDocsPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm font-medium text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300"
                   >
-                    Download spec
+                    {t("Download spec")}
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </GlassCardBody>
@@ -1187,20 +1192,20 @@ export default function ApiDocsPage() {
                   value={getTabValue(section.name)}
                   className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
                 >
-                  {section.name}
+                  {t(section.name)}
                 </TabsTrigger>
               ))}
               <TabsTrigger
                 value="data-types"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
-                Data Types
+                {t("Data Types")}
               </TabsTrigger>
               <TabsTrigger
                 value="error-codes"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
-                Error Codes
+                {t("Error Codes")}
               </TabsTrigger>
             </TabsList>
 
@@ -1217,7 +1222,7 @@ export default function ApiDocsPage() {
                       <SectionCardHeader
                         icon={section.icon}
                         tone={variant as SectionHeaderTone}
-                        title={section.name}
+                        title={t(section.name)}
                         className="mb-4"
                       />
 
@@ -1241,13 +1246,13 @@ export default function ApiDocsPage() {
                               </code>
                             </div>
                             <p className="text-sm text-gray-600 dark:text-white/80">
-                              {endpoint.description}
+                              {t(endpoint.description)}
                             </p>
 
                             {endpoint.parameters.length > 0 && (
                               <div>
                                 <h5 className="font-medium text-sm mb-2 text-gray-700 dark:text-white">
-                                  Parameters:
+                                  {t("Parameters:")}
                                 </h5>
                                 <div className="">
                                   {endpoint.parameters.map(
@@ -1267,11 +1272,11 @@ export default function ApiDocsPage() {
                                             variant="outline"
                                             className="text-xs border-rose-400/30 bg-rose-500/10 text-rose-700 dark:text-rose-300"
                                           >
-                                            Required
+                                            {t("Required")}
                                           </Badge>
                                         )}
                                         <span className="text-gray-500 dark:text-white/80">
-                                          - {param.description}
+                                          - {t(param.description)}
                                         </span>
                                       </div>
                                     ),
@@ -1282,15 +1287,16 @@ export default function ApiDocsPage() {
 
                             <div>
                               <h5 className="font-medium text-sm mb-2 text-gray-700 dark:text-white">
-                                Response:
+                                {t("Response:")}
                               </h5>
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-400/30">
-                                    Success
+                                    {t("Success")}
                                   </Badge>
                                   <span className="text-sm text-gray-600 dark:text-white/80">
-                                    Status: {endpoint.response.success.status}
+                                    {t("Status:")}{" "}
+                                    {endpoint.response.success.status}
                                   </span>
                                 </div>
                                 <code className="block bg-gray-100/50 dark:bg-white/5 border border-gray-300/20 dark:border-white/10 px-2 py-1 rounded-lg text-xs font-mono text-gray-700 dark:text-white/80">
@@ -1299,10 +1305,10 @@ export default function ApiDocsPage() {
 
                                 <div className="flex items-center gap-2">
                                   <Badge className="bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-400/30">
-                                    Error
+                                    {t("Error")}
                                   </Badge>
                                   <span className="text-sm text-gray-600 dark:text-white/80">
-                                    Status: {endpoint.response.error.status}
+                                    {t("Status:")} {endpoint.response.error.status}
                                   </span>
                                 </div>
                                 <code className="block bg-gray-100/50 dark:bg-white/5 border border-gray-300/20 dark:border-white/10 px-2 py-1 rounded-lg text-xs font-mono text-gray-700 dark:text-white/80">
@@ -1313,13 +1319,16 @@ export default function ApiDocsPage() {
 
                             <div>
                               <h5 className="font-medium text-sm mb-2 flex items-center justify-between text-gray-700 dark:text-white">
-                                Code example
+                                {t("Code example")}
                                 <CopyCodeButton
                                   text={getFetchExample(
                                     endpoint.method,
                                     endpoint.path,
                                   )}
-                                  ariaLabel={`Copy ${endpoint.method} ${endpoint.path} example`}
+                                  ariaLabel={t("Copy {method} {path} example", {
+                                    method: endpoint.method,
+                                    path: endpoint.path,
+                                  })}
                                 />
                               </h5>
                               <pre className="bg-gray-900/90 dark:bg-black/50 p-2 rounded-xl text-xs font-mono overflow-x-auto border border-gray-700/50">
@@ -1349,8 +1358,8 @@ export default function ApiDocsPage() {
                   <SectionCardHeader
                     icon={Database}
                     tone="sky"
-                    title="Data Types"
-                    description="Common data structures used throughout the API"
+                    title={t("Data Types")}
+                    description={t("Common data structures used throughout the API")}
                     className="mb-4"
                   />
 
@@ -1395,7 +1404,7 @@ export default function ApiDocsPage() {
                                   ({field.type})
                                 </span>
                                 <span className="text-gray-500 dark:text-white/80">
-                                  - {field.description}
+                                  - {t(field.description)}
                                 </span>
                               </div>
                             ))}
@@ -1417,8 +1426,8 @@ export default function ApiDocsPage() {
                   <SectionCardHeader
                     icon={AlertCircle}
                     tone="rose"
-                    title="Error Codes"
-                    description="Common HTTP status codes and their meanings"
+                    title={t("Error Codes")}
+                    description={t("Common HTTP status codes and their meanings")}
                     className="mb-4"
                   />
 
@@ -1426,7 +1435,7 @@ export default function ApiDocsPage() {
                     {/* Success Codes */}
                     <div className="rounded-xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-4 backdrop-blur-md space-y-2">
                       <h4 className="font-medium text-emerald-700 dark:text-emerald-300 text-sm">
-                        Success Codes
+                        {t("Success Codes")}
                       </h4>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -1434,7 +1443,7 @@ export default function ApiDocsPage() {
                             200
                           </Badge>
                           <span className="text-sm text-gray-700 dark:text-white/80">
-                            OK - Request successful
+                            {t("OK - Request successful")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1442,7 +1451,7 @@ export default function ApiDocsPage() {
                             201
                           </Badge>
                           <span className="text-sm text-gray-700 dark:text-white/80">
-                            Created - Resource created
+                            {t("Created - Resource created")}
                           </span>
                         </div>
                       </div>
@@ -1451,7 +1460,7 @@ export default function ApiDocsPage() {
                     {/* Error Codes */}
                     <div className="rounded-xl border border-rose-400/20 bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent p-4 backdrop-blur-md space-y-2">
                       <h4 className="font-medium text-rose-700 dark:text-rose-300 text-sm">
-                        Error Codes
+                        {t("Error Codes")}
                       </h4>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -1459,7 +1468,7 @@ export default function ApiDocsPage() {
                             400
                           </Badge>
                           <span className="text-sm text-gray-700 dark:text-white/80">
-                            Bad Request - Invalid input
+                            {t("Bad Request - Invalid input")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1467,7 +1476,7 @@ export default function ApiDocsPage() {
                             401
                           </Badge>
                           <span className="text-sm text-gray-700 dark:text-white/80">
-                            Unauthorized - Auth required
+                            {t("Unauthorized - Auth required")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1475,7 +1484,7 @@ export default function ApiDocsPage() {
                             429
                           </Badge>
                           <span className="text-sm text-gray-700 dark:text-white/80">
-                            Too Many Requests
+                            {t("Too Many Requests")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1483,7 +1492,7 @@ export default function ApiDocsPage() {
                             500
                           </Badge>
                           <span className="text-sm text-gray-700 dark:text-white/80">
-                            Internal Server Error
+                            {t("Internal Server Error")}
                           </span>
                         </div>
                       </div>

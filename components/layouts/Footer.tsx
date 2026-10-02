@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { APP_SHELL_WIDTH_CLASS } from "@/lib/ui/shell-layout-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Footer Component
@@ -11,6 +12,7 @@ import { APP_SHELL_WIDTH_CLASS } from "@/lib/ui/shell-layout-styles";
  * Matches navbar glassmorphic styling
  */
 export default function Footer() {
+  const t = useT();
   // Get current year dynamically
   const currentYear = new Date().getFullYear();
 
@@ -30,7 +32,7 @@ export default function Footer() {
           {/* Left Section - Copyright and Brand */}
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-sm text-gray-700 dark:text-muted-foreground">
             <span className="font-normal text-gray-700 dark:text-foreground text-center sm:text-left">
-              Stock Inventory Management
+              {t("Stock Inventory Management")}
             </span>
             <span className="hidden sm:inline">•</span>
             <span className="text-center sm:text-left">© {currentYear}</span>
@@ -48,7 +50,7 @@ export default function Footer() {
                   e.preventDefault();
                 }}
               >
-                {link.label}
+                {t(link.label)}
               </Link>
             ))}
           </nav>

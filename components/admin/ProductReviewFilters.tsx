@@ -19,6 +19,7 @@ import type { FilterChipGroup } from "@/components/shared";
 import { PaginationType } from "@/components/shared/PaginationSelector";
 import { ReviewStatusBadge } from "@/lib/ui/semantic-badges";
 import { FILTER_CHIP_COLLAPSED_CLASS } from "@/lib/ui/filter-chip-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 const RATING_OPTIONS = [
   { id: "1", name: "1 star" },
@@ -47,6 +48,7 @@ export default function ProductReviewFilters({
   setSelectedRatings,
   setPagination,
 }: ProductReviewFiltersProps) {
+  const t = useT();
   const ratingTriggerClass =
     "h-10 rounded-[28px] border border-amber-400/30 dark:border-amber-400/30 bg-gradient-to-r from-amber-500/25 via-amber-500/15 to-amber-500/10 dark:from-amber-500/25 dark:via-amber-500/15 dark:to-amber-500/10 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(245,158,11,0.2)] backdrop-blur-md transition duration-200 hover:border-amber-300/40 hover:from-amber-500/35 hover:via-amber-500/25 hover:to-amber-500/15 dark:hover:border-amber-300/40 dark:hover:from-amber-500/35 dark:hover:via-amber-500/25 dark:hover:to-amber-500/15";
 
@@ -57,11 +59,13 @@ export default function ProductReviewFilters({
   }, [setSelectedStatuses, setSelectedRatings, setPagination]);
 
   const filterChipGroups = useMemo((): FilterChipGroup[] => {
-    const ratingLabelById = new Map(RATING_OPTIONS.map((o) => [o.id, o.name]));
+    const ratingLabelById = new Map(
+      RATING_OPTIONS.map((o) => [o.id, t(o.name)]),
+    );
 
     return [
       {
-        label: "Status",
+        label: t("Status"),
         values: selectedStatuses,
         onClear: () => setSelectedStatuses([]),
         renderBadge: (value) => (
@@ -69,12 +73,12 @@ export default function ProductReviewFilters({
         ),
       },
       {
-        label: "Rating",
+        label: t("Rating"),
         values: selectedRatings,
         onClear: () => setSelectedRatings([]),
         renderBadge: (value) => (
           <span className={FILTER_CHIP_COLLAPSED_CLASS}>
-            {ratingLabelById.get(value) ?? `${value} stars`}
+            {ratingLabelById.get(value) ?? t("{value} stars", { value })}
           </span>
         ),
       },
@@ -84,6 +88,7 @@ export default function ProductReviewFilters({
     selectedRatings,
     setSelectedStatuses,
     setSelectedRatings,
+    t,
   ]);
 
   return (
@@ -92,7 +97,7 @@ export default function ProductReviewFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by product, SKU, or comment..."
+            placeholder={t("Search by product, SKU, or comment...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -116,9 +121,9 @@ export default function ProductReviewFilters({
           <FilterDropdown
             selectedValues={selectedRatings}
             setSelectedValues={setSelectedRatings}
-            options={RATING_OPTIONS}
-            placeholder="Filter by rating..."
-            label="Rating"
+            options={RATING_OPTIONS.map((o) => ({ ...o, name: t(o.name) }))}
+            placeholder={t("Filter by rating...")}
+            label={t("Rating")}
             icon={Star}
             triggerClassName={ratingTriggerClass}
           />

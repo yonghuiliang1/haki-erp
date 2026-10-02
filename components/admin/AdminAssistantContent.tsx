@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataSlotPulse, PageContentWrapper, PageSectionHeader } from "@/components/shared";
 import { apiClient } from "@/lib/api";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import type { AssistantChatSource } from "@/types";
 
@@ -38,6 +39,7 @@ const SOURCE_LABELS: Record<AssistantChatSource, string> = {
 };
 
 export default function AdminAssistantContent() {
+  const t = useT();
   const [sessionId] = useState(
     () => `web-${Math.random().toString(36).slice(2, 10)}`,
   );
@@ -84,8 +86,9 @@ export default function AdminAssistantContent() {
         {
           id: `e-${Date.now()}`,
           role: "assistant",
-          content:
+          content: t(
             "Something went wrong answering that question. Please try again.",
+          ),
           source: "fallback",
         },
       ]);
@@ -102,8 +105,10 @@ export default function AdminAssistantContent() {
           as="h2"
           icon={Sparkles}
           tone="teal"
-          title="AI Assistant"
-          description="ERP support questions answered from the knowledge base, with the language model when configured."
+          title={t("AI Assistant")}
+          description={t(
+            "ERP support questions answered from the knowledge base, with the language model when configured.",
+          )}
         />
 
         <div className="rounded-[28px] border border-white/20 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-md flex flex-col overflow-hidden">
@@ -118,8 +123,9 @@ export default function AdminAssistantContent() {
                   <Bot className="h-6 w-6 text-teal-600 dark:text-teal-300" />
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300 max-w-md">
-                  Ask about orders, approvals, inventory, purchasing, finance,
-                  or shipping. Answers come from the ERP knowledge base.
+                  {t(
+                    "Ask about orders, approvals, inventory, purchasing, finance, or shipping. Answers come from the ERP knowledge base.",
+                  )}
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 max-w-2xl">
                   {SUGGESTIONS.map((suggestion) => (
@@ -129,7 +135,7 @@ export default function AdminAssistantContent() {
                       onClick={() => send(suggestion)}
                       className="rounded-full border border-teal-400/30 bg-teal-500/10 px-3 py-1.5 text-xs text-teal-700 dark:text-teal-300 hover:bg-teal-500/20"
                     >
-                      {suggestion}
+                      {t(suggestion)}
                     </button>
                   ))}
                 </div>
@@ -160,9 +166,9 @@ export default function AdminAssistantContent() {
                   <p className="whitespace-pre-wrap">{entry.content}</p>
                   {entry.role === "assistant" && entry.source && (
                     <p className="mt-1.5 text-[10px] text-gray-500 dark:text-gray-400">
-                      Source: {SOURCE_LABELS[entry.source]}
+                      {t("Source:")} {t(SOURCE_LABELS[entry.source])}
                       {entry.matchedQuestion
-                        ? ` · matched: ${entry.matchedQuestion}`
+                        ? `${t(" · matched: ")}${entry.matchedQuestion}`
                         : ""}
                     </p>
                   )}
@@ -198,7 +204,7 @@ export default function AdminAssistantContent() {
                   void send(input);
                 }
               }}
-              placeholder="Ask about orders, stock, purchasing, finance…"
+              placeholder={t("Ask about orders, stock, purchasing, finance…")}
               className="h-11 rounded-xl"
               disabled={isSending}
             />
@@ -208,7 +214,7 @@ export default function AdminAssistantContent() {
               className="h-11 rounded-xl border border-teal-400/30 bg-gradient-to-r from-teal-500/40 via-teal-500/30 to-teal-500/20 text-white"
             >
               <Send className="h-4 w-4" />
-              Send
+              {t("Send")}
             </Button>
           </div>
         </div>

@@ -46,6 +46,7 @@ import { InvoiceSummaryRow } from "@/components/invoices/detail/InvoiceSummaryCa
 import { validateCheckoutChargeAmount } from "@/lib/validations/payment";
 import { buildStripeCheckoutReturnUrls } from "@/lib/payments/stripe-checkout-return-urls";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface PaymentDialogProps {
   type: CheckoutType;
@@ -88,6 +89,7 @@ export default function PaymentDialog({
   trigger,
 }: PaymentDialogProps) {
   const pathname = usePathname() ?? "";
+  const t = useT();
   const remainingDue = Math.max(0, amount);
   const [open, setOpen] = useState(false);
   /** false = pay full (default); true = partial */
@@ -114,9 +116,9 @@ export default function PaymentDialog({
 
   const amountError = useMemo(() => {
     if (!payPartial) return null;
-    if (partialInput.trim() === "") return "Enter a payment amount";
+    if (partialInput.trim() === "") return t("Enter a payment amount");
     return validateCheckoutChargeAmount(chargeAmount, remainingDue);
-  }, [payPartial, partialInput, chargeAmount, remainingDue]);
+  }, [payPartial, partialInput, chargeAmount, remainingDue, t]);
 
   const canSubmit =
     !disabled &&
@@ -162,7 +164,7 @@ export default function PaymentDialog({
         {trigger || (
           <Button disabled={disabled}>
             <CreditCard className="mr-2 h-4 w-4" />
-            Pay {formatStableCurrency(remainingDue)}
+            {t("Pay {amount}", { amount: formatStableCurrency(remainingDue) })}
           </Button>
         )}
       </DialogTrigger>
@@ -171,8 +173,8 @@ export default function PaymentDialog({
           className={DIALOG_EDGE_SCROLL_HEADER}
           icon={CreditCard}
           tone="sky"
-          title="Complete Payment"
-          description="Secure payment powered by Stripe"
+          title={t("Complete Payment")}
+          description={t("Secure payment powered by Stripe")}
         />
 
         <div className="flex flex-col gap-2 sm:gap-4 overflow-y-auto min-h-0 flex-1 w-full">
@@ -180,11 +182,11 @@ export default function PaymentDialog({
             <div className="rounded-lg border border-sky-400/30 dark:border-white/20 bg-white/10 dark:bg-white/5 backdrop-blur-md p-4 space-y-2 flex-shrink-0 shadow-[0_10px_30px_rgba(2,132,199,0.15)] dark:shadow-[0_10px_30px_rgba(2,132,199,0.1)]">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-white">
-                  {type === "order" ? "Order" : "Invoice"} Summary
+                  {type === "order" ? t("Order Summary") : t("Invoice Summary")}
                 </span>
                 {items?.length != null && (
                   <span className="text-sm text-white">
-                    Items ({items.length})
+                    {t("Items ({count})", { count: items.length })}
                   </span>
                 )}
               </div>
@@ -217,14 +219,16 @@ export default function PaymentDialog({
                   ))}
                   {items.length > 5 && (
                     <p className="text-xs text-white/80 pt-1">
-                      + {items.length - 5} more items...
+                      {t("+ {count} more items...", {
+                        count: items.length - 5,
+                      })}
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="text-sm">
                   <CopyableText value={referenceNumber} className="text-white">
-                    {type === "order" ? "Order" : "Invoice"} #{referenceNumber}
+                    {t(type === "order" ? "Order" : "Invoice")} #{referenceNumber}
                   </CopyableText>
                 </div>
               )}
@@ -234,14 +238,14 @@ export default function PaymentDialog({
               <div className="space-y-1">
                 <InvoiceSummaryRow
                   icon={Receipt}
-                  label="Subtotal:"
+                  label={t("Subtotal:")}
                   value={formatStableCurrency(displaySubtotal)}
                   variant="glass"
                 />
                 {tax != null && tax > 0 && (
                   <InvoiceSummaryRow
                     icon={Percent}
-                    label="Tax:"
+                    label={t("Tax:")}
                     value={formatStableCurrency(tax)}
                     variant="glass"
                   />
@@ -249,7 +253,7 @@ export default function PaymentDialog({
                 {shipping != null && shipping > 0 && (
                   <InvoiceSummaryRow
                     icon={Truck}
-                    label="Shipping:"
+                    label={t("Shipping:")}
                     value={formatStableCurrency(shipping)}
                     variant="glass"
                   />
@@ -257,7 +261,7 @@ export default function PaymentDialog({
                 {discount != null && discount > 0 && (
                   <InvoiceSummaryRow
                     icon={Tag}
-                    label="Discount:"
+                    label={t("Discount:")}
                     value={"-" + formatStableCurrency(discount)}
                     valueClassName="text-emerald-400"
                     variant="glass"
@@ -266,7 +270,7 @@ export default function PaymentDialog({
                 {paidSoFar > 0 && (
                   <InvoiceSummaryRow
                     icon={CircleDollarSign}
-                    label="Already paid:"
+                    label={t("Already paid:")}
                     value={formatStableCurrency(paidSoFar)}
                     valueClassName="text-emerald-400"
                     variant="glass"
@@ -279,7 +283,7 @@ export default function PaymentDialog({
               <div className="flex items-center justify-between pt-1 text-sm sm:text-lg font-medium">
                 <span className="text-white inline-flex items-center gap-1.5">
                   <CircleDollarSign className="h-4 w-4 shrink-0" />
-                  {paidSoFar > 0 ? "Amount due" : "Total"}
+                  {paidSoFar > 0 ? t("Amount due") : t("Total")}
                 </span>
                 <span className="text-white">
                   {formatStableCurrency(remainingDue)}
@@ -300,10 +304,12 @@ export default function PaymentDialog({
                     htmlFor="pay-partial-toggle"
                     className="text-sm font-medium text-white"
                   >
-                    Pay partially
+                    {t("Pay partially")}
                   </Label>
                   <p className="text-xs text-white/70 mt-0.5">
-                    Off = pay full remaining ({formatStableCurrency(remainingDue)})
+                    {t("Off = pay full remaining ({amount})", {
+                      amount: formatStableCurrency(remainingDue),
+                    })}
                   </p>
                 </div>
                 <Switch
@@ -325,7 +331,7 @@ export default function PaymentDialog({
                   htmlFor="checkout-amount"
                   className="text-xs text-white/80"
                 >
-                  Amount to charge
+                  {t("Amount to charge")}
                 </Label>
                 <Input
                   id="checkout-amount"
@@ -352,8 +358,10 @@ export default function PaymentDialog({
                 ) : (
                   <p className="text-xs text-white/60">
                     {payPartial
-                      ? `Enter any amount up to ${formatStableCurrency(remainingDue)}`
-                      : "Full remaining balance will be charged"}
+                      ? t("Enter any amount up to {amount}", {
+                          amount: formatStableCurrency(remainingDue),
+                        })
+                      : t("Full remaining balance will be charged")}
                   </p>
                 )}
               </div>
@@ -365,8 +373,9 @@ export default function PaymentDialog({
 
             <div className="flex flex-col gap-2 flex-shrink-0">
               <p className="text-xs text-center text-white/80">
-                No card entry here — you&apos;ll enter payment details on
-                Stripe&apos;s page after clicking below.
+                {t(
+                  `No card entry here — you'll enter payment details on Stripe's page after clicking below.`,
+                )}
               </p>
               <DialogFooter className="flex flex-col sm:flex-row items-center gap-2 sm:justify-center">
                 <DialogClose asChild>
@@ -380,7 +389,7 @@ export default function PaymentDialog({
                     )}
                   >
                     <X className="h-4 w-4 shrink-0" aria-hidden />
-                    Cancel
+                    {t("Cancel")}
                   </Button>
                 </DialogClose>
                 <DialogSubmitButton
@@ -388,11 +397,13 @@ export default function PaymentDialog({
                   onClick={handlePayment}
                   isPending={isLoading}
                   disabled={!canSubmit}
-                  pendingLabel="Redirecting to payment…"
+                  pendingLabel={t("Redirecting to payment…")}
                   label={
                     Number.isFinite(chargeAmount) && chargeAmount > 0
-                      ? `Pay ${formatStableCurrency(chargeAmount)}`
-                      : "Secure checkout with Link"
+                      ? t("Pay {amount}", {
+                          amount: formatStableCurrency(chargeAmount),
+                        })
+                      : t("Secure checkout with Link")
                   }
                   icon={CreditCard}
                   hue="sky"
@@ -401,7 +412,7 @@ export default function PaymentDialog({
               </DialogFooter>
 
               <p className="text-xs text-center text-white">
-                You&apos;ll be redirected to Stripe&apos;s secure checkout page
+                {t(`You'll be redirected to Stripe's secure checkout page`)}
               </p>
             </div>
           </div>

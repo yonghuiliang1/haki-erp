@@ -1,6 +1,7 @@
 "use client";
 
 import React, { type ReactNode } from "react";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Wrapper for pages that need a left sidebar + scrollable right content.
@@ -19,13 +20,14 @@ export default function PageWithSidebar({
   sidebarCollapsed,
   children,
 }: PageWithSidebarProps) {
+  const t = useT();
   return (
     <div className="flex w-full gap-0 sm:gap-2 min-h-0">
       {/* Collapsed sidebar — phone only */}
       {sidebarCollapsed && (
         <aside
           className="sm:hidden sticky top-0 z-10 flex h-[calc(100vh-3.5rem)] w-12 flex-shrink-0 flex-col overflow-y-auto overflow-x-hidden border-r border-gray-200/50 dark:border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl"
-          aria-label="Page navigation"
+          aria-label={t("Page navigation")}
         >
           {sidebarCollapsed}
         </aside>
@@ -33,7 +35,7 @@ export default function PageWithSidebar({
       {/* Full sidebar — sm and up */}
       <aside
         className={`sticky top-0 z-10 flex h-[calc(100vh-4.5rem)] w-64 flex-shrink-0 flex-col overflow-y-auto rounded-lg border border-gray-200/50 dark:border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl ${sidebarCollapsed ? "hidden sm:flex" : "hidden sm:flex"}`}
-        aria-label="Page navigation"
+        aria-label={t("Page navigation")}
       >
         {sidebarContent}
       </aside>
@@ -41,7 +43,7 @@ export default function PageWithSidebar({
       {!sidebarCollapsed && (
         <aside
           className="sm:hidden sticky top-0 z-10 flex h-[calc(100vh-3.5rem)] w-64 flex-shrink-0 flex-col overflow-y-auto border-r border-gray-200/50 dark:border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl"
-          aria-label="Page navigation"
+          aria-label={t("Page navigation")}
         >
           {sidebarContent}
         </aside>

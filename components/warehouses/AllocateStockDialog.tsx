@@ -56,6 +56,7 @@ import { useCreateStockAllocation, useProducts, useStockByProduct, useUpdateStoc
 import { getAllocationQtyBounds } from "@/lib/stock-allocation/validate-allocation-quantity";
 import type { Product, StockAllocation } from "@/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 const ALLOCATE_DIALOG_CONTENT_CLASS = `${DIALOG_EDGE_SCROLL_SHELL} poppins border-violet-400/30 dark:border-violet-400/30 shadow-[0_30px_80px_rgba(139,92,246,0.35)] dark:shadow-[0_30px_80px_rgba(139,92,246,0.25)]`;
 
@@ -75,6 +76,7 @@ export default function AllocateStockDialog({
   warehouseName,
   editAllocation = null,
 }: AllocateStockDialogProps) {
+  const t = useT();
   const isEditMode = Boolean(editAllocation);
   const [productId, setProductId] = useState(editAllocation?.productId ?? "");
   const [quantity, setQuantity] = useState(
@@ -225,17 +227,20 @@ export default function AllocateStockDialog({
       <DialogContent className={ALLOCATE_DIALOG_CONTENT_CLASS}>
         <DialogHeader className={DIALOG_EDGE_SCROLL_HEADER}>
           <DialogTitle className="text-[22px] text-white">
-            {isEditMode ? "Update Allocation" : "Allocate Stock"}
+            {isEditMode ? t("Update Allocation") : t("Allocate Stock")}
           </DialogTitle>
           <DialogDescription className="text-white/70">
             {isEditMode
-              ? `Change allocated quantity in ${warehouseName ? `"${warehouseName}"` : "this warehouse"}.`
-              : (
-                  <>
-                    Assign product quantity to{" "}
-                    {warehouseName ? `"${warehouseName}"` : "this warehouse"}.
-                  </>
-                )}
+              ? t("Change allocated quantity in {warehouse}.", {
+                  warehouse: warehouseName
+                    ? `"${warehouseName}"`
+                    : t("this warehouse"),
+                })
+              : t("Assign product quantity to {warehouse}.", {
+                  warehouse: warehouseName
+                    ? `"${warehouseName}"`
+                    : t("this warehouse"),
+                })}
           </DialogDescription>
         </DialogHeader>
 
@@ -244,7 +249,7 @@ export default function AllocateStockDialog({
             <div className="mt-2 space-y-4">
               <div>
                 <DialogFormLabel icon={Package} required>
-                  Product
+                  {t("Product")}
                 </DialogFormLabel>
                 {/* REQ-0199 — modal Combobox; ghost trigger (no outline→white hover) */}
                 <Popover open={pickerOpen} onOpenChange={setPickerOpen} modal>
@@ -283,7 +288,7 @@ export default function AllocateStockDialog({
                         />
                       ) : (
                         <span className="text-muted-foreground">
-                          Select product…
+                          {t("Select product…")}
                         </span>
                       )}
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -299,9 +304,9 @@ export default function AllocateStockDialog({
                     )}
                   >
                     <Command className="bg-transparent">
-                      <CommandInput placeholder="Search products…" />
+                      <CommandInput placeholder={t("Search products…")} />
                       <CommandList className="max-h-[min(60vh,280px)]">
-                        <CommandEmpty>No products found.</CommandEmpty>
+                        <CommandEmpty>{t("No products found.")}</CommandEmpty>
                         <CommandGroup>
                           {products.map((p) => (
                             <CommandItem
@@ -370,12 +375,12 @@ export default function AllocateStockDialog({
                 className={cn("w-full sm:w-auto px-11 gap-2", GLASS_GHOST_BUTTON)}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
               <DialogSubmitButton
                 isPending={isPending}
-                pendingLabel="Saving allocation…"
-                label={isEditMode ? "Save changes" : "Save allocation"}
+                pendingLabel={t("Saving allocation…")}
+                label={isEditMode ? t("Save changes") : t("Save allocation")}
                 icon={Save}
                 hue="violet"
                 disabled={!isValid}

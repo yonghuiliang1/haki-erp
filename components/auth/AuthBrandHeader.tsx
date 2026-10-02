@@ -3,18 +3,21 @@
 import Link from "next/link";
 import { AiFillProduct } from "react-icons/ai";
 import { AuthAnimatedBlock } from "@/components/auth/AuthAnimatedBlock";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * REQ-0031 — Navbar-matched brand for auth left column.
  * Keep icon box + title classes in sync with components/layouts/Navbar.tsx.
  */
 export function AuthBrandHeader() {
+  const t = useT();
+
   return (
     <AuthAnimatedBlock delayMs={0}>
       <Link
         href="/"
         className="group flex items-center gap-3 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50"
-        aria-label="Stockly — Stock Inventory Management"
+        aria-label={t("Stockly — Stock Inventory Management")}
       >
         <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-xl border border-rose-400/40 dark:border-rose-400/30 bg-gradient-to-br from-rose-500/30 via-rose-500/15 to-rose-500/8 dark:from-rose-500/20 dark:via-rose-500/15 dark:to-rose-500/10 shadow-[0_5px_20px_rgba(225,29,72,0.3)] dark:shadow-[0_5px_20px_rgba(225,29,72,0.25)] backdrop-blur-md transition-all duration-200 group-hover:border-rose-400/60 dark:group-hover:border-rose-400/40 group-hover:from-rose-500/40 group-hover:via-rose-500/20 group-hover:to-rose-500/10 dark:group-hover:from-rose-500/30 dark:group-hover:via-rose-500/20 dark:group-hover:to-rose-500/15 group-hover:shadow-[0_10px_35px_rgba(225,29,72,0.5)] dark:group-hover:shadow-[0_10px_35px_rgba(225,29,72,0.4)]">
           <AiFillProduct className="text-sm sm:text-lg text-rose-600 dark:text-rose-400 transition-transform group-hover:scale-110 drop-shadow-[0_2px_8px_rgba(225,29,72,0.4)]" />
@@ -24,7 +27,7 @@ export function AuthBrandHeader() {
             Stockly
           </p>
           <p className="text-sm text-gray-600 dark:text-white/80 leading-snug">
-            Stock Inventory Management
+            {t("Stock Inventory Management")}
           </p>
         </div>
       </Link>

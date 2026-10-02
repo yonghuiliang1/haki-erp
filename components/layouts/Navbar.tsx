@@ -41,7 +41,8 @@ import { resolveUserAvatarSources } from "@/lib/ui/user-avatar-sources";
 import { useTheme } from "next-themes";
 import ScrollControl from "../shared/ScrollControl";
 import Footer from "./Footer";
-import { NotificationBell } from "../shared";
+import { LocaleSwitcher, NotificationBell } from "../shared";
+import { useT } from "@/lib/i18n/locale-context";
 
 import {
   DROPDOWN_NAV_CONTENT_CLASS,
@@ -78,6 +79,7 @@ const PROFILE_MENU_LINKS = [
  */
 function ModeToggle() {
   const { setTheme } = useTheme();
+  const t = useT();
 
   return (
     <DropdownMenu>
@@ -85,12 +87,12 @@ function ModeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Toggle theme"
+          aria-label={t("Toggle theme")}
           className="h-8 w-8 sm:h-10 sm:w-10 focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0"
         >
           <Sun className="h-4 w-4 sm:h-[1.2rem] sm:w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-4 w-4 sm:h-[1.2rem] sm:w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t("Toggle theme")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -101,19 +103,19 @@ function ModeToggle() {
           onClick={() => setTheme("light")}
           className={DROPDOWN_NAV_ITEM_CLASS}
         >
-          Light
+          {t("Light")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className={DROPDOWN_NAV_ITEM_CLASS}
         >
-          Dark
+          {t("Dark")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("system")}
           className={DROPDOWN_NAV_ITEM_CLASS}
         >
-          System
+          {t("System")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -133,6 +135,7 @@ export default function Navbar({ children }: NavbarProps) {
   const { user, isCheckingAuth } = useAuth();
   const pathname = usePathname();
   const { toast } = useToast();
+  const t = useT();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -172,8 +175,8 @@ export default function Navbar({ children }: NavbarProps) {
       return;
     } catch (error) {
       toast({
-        title: "Logout Failed",
-        description: "Failed to logout. Please try again.",
+        title: t("Logout Failed"),
+        description: t("Failed to logout. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -207,7 +210,7 @@ export default function Navbar({ children }: NavbarProps) {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-sky-600 focus:px-4 focus:py-2 focus:text-sm focus:font-normal focus:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
       >
-        Skip to main content
+        {t("Skip to main content")}
       </a>
       {/* min-w-0 on flex children instead of overflow-x-hidden — hidden overflow-y would clip notification portal ancestors */}
       <div
@@ -219,7 +222,7 @@ export default function Navbar({ children }: NavbarProps) {
             href={homePath}
             prefetch
             onClick={closeMobileMenu}
-            aria-label="Go to home"
+            aria-label={t("Go to home")}
             className="group flex items-center gap-2"
           >
             <div className="flex aspect-square size-10 items-center justify-center rounded-xl border border-rose-400/40 dark:border-rose-400/30 bg-gradient-to-br from-rose-500/30 via-rose-500/15 to-rose-500/8 dark:from-rose-500/20 dark:via-rose-500/15 dark:to-rose-500/10 shadow-[0_5px_20px_rgba(225,29,72,0.3)] dark:shadow-[0_5px_20px_rgba(225,29,72,0.25)] backdrop-blur-md transition-all duration-200 hover:border-rose-400/60 dark:hover:border-rose-400/40 hover:from-rose-500/40 hover:via-rose-500/20 hover:to-rose-500/10 dark:hover:from-rose-500/30 dark:hover:via-rose-500/20 dark:hover:to-rose-500/15 hover:shadow-[0_10px_35px_rgba(225,29,72,0.5)] dark:hover:shadow-[0_10px_35px_rgba(225,29,72,0.4)]">
@@ -237,14 +240,14 @@ export default function Navbar({ children }: NavbarProps) {
             // API dropdown
             if (item.hasDropdown && "dropdownItems" in item) {
               return (
-                <DropdownMenu key={item.label}>
+                <DropdownMenu key={t(item.label)}>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="sm"
                       className="text-sm font-normal text-gray-700 dark:text-muted-foreground will-change-[background,box-shadow,color] transition-[background-image,box-shadow,color] duration-300 ease-in-out hover:text-sky-600 dark:hover:text-foreground hover:bg-gradient-to-br hover:from-sky-500/10 hover:via-sky-500/5 hover:to-sky-500/5 dark:hover:from-white/10 dark:hover:via-white/5 dark:hover:to-white/5 hover:backdrop-blur-md hover:shadow-[0_5px_15px_rgba(2,132,199,0.25)] dark:hover:shadow-[0_5px_15px_rgba(255,255,255,0.15)] rounded-md px-2 py-2 border-0 focus:border-0 focus-visible:border-0 focus-visible:ring-0 focus:ring-0 data-[state=open]:border-0"
                     >
-                      <span>{item.label}</span>
+                      <span>{t(item.label)}</span>
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -265,7 +268,7 @@ export default function Navbar({ children }: NavbarProps) {
                           onClick={closeMobileMenu}
                           className="block w-full cursor-pointer px-2 py-1.5 text-sm"
                         >
-                          {sub.label}
+                          {t(sub.label)}
                         </Link>
                       </DropdownMenuItem>
                     ))}
@@ -284,7 +287,7 @@ export default function Navbar({ children }: NavbarProps) {
                 aria-current={isNavActive ? "page" : undefined}
                 className={navbarNavLinkClass(isNavActive, "desktop")}
               >
-                {item.label}
+                {t(item.label)}
               </Link>
             );
           })}
@@ -306,13 +309,16 @@ export default function Navbar({ children }: NavbarProps) {
           {/* Mode Toggle */}
           <ModeToggle />
 
+          {/* Language toggle (中文 / EN) */}
+          <LocaleSwitcher className="h-8 sm:h-10" />
+
           {/* Avatar Dropdown (Desktop - LG and above) */}
           <div className="hidden lg:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  aria-label="Open account menu"
+                  aria-label={t("Open account menu")}
                   className="relative h-10 w-10 min-h-10 min-w-10 rounded-full border-2 border-sky-400/50 dark:border-white/20 bg-gradient-to-br from-sky-500/25 via-sky-500/10 to-sky-500/5 dark:from-white/10 dark:via-white/10 dark:to-white/5 backdrop-blur-md hover:border-sky-400/70 dark:hover:border-white/30 hover:from-sky-500/35 hover:via-sky-500/15 hover:to-sky-500/8 dark:hover:from-white/15 dark:hover:via-white/15 dark:hover:to-white/8 transition-all duration-200 shadow-[0_5px_20px_rgba(2,132,199,0.3)] hover:shadow-[0_10px_30px_rgba(2,132,199,0.5)] ring-2 ring-sky-400/30 dark:ring-white/20 hover:ring-sky-400/50 dark:hover:ring-white/30 p-0 overflow-hidden focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0"
                 >
                   {isCheckingAuth ? (
@@ -359,7 +365,7 @@ export default function Navbar({ children }: NavbarProps) {
                   >
                     <Link href={path} prefetch onClick={closeMobileMenu}>
                       <Icon className="mr-2 h-4 w-4" />
-                      <span>{label}</span>
+                      <span>{t(label)}</span>
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -371,7 +377,7 @@ export default function Navbar({ children }: NavbarProps) {
                 >
                   <LogOut className="mr-2 h-4 w-4 text-red-500 dark:text-red-400" />
                   <span className="text-red-500 dark:text-red-400">
-                    {isLoggingOut ? "Logging Out..." : "Logout"}
+                    {isLoggingOut ? t("Logging Out…") : t("Sign Out")}
                   </span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -384,7 +390,7 @@ export default function Navbar({ children }: NavbarProps) {
             <Button
               variant="ghost"
               size="icon"
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMobileMenuOpen ? t("Close menu") : t("Open menu")}
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu-panel"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -405,7 +411,7 @@ export default function Navbar({ children }: NavbarProps) {
         <div
           id="mobile-menu-panel"
           role="navigation"
-          aria-label="Mobile navigation"
+          aria-label={t("Mobile navigation")}
           className="xl:hidden border-t border-white/10 dark:border-white/10 bg-gradient-to-br from-white/95 via-white/90 to-white/85 dark:from-white/10 dark:via-white/10 dark:to-white/5 backdrop-blur-xl max-h-[calc(100vh-3.5rem)] overflow-y-auto"
         >
           <div
@@ -436,7 +442,7 @@ export default function Navbar({ children }: NavbarProps) {
                   </p>
                 )}
                 <p className="text-xs text-gray-600 dark:text-muted-foreground">
-                  {isCheckingAuth ? "Loading..." : user?.email}
+                  {isCheckingAuth ? t("Loading...") : user?.email}
                 </p>
               </div>
             </div>
@@ -449,9 +455,9 @@ export default function Navbar({ children }: NavbarProps) {
                 // API dropdown (mobile: label + sub-links)
                 if (item.hasDropdown && "dropdownItems" in item) {
                   return (
-                    <div key={item.label} className="">
+                    <div key={t(item.label)} className="">
                       <p className="px-2 py-2 text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
-                        {item.label}
+                        {t(item.label)}
                       </p>
                       <div className="pl-4 ">
                         {item.dropdownItems.map((sub) => (
@@ -465,7 +471,7 @@ export default function Navbar({ children }: NavbarProps) {
                               "mobile",
                             )}
                           >
-                            {sub.label}
+                            {t(sub.label)}
                           </Link>
                         ))}
                       </div>
@@ -483,7 +489,7 @@ export default function Navbar({ children }: NavbarProps) {
                     aria-current={isNavActive ? "page" : undefined}
                     className={navbarNavLinkClass(isNavActive, "mobile")}
                   >
-                    {item.label}
+                    {t(item.label)}
                   </Link>
                 );
               })}
@@ -501,7 +507,7 @@ export default function Navbar({ children }: NavbarProps) {
                 className={navbarNavLinkClass(false, "mobile")}
               >
                 <Icon className="mr-2 h-4 w-4" />
-                {label}
+                {t(label)}
               </Link>
             ))}
 
@@ -515,7 +521,7 @@ export default function Navbar({ children }: NavbarProps) {
               disabled={isLoggingOut}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              {isLoggingOut ? "Logging Out..." : "Logout"}
+              {isLoggingOut ? t("Logging Out…") : t("Sign Out")}
             </Button>
           </div>
         </div>

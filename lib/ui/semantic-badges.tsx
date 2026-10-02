@@ -50,6 +50,7 @@ import {
   getWarehouseTypeTone,
 } from "@/lib/ui/warehouse-type-styles";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** Human-readable label: snake_case / lowercase → Title case */
 export function formatSemanticLabel(value: string): string {
@@ -327,6 +328,8 @@ function SemanticBadgeBase({
   size?: "compact" | "detail";
 }) {
   const Icon = tone.icon;
+  // One lookup here translates every status badge in the app.
+  const t = useT();
   return (
     <span
       className={cn(
@@ -340,7 +343,7 @@ function SemanticBadgeBase({
         className={cn("shrink-0", spinIcon && "animate-spin")}
         aria-hidden
       />
-      <span>{label}</span>
+      <span>{t(label)}</span>
     </span>
   );
 }
@@ -376,6 +379,12 @@ function resolveUserRoleTone(role: string | null | undefined): BadgeTone {
   return USER_ROLE[key] ?? USER_ROLE.user ?? DEFAULT_TONE;
 }
 
+/**
+ * "Sales" doubles as a finance table header (销售额), so the role badge uses
+ * its own dictionary key to keep "业务员" when the locale is Chinese.
+ */
+const ROLE_LABEL_KEYS: Record<string, string> = { sales: "Sales Rep" };
+
 /** User role badge — admin, supplier, client, etc. */
 export function UserRoleBadge({
   role,
@@ -387,7 +396,8 @@ export function UserRoleBadge({
   size?: "compact" | "detail";
 }) {
   const tone = resolveUserRoleTone(role);
-  const label = formatSemanticLabel(role ?? "user");
+  const key = normalizeKey(role ?? "user");
+  const label = ROLE_LABEL_KEYS[key] ?? formatSemanticLabel(role ?? "user");
   return (
     <SemanticBadgeBase
       tone={tone}
@@ -770,6 +780,7 @@ export function StockQuantityLeftBadge({
   className?: string;
   size?: "compact" | "detail";
 }) {
+  const t = useT();
   const tone: BadgeTone =
     quantity <= 0
       ? { className: GLASS_BADGE_CLASS.red, icon: XCircle }
@@ -779,7 +790,7 @@ export function StockQuantityLeftBadge({
   return (
     <SemanticBadgeBase
       tone={tone}
-      label={`${quantity} left`}
+      label={t("{count} left", { count: quantity })}
       className={className}
       size={size}
     />

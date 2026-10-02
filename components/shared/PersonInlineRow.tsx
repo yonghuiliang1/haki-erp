@@ -10,6 +10,7 @@ import { AvatarInlineLink } from "@/components/shared/AvatarInlineLink";
 import { CopyableText } from "@/components/shared/CopyableText";
 import { TYPO_BODY_MUTED } from "@/lib/ui/typography-scale";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type PersonInlineRowProps = {
   seed: string;
@@ -36,6 +37,7 @@ export function PersonInlineRow({
   className,
   userId,
 }: PersonInlineRowProps) {
+  const t = useT();
   const showEmail = Boolean(email && name && email !== name);
   const showUserId = Boolean(userId && userId.trim());
 
@@ -90,7 +92,7 @@ export function PersonInlineRow({
         {showUserId ? (
           <span className="inline-flex flex-wrap items-center gap-x-1.5 min-w-0 w-full max-w-full min-h-[1.125rem]">
             <span className={cn("text-xs shrink-0", TYPO_BODY_MUTED)}>
-              User ID:
+              {t("User ID:")}
             </span>
             {/* truncate (not break-all) — avoids letter-wrap flash in narrow cards */}
             <CopyableText

@@ -15,6 +15,7 @@ import { DismissibleFilterChips } from "@/components/shared";
 import type { FilterChipGroup } from "@/components/shared";
 import { PaginationType } from "@/components/shared/PaginationSelector";
 import { UserRoleBadge } from "@/lib/ui/semantic-badges";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface UserManagementFiltersProps {
   searchTerm: string;
@@ -31,6 +32,7 @@ export default function UserManagementFilters({
   setSelectedRoles,
   setPagination,
 }: UserManagementFiltersProps) {
+  const t = useT();
   const handleResetFilters = useCallback(() => {
     setSelectedRoles([]);
     setPagination?.((prev) => ({ ...prev, pageIndex: 0 }));
@@ -39,13 +41,13 @@ export default function UserManagementFilters({
   const filterChipGroups = useMemo((): FilterChipGroup[] => {
     return [
       {
-        label: "Role",
+        label: t("Role"),
         values: selectedRoles,
         onClear: () => setSelectedRoles([]),
         renderBadge: (value) => <UserRoleBadge role={value} size="compact" />,
       },
     ];
-  }, [selectedRoles, setSelectedRoles]);
+  }, [selectedRoles, setSelectedRoles, t]);
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -53,7 +55,7 @@ export default function UserManagementFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by name, email, or username..."
+            placeholder={t("Search by name, email, or username...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}

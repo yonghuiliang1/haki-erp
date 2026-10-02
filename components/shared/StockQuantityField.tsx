@@ -10,6 +10,8 @@ import {
   DIALOG_FORM_ERROR_TEXT,
   DIALOG_FORM_SUCCESS_TEXT,
 } from "@/components/shared/dialog-edge-scroll";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 
 export type StockQuantityMode = "allocate" | "transfer";
 
@@ -42,33 +44,41 @@ export function getStockQuantityValidation(
   maxAvailable: number,
   mode: StockQuantityMode,
   minReserved = 0,
+  t: TranslateFn = (text) => text,
 ): { valid: boolean; message: string | null } {
   const qty = parseQty(raw);
   if (qty === null) {
-    return { valid: false, message: "Enter a whole number." };
+    return { valid: false, message: t("Enter a whole number.") };
   }
   if (qty < 0) {
-    return { valid: false, message: "Quantity cannot be negative." };
+    return { valid: false, message: t("Quantity cannot be negative.") };
   }
   if (mode === "allocate" && minReserved > 0 && qty < minReserved) {
     return {
       valid: false,
-      message: `Quantity cannot be below ${minReserved} reserved unit(s) for this warehouse.`,
+      message: t(
+        "Quantity cannot be below {min} reserved unit(s) for this warehouse.",
+        { min: minReserved },
+      ),
     };
   }
   if (mode === "transfer" && qty < 1) {
-    return { valid: false, message: "Transfer at least 1 unit." };
+    return { valid: false, message: t("Transfer at least 1 unit.") };
   }
   if (mode === "transfer" && qty > maxAvailable) {
     return {
       valid: false,
-      message: `Only ${maxAvailable} unit(s) available to transfer.`,
+      message: t("Only {max} unit(s) available to transfer.", {
+        max: maxAvailable,
+      }),
     };
   }
   if (mode === "allocate" && maxAvailable >= 0 && qty > maxAvailable) {
     return {
       valid: false,
-      message: `Only ${maxAvailable} unit(s) available in product stock.`,
+      message: t("Only {max} unit(s) available in product stock.", {
+        max: maxAvailable,
+      }),
     };
   }
   return { valid: true, message: null };
@@ -87,30 +97,44 @@ export function StockQuantityField({
   unallocatedRemaining,
   minReserved = 0,
 }: StockQuantityFieldProps) {
+  const t = useT();
   const validation = getStockQuantityValidation(
     value,
     maxAvailable,
     mode,
     minReserved,
+    t,
   );
   const qty = parseQty(value);
 
   const hint =
     mode === "transfer"
       ? maxAvailable > 0
-        ? `${maxAvailable} available in this warehouse · up to ${maxAvailable} can transfer`
-        : "Select a product with available stock"
+        ? t(
+            "{max} available in this warehouse · up to {max} can transfer",
+            { max: maxAvailable },
+          )
+        : t("Select a product with available stock")
       : minReserved > 0
-        ? `${minReserved} reserved in this warehouse · minimum ${minReserved}`
+        ? t("{min} reserved in this warehouse · minimum {min}", {
+            min: minReserved,
+          })
         : catalogTotal !== undefined && unallocatedRemaining !== undefined
-          ? `${catalogTotal} catalog total · ${allocatedTotal ?? 0} allocated · up to ${unallocatedRemaining} can be added here`
+          ? t(
+              "{catalog} catalog total · {allocated} allocated · up to {remaining} can be added here",
+              {
+                catalog: catalogTotal,
+                allocated: allocatedTotal ?? 0,
+                remaining: unallocatedRemaining,
+              },
+            )
           : null;
 
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
         <Label htmlFor={id} className="text-sm text-white/80">
-          Quantity *
+          {t("Quantity")} *
         </Label>
         {hint ? (
           <span className="text-xs text-white/80">{hint}</span>
@@ -142,8 +166,11 @@ export function StockQuantityField({
       ) : validation.valid && qty !== null && qty >= 0 && qty >= minReserved ? (
         <p className={cn("mt-1", DIALOG_FORM_SUCCESS_TEXT)}>
           {mode === "transfer"
-            ? `Transferring ${qty} of ${maxAvailable} available unit(s).`
-            : `Allocating ${qty} unit(s) to this warehouse.`}
+            ? t("Transferring {qty} of {max} available unit(s).", {
+                qty,
+                max: maxAvailable,
+              })
+            : t("Allocating {qty} unit(s) to this warehouse.", { qty })}
         </p>
       ) : null}
     </div>

@@ -85,6 +85,7 @@ import {
   APP_SHELL_DETAIL_CLASS,
   DETAIL_PAGE_HEADER_SPACING_CLASS,
 } from "@/lib/ui/shell-layout-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CategoryDetailPageProps = {
   embedInAdmin?: boolean;
@@ -98,6 +99,7 @@ export default function CategoryDetailPage({
   initialCategory,
   initialForecasting,
 }: CategoryDetailPageProps = {}) {
+  const t = useT();
   const params = useParams();
   const router = useRouter();
   const { handleBack, navigateTo } = useBackWithRefresh("category");
@@ -223,19 +225,19 @@ export default function CategoryDetailPage({
           <GlassCard variant="rose" className="max-w-md text-center">
             <GlassCardBody>
               <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-                Category Not Found
+                {t("Category Not Found")}
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {categoryQuery.error instanceof Error
                   ? categoryQuery.error.message
-                  : "Failed to load category details"}
+                  : t("Failed to load category details")}
               </p>
               <Button
                 onClick={() => router.push("/")}
                 className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                {t("Back to Home")}
               </Button>
             </GlassCardBody>
           </GlassCard>
@@ -252,17 +254,17 @@ export default function CategoryDetailPage({
           <GlassCard variant="rose" className="max-w-md text-center">
             <GlassCardBody>
               <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-                Category Not Found
+                {t("Category Not Found")}
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                The category you are looking for does not exist or was removed.
+                {t("The category you are looking for does not exist or was removed.")}
               </p>
               <Button
                 onClick={() => router.push("/")}
                 className="rounded-xl border border-gray-300/30 bg-white/50 dark:bg-white/5 dark:border-white/10 hover:bg-gray-100/50 dark:hover:bg-white/10 text-gray-700 dark:text-white"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                {t("Back to Home")}
               </Button>
             </GlassCardBody>
           </GlassCard>
@@ -331,7 +333,7 @@ export default function CategoryDetailPage({
               ) : (
                 <ClientRelativeTime
                   date={createdAt}
-                  prefix="Created "
+                  prefix={`${t("Created")} `}
                   semantic="created"
                 />
               )
@@ -344,7 +346,7 @@ export default function CategoryDetailPage({
                 <div className="flex shrink-0 flex-col items-end justify-center gap-0.5 self-center">
                   <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-gray-500 dark:text-white/60">
                     <CheckCircle2 className="h-3 w-3 shrink-0" aria-hidden />
-                    Status
+                    {t("Status")}
                   </span>
                   <ActiveInactiveBadge
                     active={Boolean(category.status)}
@@ -366,9 +368,9 @@ export default function CategoryDetailPage({
                     <Tag className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
-                    <h3 className={TYPO_CARD_TITLE}>Category Information</h3>
+                    <h3 className={TYPO_CARD_TITLE}>{t("Category Information")}</h3>
                     <p className={TYPO_SUBTITLE}>
-                      Category metadata and audit fields
+                      {t("Category metadata and audit fields")}
                     </p>
                   </div>
                 </div>
@@ -377,7 +379,7 @@ export default function CategoryDetailPage({
                   {!dataLoading && category && (
                     <DetailInfoRow
                       icon={Hash}
-                      label="Category ID:"
+                      label={t("Category ID:")}
                       tone="violet"
                     >
                       <CopyableText value={category.id}>
@@ -387,7 +389,7 @@ export default function CategoryDetailPage({
                   )}
                   <DetailInfoRow
                     icon={Tag}
-                    label="Name:"
+                    label={t("Name:")}
                     tone="orange"
                     loading={dataLoading}
                   >
@@ -398,28 +400,28 @@ export default function CategoryDetailPage({
                     )}
                   </DetailInfoRow>
                   {!dataLoading && category && (
-                    <DetailInfoRow icon={Tag} label="Status:" tone="emerald">
+                    <DetailInfoRow icon={Tag} label={t("Status:")} tone="emerald">
                       <ActiveInactiveBadge active={Boolean(category.status)} />
                     </DetailInfoRow>
                   )}
                   {!dataLoading && category?.description && (
                     <DetailInfoRow
                       icon={FileText}
-                      label="Description:"
+                      label={t("Description:")}
                       tone="amber"
                     >
                       {category.description}
                     </DetailInfoRow>
                   )}
                   {!dataLoading && category?.notes && (
-                    <DetailInfoRow icon={StickyNote} label="Notes:" tone="teal">
+                    <DetailInfoRow icon={StickyNote} label={t("Notes:")} tone="teal">
                       {category.notes}
                     </DetailInfoRow>
                   )}
                   <DetailInfoRowGroup>
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Created:"
+                      label={t("Created:")}
                       tone="teal"
                       loading={dataLoading && !createdAt}
                     >
@@ -430,7 +432,7 @@ export default function CategoryDetailPage({
                     {(dataLoading || updatedAt) && (
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Updated:"
+                        label={t("Updated:")}
                         tone="sky"
                         loading={dataLoading && !updatedAt}
                       >
@@ -441,7 +443,7 @@ export default function CategoryDetailPage({
                     )}
                   </DetailInfoRowGroup>
                   <AuditUserDetailRow
-                    label="Created by:"
+                    label={t("Created by:")}
                     tone="violet"
                     user={category?.creator}
                     loading={dataLoading && !category?.creator}
@@ -455,7 +457,7 @@ export default function CategoryDetailPage({
                     }
                   />
                   <AuditUserDetailRow
-                    label="Updated by:"
+                    label={t("Updated by:")}
                     tone="blue"
                     user={category?.updater}
                     loading={dataLoading && !category?.updater}
@@ -478,9 +480,9 @@ export default function CategoryDetailPage({
                     <BarChart3 className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
-                    <h3 className={TYPO_CARD_TITLE}>Statistics</h3>
+                    <h3 className={TYPO_CARD_TITLE}>{t("Statistics")}</h3>
                     <p className={TYPO_SUBTITLE}>
-                      Summary of products and sales data
+                      {t("Summary of products and sales data")}
                     </p>
                   </div>
                 </div>
@@ -488,7 +490,7 @@ export default function CategoryDetailPage({
                 <div className="space-y-2 mt-4">
                   <DetailInfoRow
                     icon={Package}
-                    label="Total Products:"
+                    label={t("Total Products:")}
                     tone="sky"
                     loading={dataLoading}
                   >
@@ -496,7 +498,7 @@ export default function CategoryDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={Package}
-                    label="Total Quantity Sold:"
+                    label={t("Total Quantity Sold:")}
                     tone="violet"
                     loading={dataLoading}
                   >
@@ -504,7 +506,7 @@ export default function CategoryDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={DollarSign}
-                    label="Total Revenue:"
+                    label={t("Total Revenue:")}
                     tone="emerald"
                     loading={dataLoading}
                   >
@@ -516,7 +518,7 @@ export default function CategoryDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={ShoppingCart}
-                    label="Orders Containing Products:"
+                    label={t("Orders Containing Products:")}
                     tone="amber"
                     loading={dataLoading}
                   >
@@ -524,7 +526,7 @@ export default function CategoryDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={Wallet}
-                    label="Inventory value (list price):"
+                    label={t("Inventory value (list price):")}
                     tone="blue"
                     loading={dataLoading}
                   >
@@ -534,7 +536,7 @@ export default function CategoryDetailPage({
                           ${(stats.totalValue ?? 0).toFixed(2)}
                         </span>
                         <span className={cn("text-xs", TYPO_BODY_MUTED)}>
-                          (price × on-hand qty)
+                          {t("(price × on-hand qty)")}
                         </span>
                       </span>
                     )}
@@ -552,10 +554,10 @@ export default function CategoryDetailPage({
               dataLoading={false}
               isAdminRole={isAdminRole}
               forecastLoading={forecastLoading}
-              title="Category Insights"
-              subtitle="Derived demand and inventory signals"
-              salesChartTitle="Sales Trend (6 months)"
-              salesChartDescription="Revenue from category order lines"
+              title={t("Category Insights")}
+              subtitle={t("Derived demand and inventory signals")}
+              salesChartTitle={t("Sales Trend (6 months)")}
+              salesChartDescription={t("Revenue from category order lines")}
               salesChartData={salesChartData}
               stockChartData={stockChartData}
               urgentReorderCount={categoryForecast?.urgentReorderCount}
@@ -588,8 +590,8 @@ export default function CategoryDetailPage({
                 icon={Package}
                 iconClassName="text-sky-600 dark:text-sky-400"
                 iconTile
-                title="Products in this Category"
-                subtitle="Catalog products assigned to this category"
+                title={t("Products in this Category")}
+                subtitle={t("Catalog products assigned to this category")}
                 count={
                   !dataLoading && products.length > 0
                     ? products.length
@@ -599,7 +601,7 @@ export default function CategoryDetailPage({
               <CatalogDetailProductGrid
                 loading={dataLoading}
                 products={products}
-                emptyMessage="No products in this category yet."
+                emptyMessage={t("No products in this category yet.")}
                 productHref={productHref}
                 ownerProductsHref={ownerProductsHref}
                 supplierHref={supplierHref}
@@ -616,8 +618,8 @@ export default function CategoryDetailPage({
                 icon={ShoppingCart}
                 iconClassName="text-violet-600 dark:text-violet-400"
                 iconTile
-                title="Recent Orders"
-                subtitle="Latest orders for products in this category"
+                title={t("Recent Orders")}
+                subtitle={t("Latest orders for products in this category")}
                 count={
                   !dataLoading && recentOrders.length > 0
                     ? recentOrders.length
@@ -627,7 +629,7 @@ export default function CategoryDetailPage({
               <CatalogDetailRecentOrdersList
                 loading={dataLoading}
                 orders={recentOrders}
-                emptyMessage="No recent orders for products in this category."
+                emptyMessage={t("No recent orders for products in this category.")}
                 orderHref={orderHref}
                 productHref={productHref}
                 ownerProductsHref={ownerProductsHref}
@@ -645,7 +647,7 @@ export default function CategoryDetailPage({
               className={glassDetailBackButtonClass("w-full sm:w-auto gap-2")}
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
-              Back
+              {t("Back")}
             </Button>
             <Button
               onClick={handleEditCategory}
@@ -653,7 +655,7 @@ export default function CategoryDetailPage({
               className={glassDetailFooterButtonClass("blue")}
             >
               <Edit className="h-4 w-4 shrink-0" />
-              Edit Category
+              {t("Edit Category")}
             </Button>
             <Button
               onClick={handleDuplicateCategory}
@@ -661,14 +663,14 @@ export default function CategoryDetailPage({
               className={glassDetailFooterButtonClass("violet")}
             >
               <Copy className="h-4 w-4 shrink-0" />
-              {isCopying ? "Duplicating..." : "Create Duplicate"}
+              {isCopying ? t("Duplicating...") : t("Create Duplicate")}
             </Button>
             <DialogSubmitButton
               type="button"
               onClick={() => setDeleteDialogOpen(true)}
               isPending={isDeleting}
-              pendingLabel="Deleting…"
-              label="Delete Category"
+              pendingLabel={t("Deleting…")}
+              label={t("Delete Category")}
               icon={Trash2}
               hue="rose"
               disabled={disableCrud}
@@ -680,10 +682,10 @@ export default function CategoryDetailPage({
           <AlertDialogWrapper
             open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
-            title="Are you absolutely sure?"
-            description={`This action cannot be undone. This will permanently delete the category "${category?.name ?? ""}".`}
-            actionLabel="Delete"
-            actionLoadingLabel="Deleting..."
+            title={t("Are you absolutely sure?")}
+            description={t("This action cannot be undone. This will permanently delete the category \"{name}\".", { name: category?.name ?? "" })}
+            actionLabel={t("Delete")}
+            actionLoadingLabel={t("Deleting...")}
             isLoading={isDeleting}
             onAction={handleConfirmDeleteCategory}
             onCancel={() => setDeleteDialogOpen(false)}

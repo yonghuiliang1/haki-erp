@@ -14,6 +14,7 @@ import { MdError } from "react-icons/md";
 import { Image as ImageIcon, Upload, X, Loader2 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/lib/i18n/locale-context";
 
 export default function ImageField() {
   const {
@@ -23,6 +24,7 @@ export default function ImageField() {
     formState: { errors },
   } = useFormContext();
   const { toast } = useToast();
+  const t = useT();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -44,8 +46,8 @@ export default function ImageField() {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
       toast({
-        title: "Invalid File Type",
-        description: "Only JPEG, PNG, and WebP images are allowed.",
+        title: t("Invalid File Type"),
+        description: t("Only JPEG, PNG, and WebP images are allowed."),
         variant: "destructive",
       });
       return;
@@ -55,8 +57,8 @@ export default function ImageField() {
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       toast({
-        title: "File Too Large",
-        description: "Image size must be less than 5MB.",
+        title: t("File Too Large"),
+        description: t("Image size must be less than 5MB."),
         variant: "destructive",
       });
       return;
@@ -90,14 +92,14 @@ export default function ImageField() {
       setValue("imageFileId", data.imageFileId, { shouldValidate: true });
 
       toast({
-        title: "Image Uploaded!",
-        description: "Product image has been uploaded successfully.",
+        title: t("Image Uploaded!"),
+        description: t("Product image has been uploaded successfully."),
       });
     } catch (error) {
       toast({
-        title: "Upload Failed",
+        title: t("Upload Failed"),
         description:
-          error instanceof Error ? error.message : "Failed to upload image",
+          error instanceof Error ? error.message : t("Failed to upload image"),
         variant: "destructive",
       });
     } finally {
@@ -134,7 +136,7 @@ export default function ImageField() {
   return (
     <div className="mt-5 flex h-full flex-col gap-2">
       <DialogFormLabel htmlFor="product-image" icon={ImageIcon} optional>
-        Product Image
+        {t("Product Image")}
       </DialogFormLabel>
 
       {/* Hidden input for form registration */}
@@ -146,7 +148,7 @@ export default function ImageField() {
         <div className="relative w-full">
           <SafeImage
             src={imageUrl}
-            alt="Product preview"
+            alt={t("Product preview")}
             width={256}
             height={128}
             className="w-full h-32 object-cover rounded-lg border border-rose-400/30"
@@ -177,12 +179,12 @@ export default function ImageField() {
             {isUploading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Uploading...
+                {t("Uploading...")}
               </>
             ) : (
               <>
                 <Upload className="h-4 w-4 mr-2" />
-                Upload Image
+                {t("Upload Image")}
               </>
             )}
           </Button>

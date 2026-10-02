@@ -63,6 +63,7 @@ import {
 import { Category } from "@/types";
 import { createCategoryColumns } from "./CategoryTableColumns";
 import { Plus, Tag, X, FileText, StickyNote } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 const CATEGORY_DIALOG_CONTENT_CLASS = `${DIALOG_EDGE_SCROLL_SHELL} poppins border-sky-400/30 dark:border-sky-400/30 shadow-[0_30px_80px_rgba(2,132,199,0.35)] dark:shadow-[0_30px_80px_rgba(2,132,199,0.25)]`;
 
@@ -81,6 +82,7 @@ export default function AddCategoryDialog({
   editingCategory: externalEditingCategory,
   onEditCategory,
 }: AddCategoryDialogProps = {}) {
+  const t = useT();
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Use controlled or internal state
@@ -165,8 +167,8 @@ export default function AddCategoryDialog({
   const handleAddCategory = async () => {
     if (categoryName.trim() === "") {
       toast({
-        title: "Error",
-        description: "Category name cannot be empty",
+        title: t("Error"),
+        description: t("Category name cannot be empty"),
         variant: "destructive",
       });
       return;
@@ -174,8 +176,8 @@ export default function AddCategoryDialog({
 
     if (!user?.id) {
       toast({
-        title: "Error",
-        description: "User ID is required",
+        title: t("Error"),
+        description: t("User ID is required"),
         variant: "destructive",
       });
       return;
@@ -229,8 +231,8 @@ export default function AddCategoryDialog({
 
     if (newCategoryName.trim() === "") {
       toast({
-        title: "Error",
-        description: "Category name cannot be empty",
+        title: t("Error"),
+        description: t("Category name cannot be empty"),
         variant: "destructive",
       });
       return;
@@ -314,7 +316,7 @@ export default function AddCategoryDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children || (
-          <Button className="h-10 font-medium">+Add Category</Button>
+          <Button className="h-10 font-medium">+{t("Add Category")}</Button>
         )}
       </DialogTrigger>
       <DialogContent className={CATEGORY_DIALOG_CONTENT_CLASS}>
@@ -322,11 +324,11 @@ export default function AddCategoryDialog({
           className={DIALOG_EDGE_SCROLL_HEADER}
           icon={Tag}
           tone="sky"
-          title={editingCategory ? "Edit Category" : "Add Category"}
+          title={editingCategory ? t("Edit Category") : t("Add Category")}
           description={
             editingCategory
-              ? "Update the category name"
-              : "Enter the name of the new category"
+              ? t("Update the category name")
+              : t("Enter the name of the new category")
           }
         />
         <div className={DIALOG_EDGE_SCROLL_BODY}>
@@ -336,12 +338,12 @@ export default function AddCategoryDialog({
               <div className="mt-4">
                 <div className="pb-4">
                   <DialogFormLabel icon={Tag} required wrapperClassName="mb-2">
-                    Category Name
+                    {t("Category Name")}
                   </DialogFormLabel>
                   <Input
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="Category Name"
+                    placeholder={t("Category Name")}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_SKY)}
                   />
                 </div>
@@ -351,12 +353,12 @@ export default function AddCategoryDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Description
+                    {t("Description")}
                   </DialogFormLabel>
                   <Textarea
                     value={newCategoryDescription}
                     onChange={(e) => setNewCategoryDescription(e.target.value)}
-                    placeholder="Enter category description..."
+                    placeholder={t("Enter category description...")}
                     rows={3}
                     maxLength={500}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_SKY)}
@@ -368,12 +370,12 @@ export default function AddCategoryDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Notes
+                    {t("Notes")}
                   </DialogFormLabel>
                   <Textarea
                     value={newCategoryNotes}
                     onChange={(e) => setNewCategoryNotes(e.target.value)}
-                    placeholder="Enter category notes..."
+                    placeholder={t("Enter category notes...")}
                     rows={3}
                     maxLength={1000}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_SKY)}
@@ -392,8 +394,7 @@ export default function AddCategoryDialog({
                     htmlFor="edit-category-status"
                     className="min-w-0 flex-1 text-sm font-medium leading-snug text-white/80 cursor-pointer"
                   >
-                    Active (Inactive categories will not appear while creating
-                    products)
+                    {t("Active (Inactive categories will not appear while creating products)")}
                   </Label>
                 </div>
                 <DialogFooter className="mt-9 mb-4 flex w-full min-w-0 flex-col sm:flex-row items-center gap-2">
@@ -406,14 +407,14 @@ export default function AddCategoryDialog({
                     )}
                   >
                     <X className="h-4 w-4 shrink-0" aria-hidden />
-                    Cancel
+                    {t("Cancel")}
                   </Button>
                   <DialogSubmitButton
                     type="button"
                     onClick={handleUpdateCategory}
                     isPending={isEditing}
-                    pendingLabel="Saving…"
-                    label="Save Changes"
+                    pendingLabel={t("Saving…")}
+                    label={t("Save Changes")}
                     icon={Plus}
                     hue="sky"
                     disabled={!isEditValid}
@@ -425,12 +426,12 @@ export default function AddCategoryDialog({
               <>
                 <div className="pb-4">
                   <DialogFormLabel icon={Tag} required wrapperClassName="mb-2">
-                    Category Name
+                    {t("Category Name")}
                   </DialogFormLabel>
                   <Input
                     value={categoryName}
                     onChange={(e) => setCategoryName(e.target.value)}
-                    placeholder="New Category"
+                    placeholder={t("New Category")}
                     className={cn("w-full", DIALOG_FORM_FIELD_SKY)}
                   />
                 </div>
@@ -440,12 +441,12 @@ export default function AddCategoryDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Description
+                    {t("Description")}
                   </DialogFormLabel>
                   <Textarea
                     value={categoryDescription}
                     onChange={(e) => setCategoryDescription(e.target.value)}
-                    placeholder="Enter category description..."
+                    placeholder={t("Enter category description...")}
                     rows={3}
                     maxLength={500}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_SKY)}
@@ -457,12 +458,12 @@ export default function AddCategoryDialog({
                     optional
                     wrapperClassName="mb-2"
                   >
-                    Notes
+                    {t("Notes")}
                   </DialogFormLabel>
                   <Textarea
                     value={categoryNotes}
                     onChange={(e) => setCategoryNotes(e.target.value)}
-                    placeholder="Enter category notes..."
+                    placeholder={t("Enter category notes...")}
                     rows={3}
                     maxLength={1000}
                     className={cn("mt-2 w-full", DIALOG_FORM_FIELD_SKY)}
@@ -481,8 +482,7 @@ export default function AddCategoryDialog({
                     htmlFor="category-status"
                     className="min-w-0 flex-1 text-sm font-medium leading-snug text-white/80 cursor-pointer"
                   >
-                    Active (Inactive categories will not appear while creating
-                    products)
+                    {t("Active (Inactive categories will not appear while creating products)")}
                   </Label>
                 </div>
                 <DialogFooter className="mt-9 mb-4 flex w-full min-w-0 flex-col sm:flex-row items-center gap-2">
@@ -495,15 +495,15 @@ export default function AddCategoryDialog({
                       )}
                     >
                       <X className="h-4 w-4 shrink-0" aria-hidden />
-                      Cancel
+                      {t("Cancel")}
                     </Button>
                   </DialogClose>
                   <DialogSubmitButton
                     type="button"
                     onClick={handleAddCategory}
                     isPending={isSubmitting}
-                    pendingLabel="Creating…"
-                    label="Add Category"
+                    pendingLabel={t("Creating…")}
+                    label={t("Add Category")}
                     icon={Plus}
                     hue="sky"
                     disabled={!isAddValid}
@@ -521,7 +521,7 @@ export default function AddCategoryDialog({
                   DIALOG_TABLE_SECTION_TITLE,
                 )}
               >
-                Categories{" "}
+                {t("Categories")}{" "}
                 {categories && categories.length > 0 && (
                   <span className={DIALOG_TABLE_SECTION_TITLE}>
                     ({categories.length})
@@ -561,7 +561,7 @@ export default function AddCategoryDialog({
                           colSpan={columns.length}
                           className={cn("text-center", DIALOG_TABLE_TEXT_MUTED)}
                         >
-                          Loading...
+                          {t("Loading...")}
                         </TableCell>
                       </TableRow>
                     ) : table.getRowModel().rows?.length ? (
@@ -597,7 +597,7 @@ export default function AddCategoryDialog({
                           colSpan={columns.length}
                           className={cn("text-center", DIALOG_TABLE_TEXT_MUTED)}
                         >
-                          No categories found.
+                          {t("No categories found.")}
                         </TableCell>
                       </TableRow>
                     )}

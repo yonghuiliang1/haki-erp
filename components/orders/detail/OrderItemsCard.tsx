@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { TYPO_CARD_TITLE, TYPO_SUBTITLE } from "@/lib/ui/typography-scale";
 import { GlassCard } from "./order-detail-primitives";
 import type { OrderReviewContext } from "@/lib/server/order-review-context-data";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type OrderItemsCardProps = {
   order?: Order;
@@ -37,6 +38,7 @@ export function OrderItemsCard({
   initialReviewContext,
   className,
 }: OrderItemsCardProps) {
+  const t = useT();
   const itemCount = order?.items?.length ?? 0;
 
   const description = dataLoading ? (
@@ -44,7 +46,12 @@ export function OrderItemsCard({
   ) : (
     <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
       <span>
-        {itemCount} item{itemCount !== 1 ? "s" : ""} in this order
+        {t(
+          itemCount !== 1
+            ? "{count} items in this order"
+            : "{count} item in this order",
+          { count: itemCount },
+        )}
       </span>
       {order?.createdAt ? (
         <>
@@ -60,7 +67,7 @@ export function OrderItemsCard({
   return (
     <GlassCard variant="sky" className={cn("h-full", className)}>
       <SectionCardHeader
-        title="Order Items"
+        title={t("Order Items")}
         description={description}
         icon={Package}
         tone="sky"
@@ -92,7 +99,7 @@ export function OrderItemsCard({
             warehouseLinkMode={warehouseLinkMode}
             orderSubtotal={order?.subtotal}
             orderTotal={order?.total}
-            emptyMessage="No items in this order"
+            emptyMessage={t("No items in this order")}
             showReviews
             order={order}
             initialReviewContext={initialReviewContext}

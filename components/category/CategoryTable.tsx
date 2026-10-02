@@ -27,6 +27,7 @@ import { useClampPaginationIndex } from "@/hooks/use-clamp-pagination-index";
 import { Button } from "@/components/ui/button";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Props for CategoryTable component
@@ -58,6 +59,7 @@ export const CategoryTable = React.memo(function CategoryTable({
   setPagination,
   statusFilter,
 }: CategoryTableProps<Category, unknown>) {
+  const t = useT();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   /**
@@ -159,7 +161,7 @@ export const CategoryTable = React.memo(function CategoryTable({
                     colSpan={columns.length}
                     className="text-center text-gray-700 dark:text-white"
                   >
-                    No categories added/found.
+                    {t("No categories added/found.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -199,7 +201,10 @@ export const CategoryTable = React.memo(function CategoryTable({
             <GrFormPrevious />
           </Button>
           <span className="text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+            {t("Page {page} of {total}", {
+              page: pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </span>
           <Button
             variant="outline"

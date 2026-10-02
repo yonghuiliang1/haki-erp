@@ -30,6 +30,7 @@ import { useClampPaginationIndex } from "@/hooks/use-clamp-pagination-index";
 import { Button } from "@/components/ui/button";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
+import { useT } from "@/lib/i18n/locale-context";
 import type { UserForAdmin } from "@/types";
 
 interface UserManagementTableProps {
@@ -53,6 +54,7 @@ export const UserManagementTable = React.memo(function UserManagementTable({
   setPagination,
   selectedRoles,
 }: UserManagementTableProps) {
+  const t = useT();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const filteredData = useMemo(() => {
@@ -140,7 +142,7 @@ export const UserManagementTable = React.memo(function UserManagementTable({
                     colSpan={columns.length}
                     className="text-center text-gray-700 dark:text-white"
                   >
-                    No users found.
+                    {t("No users found.")}
                   </TableCell>
                 </TableRow>
               )}
@@ -177,7 +179,10 @@ export const UserManagementTable = React.memo(function UserManagementTable({
             <GrFormPrevious />
           </Button>
           <span className="text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+            {t("Page {page} of {total}", {
+              page: pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </span>
           <Button
             variant="outline"

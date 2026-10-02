@@ -19,6 +19,7 @@ import ProductReviewDialog from "./ProductReviewDialog";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
+import { useT } from "@/lib/i18n/locale-context";
 import type { ProductReview } from "@/types";
 import type { DashboardStats } from "@/types";
 
@@ -35,6 +36,7 @@ export default function ProductReviewList({
   initialReviews,
   initialStats,
 }: ProductReviewListProps = {}) {
+  const t = useT();
   const { user } = useAuth();
   const isMountedRef = useRef(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -74,8 +76,8 @@ export default function ProductReviewList({
       2: "not good",
       1: "bad",
     };
-    return labels[r] ?? "—";
-  }, [avgRating]);
+    return labels[r] ? t(labels[r]) : "—";
+  }, [avgRating, t]);
 
   useEffect(() => {
     if (!isMountedRef.current) {
@@ -109,48 +111,50 @@ export default function ProductReviewList({
         as="h2"
         icon={Star}
         tone="amber"
-        title="Store Product Reviews (your products)"
-        description="Manage and moderate product reviews. Approve or reject, view by product, rating, and status. Add reviews for products."
+        title={t("Store Product Reviews (your products)")}
+        description={t(
+          "Manage and moderate product reviews. Approve or reject, view by product, rating, and status. Add reviews for products.",
+        )}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 pb-6 items-stretch">
         <StatisticsCard
-          title="Reviews"
+          title={t("Reviews")}
           value={dashboard?.counts?.reviews ?? allReviews.length}
-          description="Product reviews"
+          description={t("Product reviews")}
           icon={Star}
           variant="violet"
           valueLoading={dashboardCardsLoading}
           badgeValuesLoading={dashboardCardsLoading}
           badges={[
             {
-              label: "Pending",
+              label: t("Pending"),
               value: dashboard?.reviewStatusBreakdown?.pending ?? 0,
             },
             {
-              label: "Approved",
+              label: t("Approved"),
               value: dashboard?.reviewStatusBreakdown?.approved ?? 0,
             },
             {
-              label: "Rejected",
+              label: t("Rejected"),
               value: dashboard?.reviewStatusBreakdown?.rejected ?? 0,
             },
           ]}
         />
         <StatisticsCard
-          title="Avg. Rating"
+          title={t("Avg. Rating")}
           value={avgRating > 0 ? `${avgRating} · ${avgRatingLabel}` : "—"}
-          description="Average among your product reviews"
+          description={t("Average among your product reviews")}
           icon={Star}
           variant="amber"
           valueLoading={reviewsCardsLoading}
           badgeValuesLoading={reviewsCardsLoading}
           badges={[
-            { label: "5 best", value: ratingBreakdown.r5 },
-            { label: "4 very good", value: ratingBreakdown.r4 },
-            { label: "3 good", value: ratingBreakdown.r3 },
-            { label: "2 not good", value: ratingBreakdown.r2 },
-            { label: "1 bad", value: ratingBreakdown.r1 },
+            { label: t("5 best"), value: ratingBreakdown.r5 },
+            { label: t("4 very good"), value: ratingBreakdown.r4 },
+            { label: t("3 good"), value: ratingBreakdown.r3 },
+            { label: t("2 not good"), value: ratingBreakdown.r2 },
+            { label: t("1 bad"), value: ratingBreakdown.r1 },
           ]}
         />
       </div>
@@ -173,7 +177,7 @@ export default function ProductReviewList({
               trigger={
                 <Button className="h-10 rounded-[28px] border border-violet-400/30 dark:border-violet-400/30 bg-gradient-to-r from-violet-500/70 via-violet-500/50 to-violet-500/30 dark:from-violet-500/70 dark:via-violet-500/50 dark:to-violet-500/30 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] flex items-center gap-2">
                   <Star className="h-4 w-4" />
-                  Add Review
+                  {t("Add Review")}
                 </Button>
               }
             />

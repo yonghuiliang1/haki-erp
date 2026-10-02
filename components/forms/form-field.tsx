@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Reusable Form Field Component
  * Generic form field wrapper with label, input, and error display
@@ -10,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { MdError } from "react-icons/md";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Props for FormField component
@@ -82,6 +85,7 @@ export function FormField({
     register,
     formState: { errors },
   } = useFormContext();
+  const t = useT();
 
   const fieldError = errors[name];
   const displayError = errorMessage || fieldError?.message;
@@ -110,7 +114,7 @@ export function FormField({
       {displayError && (
         <div className="text-red-500 flex gap-1 items-center text-[13px]">
           <MdError />
-          <p>{String(displayError)}</p>
+          <p>{t(String(displayError))}</p>
         </div>
       )}
     </div>

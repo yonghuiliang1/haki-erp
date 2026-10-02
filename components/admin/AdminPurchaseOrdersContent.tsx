@@ -33,6 +33,7 @@ import {
   useReceivePurchaseOrder,
 } from "@/hooks/queries";
 import { apiClient } from "@/lib/api";
+import { useT } from "@/lib/i18n/locale-context";
 import { isDataSlotUnsettled } from "@/lib/react-query";
 import { cn } from "@/lib/utils";
 import { formatStableCurrency } from "@/lib/format";
@@ -70,6 +71,7 @@ function PurchaseStatusBadge({ status }: { status: PurchaseOrderStatus }) {
 export default function AdminPurchaseOrdersContent({
   initialOrders,
 }: AdminPurchaseOrdersContentProps) {
+  const t = useT();
   const ordersQuery = usePurchaseOrders(initialOrders);
   const orders = ordersQuery.data ?? initialOrders ?? [];
   const dataLoading = isDataSlotUnsettled(ordersQuery, initialOrders);
@@ -94,8 +96,10 @@ export default function AdminPurchaseOrdersContent({
           as="h2"
           icon={ClipboardList}
           tone="teal"
-          title="Purchase Orders"
-          description="Order stock from suppliers and receive it into inventory."
+          title={t("Purchase Orders")}
+          description={t(
+            "Order stock from suppliers and receive it into inventory.",
+          )}
         />
 
         <div className="flex justify-end">
@@ -104,7 +108,7 @@ export default function AdminPurchaseOrdersContent({
             className="h-10 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/40 via-cyan-500/30 to-cyan-500/20 text-white shadow-[0_15px_35px_rgba(6,182,212,0.35)] backdrop-blur-md"
           >
             <Plus className="h-4 w-4 mr-1" />
-            New Purchase Order
+            {t("New Purchase Order")}
           </Button>
         </div>
 
@@ -112,13 +116,13 @@ export default function AdminPurchaseOrdersContent({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Purchase #</TableHead>
-                <TableHead>Supplier</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-                <TableHead>Expected</TableHead>
-                <TableHead>Received</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("Purchase #")}</TableHead>
+                <TableHead>{t("Supplier")}</TableHead>
+                <TableHead>{t("Status")}</TableHead>
+                <TableHead className="text-right">{t("Total")}</TableHead>
+                <TableHead>{t("Expected")}</TableHead>
+                <TableHead>{t("Received")}</TableHead>
+                <TableHead className="text-right">{t("Actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -133,8 +137,8 @@ export default function AdminPurchaseOrdersContent({
                     <TableCell className="font-mono text-xs text-gray-700 dark:text-white">
                       {order.purchaseNo}
                       <span className="block text-[10px] text-gray-500 dark:text-gray-400">
-                        {order.items.length} line
-                        {order.items.length === 1 ? "" : "s"}
+                        {order.items.length}{" "}
+                        {t(order.items.length === 1 ? "line" : "lines")}
                       </span>
                     </TableCell>
                     <TableCell className="text-sm text-gray-700 dark:text-white">
@@ -171,7 +175,7 @@ export default function AdminPurchaseOrdersContent({
                         <a
                           href={apiClient.purchaseOrders.exportCsvUrl(order.id)}
                           className="inline-flex h-8 items-center gap-1 rounded-lg border border-sky-400/30 bg-sky-500/10 px-2.5 text-xs text-sky-600 dark:text-sky-300 hover:bg-sky-500/20"
-                          title="Export line items as CSV"
+                          title={t("Export line items as CSV")}
                         >
                           <Download className="h-3.5 w-3.5" />
                           CSV
@@ -189,7 +193,7 @@ export default function AdminPurchaseOrdersContent({
                             ) : (
                               <PackageCheck className="h-3.5 w-3.5" />
                             )}
-                            Receive
+                            {t("Receive")}
                           </Button>
                         )}
                       </div>
@@ -203,8 +207,9 @@ export default function AdminPurchaseOrdersContent({
                     colSpan={7}
                     className="text-center text-muted-foreground py-8"
                   >
-                    No purchase orders yet — create the first one from a
-                    supplier.
+                    {t(
+                      "No purchase orders yet — create the first one from a supplier.",
+                    )}
                   </TableCell>
                 </TableRow>
               )}
@@ -221,10 +226,16 @@ export default function AdminPurchaseOrdersContent({
           onOpenChange={(open) => {
             if (!open) setReceiveTarget(null);
           }}
-          title="Receive Purchase Order"
-          description={`Receiving ${receiveTarget.purchaseNo} adds ${receiveTarget.items.length} line(s) to inventory. This cannot be undone.`}
-          actionLabel="Receive"
-          actionLoadingLabel="Receiving..."
+          title={t("Receive Purchase Order")}
+          description={t(
+            "Receiving {purchaseNo} adds {count} line(s) to inventory. This cannot be undone.",
+            {
+              purchaseNo: receiveTarget.purchaseNo,
+              count: receiveTarget.items.length,
+            },
+          )}
+          actionLabel={t("Receive")}
+          actionLoadingLabel={t("Receiving...")}
           isLoading={receiveMutation.isPending}
           onAction={handleReceive}
           onCancel={() => setReceiveTarget(null)}

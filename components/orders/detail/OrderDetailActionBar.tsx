@@ -35,6 +35,7 @@ import {
 import type { Order } from "@/types";
 import { resolveOrderPayAmount } from "@/lib/payments/resolve-order-pay-amount";
 import { canGenerateShippingLabel } from "@/lib/orders/order-ship-eligibility";
+import { useT } from "@/lib/i18n/locale-context";
 import { OrderApprovalActions } from "./OrderApprovalActions";
 
 export type OrderDetailActionBarProps = {
@@ -78,6 +79,7 @@ export function OrderDetailActionBar({
   onCancelClick,
   onRefundClick,
 }: OrderDetailActionBarProps) {
+  const t = useT();
   // mode still gates the approval controls (admin only); payment gates stay
   // paymentStatus-based (REQ-0209).
   const actionsDisabled = dataLoading || !order || disableOrderActions;
@@ -116,7 +118,7 @@ export function OrderDetailActionBar({
         className={glassDetailBackButtonClass("w-full sm:w-auto gap-2")}
       >
         <ArrowLeft className="h-4 w-4 shrink-0" />
-        Back
+        {t("Back")}
       </Button>
 
       <Tooltip>
@@ -129,16 +131,16 @@ export function OrderDetailActionBar({
               className={glassDetailFooterButtonClass("blue")}
             >
               <Edit className="h-4 w-4 shrink-0" />
-              Update Order
+              {t("Update Order")}
             </Button>
           </span>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="max-w-xs">
           {isCancelled
-            ? "Cancelled orders cannot be updated."
+            ? t("Cancelled orders cannot be updated.")
             : disableOrderActions
-              ? "Only the admin who owns the order can update it."
-              : "Edit order details."}
+              ? t("Only the admin who owns the order can update it.")
+              : t("Edit order details.")}
         </TooltipContent>
       </Tooltip>
 
@@ -155,7 +157,7 @@ export function OrderDetailActionBar({
         <Button asChild className={glassDetailFooterButtonClass("indigo")}>
           <Link href={`${invoiceHrefBase}/${order.invoiceForOrder.id}`}>
             <FileText className="h-4 w-4 shrink-0" />
-            View Invoice
+            {t("View Invoice")}
           </Link>
         </Button>
       ) : (
@@ -168,7 +170,7 @@ export function OrderDetailActionBar({
             className={glassDetailFooterButtonClass("indigo")}
           >
             <FilePlus2 className="h-4 w-4 shrink-0" />
-            Create Invoice
+            {t("Create Invoice")}
           </Button>
         )
       )}
@@ -205,7 +207,9 @@ export function OrderDetailActionBar({
                     className={glassDetailFooterButtonClass("emerald")}
                   >
                     <CreditCard className="h-4 w-4 shrink-0" />
-                    Pay {formatStableCurrency(payAmount)}
+                    {t("Pay {amount}", {
+                      amount: formatStableCurrency(payAmount),
+                    })}
                   </Button>
                 }
               />
@@ -213,8 +217,8 @@ export function OrderDetailActionBar({
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-xs">
             {isSupplierRole
-              ? "Only the order creator or client can complete payment."
-              : "Complete payment for this order via Stripe."}
+              ? t("Only the order creator or client can complete payment.")
+              : t("Complete payment for this order via Stripe.")}
           </TooltipContent>
         </Tooltip>
       )}
@@ -229,7 +233,7 @@ export function OrderDetailActionBar({
               className={glassDetailFooterButtonClass("violet")}
             >
               <Truck className="h-4 w-4 shrink-0" />
-              Ship Order
+              {t("Ship Order")}
             </Button>
           }
         />
@@ -243,8 +247,8 @@ export function OrderDetailActionBar({
                 type="button"
                 onClick={onCancelClick}
                 isPending={isCancelling}
-                pendingLabel="Cancelling…"
-                label="Cancel Order"
+                pendingLabel={t("Cancelling…")}
+                label={t("Cancel Order")}
                 icon={Ban}
                 hue="rose"
                 disabled={actionsDisabled}
@@ -254,8 +258,8 @@ export function OrderDetailActionBar({
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-xs">
             {disableOrderActions
-              ? "Only the admin who owns the order can cancel it."
-              : "Cancel this order."}
+              ? t("Only the admin who owns the order can cancel it.")
+              : t("Cancel this order.")}
           </TooltipContent>
         </Tooltip>
       )}
@@ -268,8 +272,8 @@ export function OrderDetailActionBar({
                 type="button"
                 onClick={onRefundClick}
                 isPending={isRefunding}
-                pendingLabel="Processing…"
-                label="Process Refund"
+                pendingLabel={t("Processing…")}
+                label={t("Process Refund")}
                 icon={RefreshCw}
                 hue="rose"
                 // REQ-0214 — same disableOrderActions gate as Cancel Order (client/supplier)
@@ -280,8 +284,10 @@ export function OrderDetailActionBar({
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-xs">
             {disableOrderActions
-              ? "Only the admin who owns the order can process a refund."
-              : "Cancel the order and issue a full refund via Stripe. Stock will be restored and the linked invoice cancelled."}
+              ? t("Only the admin who owns the order can process a refund.")
+              : t(
+                  "Cancel the order and issue a full refund via Stripe. Stock will be restored and the linked invoice cancelled.",
+                )}
           </TooltipContent>
         </Tooltip>
       )}

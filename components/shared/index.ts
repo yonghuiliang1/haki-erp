@@ -144,6 +144,8 @@ export {
 export type { SemanticDateKind } from "@/lib/ui/semantic-date-styles";
 export { DataSlotPulse } from "./DataSlotPulse";
 export type { DataSlotPulseProps, DataSlotPulseVariant } from "./DataSlotPulse";
+export { LocaleSwitcher } from "./LocaleSwitcher";
+export type { LocaleSwitcherProps } from "./LocaleSwitcher";
 export { SectionCardHeader } from "./SectionCardHeader";
 export type { SectionCardHeaderProps } from "./SectionCardHeader";
 export { AuditUserDetailRow } from "./AuditUserDetailRow";

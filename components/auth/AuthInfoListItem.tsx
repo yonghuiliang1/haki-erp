@@ -6,6 +6,7 @@ import { AuthAnimatedBlock } from "@/components/auth/AuthAnimatedBlock";
 import { AUTH_STAGGER_MS } from "@/components/auth/auth-animation";
 import { AUTH_LIST_ICON_STYLES } from "@/components/auth/auth-list-styles";
 import { AUTH_LIST_ROW_GLASS } from "@/components/auth/auth-glass-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 type AuthInfoListItemProps = {
   item: AuthPanelListItem;
@@ -21,6 +22,7 @@ export function AuthInfoListItem({
   item,
   staggerIndex,
 }: AuthInfoListItemProps) {
+  const t = useT();
   const { icon: Icon, hue, title, description } = item;
   const styles = AUTH_LIST_ICON_STYLES[hue];
 
@@ -37,10 +39,10 @@ export function AuthInfoListItem({
         </div>
         <div className="min-w-0 space-y-0.5 text-left">
           <h3 className="text-sm font-medium leading-snug text-gray-700 dark:text-white">
-            {title}
+            {t(title)}
           </h3>
           <p className="text-sm leading-snug text-gray-600 dark:text-white/80">
-            {description}
+            {t(description)}
           </p>
         </div>
       </div>

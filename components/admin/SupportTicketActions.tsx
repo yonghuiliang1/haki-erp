@@ -22,6 +22,7 @@ import TicketReassignDialog from "@/components/support-tickets/TicketReassignDia
 import { useDeleteSupportTicket } from "@/hooks/queries";
 import { useAuth } from "@/contexts";
 import { logger } from "@/lib/logger";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   MoreVertical,
   Eye,
@@ -51,6 +52,7 @@ export default function SupportTicketActions({
   productOwners = [],
   dialogVariant = "violet",
 }: SupportTicketActionsProps) {
+  const t = useT();
   const { user } = useAuth();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -78,15 +80,21 @@ export default function SupportTicketActions({
 
   const descPreview = truncateTicketDescription(ticket.description, 80);
   const deleteDescription = descPreview
-    ? `This will permanently delete the ticket "${ticket.subject}": ${descPreview}`
-    : `This will permanently delete the ticket "${ticket.subject}". This action cannot be undone.`;
+    ? t(
+        'This will permanently delete the ticket "{subject}": {preview}',
+        { subject: ticket.subject, preview: descPreview },
+      )
+    : t(
+        'This will permanently delete the ticket "{subject}". This action cannot be undone.',
+        { subject: ticket.subject },
+      );
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
@@ -97,7 +105,7 @@ export default function SupportTicketActions({
           <DropdownMenuItem asChild>
             <Link href={detailHref} className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </Link>
           </DropdownMenuItem>
           {canMutate ? (
@@ -106,7 +114,7 @@ export default function SupportTicketActions({
               className="flex items-center gap-2"
             >
               <Pencil className="h-4 w-4" />
-              Edit Ticket
+              {t("Edit Ticket")}
             </DropdownMenuItem>
           ) : null}
           {canReassign ? (
@@ -115,7 +123,7 @@ export default function SupportTicketActions({
               className="flex items-center gap-2"
             >
               <UserRoundPen className="h-4 w-4" />
-              Reassign…
+              {t("Reassign…")}
             </DropdownMenuItem>
           ) : null}
           {canMutate ? (
@@ -125,7 +133,7 @@ export default function SupportTicketActions({
               className="flex items-center gap-2 text-red-600 dark:text-red-400"
             >
               <Trash2 className="h-4 w-4" />
-              {isDeleting ? "Deleting..." : "Delete Ticket"}
+              {isDeleting ? t("Deleting...") : t("Delete Ticket")}
             </DropdownMenuItem>
           ) : null}
         </DropdownMenuContent>
@@ -154,10 +162,10 @@ export default function SupportTicketActions({
       <AlertDialogWrapper
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete support ticket?"
+        title={t("Delete support ticket?")}
         description={deleteDescription}
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={isDeleting}
         onAction={handleDelete}
         onCancel={() => setDeleteDialogOpen(false)}

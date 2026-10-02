@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import { DataSlotPulse } from "@/components/shared";
 import type { Order } from "@/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import {
   formatAddress,
   GlassCard,
@@ -20,6 +21,7 @@ export function OrderShippingAddressCard({
   order,
   dataLoading,
 }: OrderShippingAddressCardProps) {
+  const t = useT();
   if (!dataLoading && !order?.shippingAddress) return null;
 
   return (
@@ -35,7 +37,7 @@ export function OrderShippingAddressCard({
           <MapPin className="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
         <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-          Shipping Address
+          {t("Shipping Address")}
         </h3>
       </div>
       <p className="text-sm text-gray-700 dark:text-white p-2 rounded-xl bg-gradient-to-r from-violet-100/40 via-violet-50/20 to-transparent dark:from-violet-500/10 dark:via-violet-500/5 dark:to-transparent border border-violet-200/30 dark:border-violet-400/10">

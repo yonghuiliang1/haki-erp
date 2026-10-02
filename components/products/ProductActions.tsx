@@ -1,3 +1,5 @@
+"use client";
+
 import { Product } from "@/types";
 import { useProductStore } from "@/stores";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,7 @@ import { useState } from "react";
 import { AlertDialogWrapper } from "@/components/dialogs";
 import WriteEditReviewDialog from "@/components/product-reviews/WriteEditReviewDialog";
 import type { ProductReview } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface ProductsDropDownProps {
   row: {
@@ -47,6 +50,7 @@ export default function ProductsDropDown({
   // Keep UI state in Zustand (setSelectedProduct, setOpenProductDialog)
   const { setSelectedProduct, setOpenProductDialog } = useProductStore();
   const { user } = useAuth();
+  const t = useT();
 
   // Use TanStack Query mutations
   const createProductMutation = useCreateProduct();
@@ -164,7 +168,7 @@ export default function ProductsDropDown({
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
@@ -182,7 +186,7 @@ export default function ProductsDropDown({
               className="flex items-center gap-2"
             >
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </Link>
           </DropdownMenuItem>
           {!readOnlyCatalog && (
@@ -193,14 +197,14 @@ export default function ProductsDropDown({
                 className="flex items-center gap-2"
               >
                 <Copy className="h-4 w-4" />
-                {isCopying ? "Duplicating..." : "Create Duplicate"}
+                {isCopying ? t("Duplicating...") : t("Create Duplicate")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleEditProduct}
                 className="flex items-center gap-2"
               >
                 <Edit className="h-4 w-4" />
-                Edit Product
+                {t("Edit Product")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setDeleteDialogOpen(true)}
@@ -208,7 +212,7 @@ export default function ProductsDropDown({
                 className="flex items-center gap-2 text-red-600 dark:text-red-400"
               >
                 <Trash2 className="h-4 w-4" />
-                {isDeleting ? "Deleting..." : "Delete Product"}
+                {isDeleting ? t("Deleting...") : t("Delete Product")}
               </DropdownMenuItem>
             </>
           )}
@@ -220,11 +224,11 @@ export default function ProductsDropDown({
             title={
               canWriteReview
                 ? undefined
-                : "Purchase this product to write a review"
+                : t("Purchase this product to write a review")
             }
           >
             <Star className="h-4 w-4" />
-            Write Review
+            {t("Write Review")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleOpenEditReview}
@@ -232,7 +236,7 @@ export default function ProductsDropDown({
             className="flex items-center gap-2"
           >
             <Pencil className="h-4 w-4" />
-            Edit Review
+            {t("Edit Review")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => myReviews[0] && setDeleteReviewId(myReviews[0].id)}
@@ -240,7 +244,7 @@ export default function ProductsDropDown({
             className="flex items-center gap-2 text-red-600 dark:text-red-400"
           >
             <Trash2 className="h-4 w-4" />
-            Delete Review
+            {t("Delete Review")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -262,10 +266,10 @@ export default function ProductsDropDown({
       <AlertDialogWrapper
         open={!!deleteReviewId}
         onOpenChange={(open) => !open && setDeleteReviewId(null)}
-        title="Delete Review"
-        description="Are you sure you want to delete this review? This cannot be undone."
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        title={t("Delete Review")}
+        description={t("Are you sure you want to delete this review? This cannot be undone.")}
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={deleteReviewMutation.isPending}
         onAction={handleConfirmDeleteReview}
         onCancel={() => setDeleteReviewId(null)}
@@ -275,10 +279,13 @@ export default function ProductsDropDown({
       <AlertDialogWrapper
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Product"
-        description={`Are you sure you want to delete "${row.original.name}"? This action cannot be undone.`}
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        title={t("Delete Product")}
+        description={t(
+          'Are you sure you want to delete "{name}"? This action cannot be undone.',
+          { name: row.original.name },
+        )}
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={isDeleting}
         onAction={handleConfirmDeleteProduct}
         onCancel={() => setDeleteDialogOpen(false)}

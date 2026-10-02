@@ -97,6 +97,7 @@ import {
 import { useAuth } from "@/contexts";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** ISO date string for native date inputs (REQ-0126). */
 function toDateInputValue(value?: Date | string | null): string {
@@ -162,6 +163,7 @@ export default function OrderDialog({
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const t = useT();
 
   // Use controlled or internal state
   const isControlled = controlledOpen !== undefined;
@@ -203,8 +205,8 @@ export default function OrderDialog({
   // When client creates order and selected owner has no products, show dynamic placeholder in product dropdown
   const productSelectPlaceholder =
     isClientCreatingOrder && clientProducts.length === 0 && productOwner
-      ? `${productOwner.name} hasn't added any products yet`
-      : "Select Product";
+      ? t("{name} hasn't added any products yet", { name: productOwner.name })
+      : t("Select Product");
 
   // Filter to only show available products (status !== "Stock Out")
   const availableProducts = useMemo(
@@ -410,7 +412,7 @@ export default function OrderDialog({
             stockCheck.message ??
             `Insufficient stock for ${product.name}. Available: ${stockCheck.maxQty}`;
           toast({
-            title: "Insufficient stock",
+            title: t("Insufficient stock"),
             description: msg,
             variant: "destructive",
           });
@@ -732,7 +734,7 @@ export default function OrderDialog({
       <DialogTrigger asChild>
         {children || (
           <Button className="h-10 font-medium inline-flex items-center justify-center rounded-xl border border-violet-400/30 dark:border-violet-400/30 bg-gradient-to-r from-violet-500/40 via-violet-500/30 to-violet-500/20 dark:from-violet-500/40 dark:via-violet-500/30 dark:to-violet-500/20 text-white shadow-[0_15px_35px_rgba(139,92,246,0.35)] backdrop-blur-md transition duration-200 hover:border-violet-300/50 hover:from-violet-500/50 hover:via-violet-500/40 hover:to-violet-500/30 dark:hover:border-violet-300/50 dark:hover:from-violet-500/50 dark:hover:via-violet-500/40 dark:hover:to-violet-500/30">
-            + Create Order
+            + {t("Create Order")}
           </Button>
         )}
       </DialogTrigger>
@@ -745,13 +747,15 @@ export default function OrderDialog({
           tone="violet"
           title={
             editingOrder
-              ? `Edit Order ${editingOrder.orderNumber}`
-              : "Create New Order"
+              ? t("Edit Order {number}", { number: editingOrder.orderNumber })
+              : t("Create New Order")
           }
           description={
             editingOrder
-              ? "Update order status, payment status, tracking information, and notes."
-              : "Add products, quantities, addresses, and order details below."
+              ? t(
+                  "Update order status, payment status, tracking information, and notes.",
+                )
+              : t("Add products, quantities, addresses, and order details below.")
           }
         />
 
@@ -763,7 +767,7 @@ export default function OrderDialog({
                 {/* Order Status */}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-white/80">
-                    Order Status
+                    {t("Order Status")}
                   </label>
                   <DeferredSelectGate
                     enabled={open}
@@ -775,12 +779,14 @@ export default function OrderDialog({
                         )}
                         aria-hidden
                       >
-                        {orderStatusOptions.find(
-                          (o) =>
-                            o.value ===
-                            (editFormMethods.watch("status") ||
-                              editingOrder.status),
-                        )?.label ?? "Select Status"}
+                        {t(
+                          orderStatusOptions.find(
+                            (o) =>
+                              o.value ===
+                              (editFormMethods.watch("status") ||
+                                editingOrder.status),
+                          )?.label ?? "Select Status",
+                        )}
                       </div>
                     }
                   >
@@ -798,7 +804,7 @@ export default function OrderDialog({
                         }
                       >
                         <SelectTrigger className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}>
-                          <SelectValue placeholder="Select Status" />
+                          <SelectValue placeholder={t("Select Status")} />
                         </SelectTrigger>
                         <SelectContent
                           className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -812,7 +818,7 @@ export default function OrderDialog({
                               value={option.value}
                               className={DIALOG_SELECT_ITEM_CLASS}
                             >
-                              {option.label}
+                              {t(option.label)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -824,7 +830,7 @@ export default function OrderDialog({
                 {/* Payment Status */}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-white/80">
-                    Payment Status
+                    {t("Payment Status")}
                   </label>
                   <DeferredSelectGate
                     enabled={open}
@@ -836,12 +842,14 @@ export default function OrderDialog({
                         )}
                         aria-hidden
                       >
-                        {paymentStatusOptions.find(
-                          (o) =>
-                            o.value ===
-                            (editFormMethods.watch("paymentStatus") ||
-                              editingOrder.paymentStatus),
-                        )?.label ?? "Select Payment Status"}
+                        {t(
+                          paymentStatusOptions.find(
+                            (o) =>
+                              o.value ===
+                              (editFormMethods.watch("paymentStatus") ||
+                                editingOrder.paymentStatus),
+                          )?.label ?? "Select Payment Status",
+                        )}
                       </div>
                     }
                   >
@@ -860,7 +868,7 @@ export default function OrderDialog({
                         }
                       >
                         <SelectTrigger className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}>
-                          <SelectValue placeholder="Select Payment Status" />
+                          <SelectValue placeholder={t("Select Payment Status")} />
                         </SelectTrigger>
                         <SelectContent
                           className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -874,7 +882,7 @@ export default function OrderDialog({
                               value={option.value}
                               className={DIALOG_SELECT_ITEM_CLASS}
                             >
-                              {option.label}
+                              {t(option.label)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -886,8 +894,8 @@ export default function OrderDialog({
                 {/* Tracking Number */}
                 <FormField
                   name="trackingNumber"
-                  label="Tracking Number"
-                  placeholder="Enter tracking number"
+                  label={t("Tracking Number")}
+                  placeholder={t("Enter tracking number")}
                   labelClassName="text-white/80"
                   inputClassName={DIALOG_FORM_FIELD_VIOLET}
                 />
@@ -895,7 +903,7 @@ export default function OrderDialog({
                 {/* Tracking URL */}
                 <FormField
                   name="trackingUrl"
-                  label="Tracking URL"
+                  label={t("Tracking URL")}
                   placeholder="https://tracking.example.com/..."
                   type="url"
                   labelClassName="text-white/80"
@@ -905,7 +913,7 @@ export default function OrderDialog({
                 {/* Estimated Delivery — REQ-0126 DialogDateField */}
                 <DialogDateField
                   id="estimated-delivery"
-                  label="Estimated Delivery"
+                  label={t("Estimated Delivery")}
                   optional
                   labelIcon={null}
                   value={toDateInputValue(editWatch("estimatedDelivery"))}
@@ -924,7 +932,7 @@ export default function OrderDialog({
                 currentStatus === "delivered" ? (
                   <DialogDateField
                     id="shipped-at"
-                    label="Shipped At"
+                    label={t("Shipped At")}
                     optional
                     labelIcon={null}
                     value={toDateInputValue(editWatch("shippedAt"))}
@@ -941,7 +949,7 @@ export default function OrderDialog({
                 {currentStatus === "delivered" ? (
                   <DialogDateField
                     id="delivered-at"
-                    label="Delivered At"
+                    label={t("Delivered At")}
                     optional
                     labelIcon={null}
                     value={toDateInputValue(editWatch("deliveredAt"))}
@@ -958,7 +966,7 @@ export default function OrderDialog({
                 {currentStatus === "cancelled" ? (
                   <DialogDateField
                     id="cancelled-at"
-                    label="Cancelled At"
+                    label={t("Cancelled At")}
                     optional
                     labelIcon={null}
                     value={toDateInputValue(editWatch("cancelledAt"))}
@@ -974,7 +982,7 @@ export default function OrderDialog({
                 {/* Export Trade — shared field block (see OrderTradeFields) */}
                 <div className="sm:col-span-2 space-y-2">
                   <DialogFormLabel icon={Globe2} optional>
-                    Export Trade
+                    {t("Export Trade")}
                   </DialogFormLabel>
                   <OrderTradeFields dialogOpen={open} />
                 </div>
@@ -982,12 +990,12 @@ export default function OrderDialog({
                 {/* Notes */}
                 <div className="sm:col-span-2 space-y-2">
                   <DialogFormLabel htmlFor="notes" icon={StickyNote} optional>
-                    Notes
+                    {t("Notes")}
                   </DialogFormLabel>
                   <FormField
                     name="notes"
-                    label="Notes"
-                    placeholder="Enter order notes..."
+                    label={t("Notes")}
+                    placeholder={t("Enter order notes...")}
                     showLabel={false}
                     inputClassName={DIALOG_FORM_FIELD_VIOLET}
                   />
@@ -1003,12 +1011,12 @@ export default function OrderDialog({
                   className={cn("w-full sm:w-auto px-11 gap-2", GLASS_GHOST_BUTTON)}
                 >
                   <X className="h-4 w-4 shrink-0" aria-hidden />
-                  Cancel
+                  {t("Cancel")}
                 </Button>
                 <DialogSubmitButton
                   isPending={isUpdating}
-                  pendingLabel="Updating order…"
-                  label="Update Order"
+                  pendingLabel={t("Updating order…")}
+                  label={t("Update Order")}
                   icon={Save}
                   hue="violet"
                   disabled={isUpdating}
@@ -1078,11 +1086,11 @@ export default function OrderDialog({
                   const errorMessages = extractErrorMessages(errors);
 
                   toast({
-                    title: "Validation Error",
+                    title: t("Validation Error"),
                     description:
                       errorMessages.length > 0
                         ? errorMessages.join(". ")
-                        : "Please fix the form errors before submitting.",
+                        : t("Please fix the form errors before submitting."),
                     variant: "destructive",
                   });
                 },
@@ -1092,7 +1100,7 @@ export default function OrderDialog({
                 {/* Order Items Section */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <DialogFormLabel icon={Package}>Order Items</DialogFormLabel>
+                    <DialogFormLabel icon={Package}>{t("Order Items")}</DialogFormLabel>
                     <Button
                       type="button"
                       onClick={handleAddItem}
@@ -1100,7 +1108,7 @@ export default function OrderDialog({
                       className="h-10 rounded-[28px] border border-violet-400/30 dark:border-violet-400/30 bg-gradient-to-r from-violet-500/30 via-violet-500/15 to-violet-500/5 dark:from-violet-500/30 dark:via-violet-500/15 dark:to-violet-500/5 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(139,92,246,0.2)] backdrop-blur-md transition duration-200 hover:border-violet-300/60 hover:from-violet-500/35 hover:via-violet-500/25 hover:to-violet-500/15 dark:hover:border-violet-300/60 dark:hover:from-violet-500/35 dark:hover:via-violet-500/25 dark:hover:to-violet-500/15"
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Add Item
+                      {t("Add Item")}
                     </Button>
                   </div>
 
@@ -1136,7 +1144,7 @@ export default function OrderDialog({
 
                 {/* Addresses Section */}
                 <div className="space-y-4">
-                  <DialogFormLabel icon={MapPin}>Shipping Address</DialogFormLabel>
+                  <DialogFormLabel icon={MapPin}>{t("Shipping Address")}</DialogFormLabel>
                   <OrderAddressFields prefix="shippingAddress" />
 
                   {/* Use Same Address Checkbox */}
@@ -1154,14 +1162,14 @@ export default function OrderDialog({
                       htmlFor="useSameAddress"
                       className="text-white/80 text-sm cursor-pointer"
                     >
-                      Use same address for billing
+                      {t("Use same address for billing")}
                     </Label>
                   </div>
 
                   {/* Billing Address */}
                   {!useSameAddress && (
                     <div className="space-y-4 pt-4 border-t border-violet-400/20">
-                      <DialogFormLabel icon={MapPin}>Billing Address</DialogFormLabel>
+                      <DialogFormLabel icon={MapPin}>{t("Billing Address")}</DialogFormLabel>
                       <OrderAddressFields prefix="billingAddress" />
                     </div>
                   )}
@@ -1170,41 +1178,43 @@ export default function OrderDialog({
                 {/* Export Trade Section — shared field block (see OrderTradeFields) */}
                 <div className="space-y-4">
                   <DialogFormLabel icon={Globe2} optional>
-                    Export Trade
+                    {t("Export Trade")}
                   </DialogFormLabel>
                   <OrderTradeFields dialogOpen={open} />
                 </div>
 
                 {/* Order Totals Section — tax 7%, shipping $4.99, discount by subtotal tier (computed, no dropdowns) */}
                 <div className="space-y-4">
-                  <DialogFormLabel icon={DollarSign}>Order Totals</DialogFormLabel>
+                  <DialogFormLabel icon={DollarSign}>{t("Order Totals")}</DialogFormLabel>
                   {showOrderTotals ? (
                     <div className="p-4 border border-violet-400/20 rounded-lg bg-white/5 space-y-2">
                       <div className="flex justify-between text-sm text-white/70">
                         <span className="inline-flex items-center gap-1.5">
                           <Receipt className="h-3.5 w-3.5 shrink-0" />
-                          Subtotal:
+                          {t("Subtotal:")}
                         </span>
                         <span>{formatStableCurrency(subtotal)}</span>
                       </div>
                       <div className="flex justify-between text-sm text-white/70">
                         <span className="inline-flex items-center gap-1.5">
                           <Percent className="h-3.5 w-3.5 shrink-0" />
-                          Tax (7%):
+                          {t("Tax (7%):")}
                         </span>
                         <span>{formatStableCurrency(orderFees.taxAmount)}</span>
                       </div>
                       <div className="flex justify-between text-sm text-white/70">
                         <span className="inline-flex items-center gap-1.5">
                           <Truck className="h-3.5 w-3.5 shrink-0" />
-                          Shipping:
+                          {t("Shipping:")}
                         </span>
                         <span>{formatStableCurrency(orderFees.shippingAmount)}</span>
                       </div>
                       <div className="flex justify-between text-sm text-white/70">
                         <span className="inline-flex items-center gap-1.5">
                           <Tag className="h-3.5 w-3.5 shrink-0" />
-                          Discount ({orderFees.discountPercent}%):
+                          {t("Discount ({percent}%):", {
+                            percent: orderFees.discountPercent,
+                          })}
                         </span>
                         <span className="text-red-400">
                           -{formatStableCurrency(orderFees.discountAmount)}
@@ -1213,7 +1223,7 @@ export default function OrderDialog({
                       <div className="flex justify-between text-base font-medium text-white pt-2 border-t border-violet-400/20">
                         <span className="inline-flex items-center gap-1.5">
                           <CircleDollarSign className="h-4 w-4 shrink-0" />
-                          Total:
+                          {t("Total:")}
                         </span>
                         <span>{formatStableCurrency(total)}</span>
                       </div>
@@ -1221,7 +1231,7 @@ export default function OrderDialog({
                   ) : (
                     <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-violet-400/20 bg-white/5 p-6 text-center text-white/60">
                       <Package className="h-8 w-8 shrink-0 opacity-70" aria-hidden />
-                      <p className="text-sm">Add products to see totals</p>
+                      <p className="text-sm">{t("Add products to see totals")}</p>
                     </div>
                   )}
                 </div>
@@ -1229,12 +1239,12 @@ export default function OrderDialog({
                 {/* Notes */}
                 <div className="space-y-2">
                   <DialogFormLabel htmlFor="notes" icon={StickyNote} optional>
-                    Order Notes
+                    {t("Order Notes")}
                   </DialogFormLabel>
                   <FormField
                     name="notes"
-                    label="Order Notes"
-                    placeholder="Additional notes or instructions..."
+                    label={t("Order Notes")}
+                    placeholder={t("Additional notes or instructions...")}
                     showLabel={false}
                     inputClassName={DIALOG_FORM_FIELD_VIOLET}
                   />
@@ -1249,13 +1259,13 @@ export default function OrderDialog({
                     className={cn("w-full sm:w-auto px-11 gap-2", GLASS_GHOST_BUTTON)}
                   >
                     <X className="h-4 w-4 shrink-0" aria-hidden />
-                    Cancel
+                    {t("Cancel")}
                   </Button>
                 </DialogClose>
                 <DialogSubmitButton
                   isPending={isCreating}
-                  pendingLabel="Creating order…"
-                  label="Create Order"
+                  pendingLabel={t("Creating order…")}
+                  label={t("Create Order")}
                   icon={Package}
                   hue="violet"
                   disabled={

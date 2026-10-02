@@ -1,7 +1,10 @@
+"use client";
+
 import { AlertDialogWrapper } from "@/components/dialogs";
 import { useProductStore } from "@/stores";
 import { useDeleteProduct } from "@/hooks/queries";
 import { logger } from "@/lib/logger";
+import { useT } from "@/lib/i18n/locale-context";
 
 export function DeleteDialog() {
   // Keep UI state in Zustand (openDialog, selectedProduct)
@@ -11,6 +14,7 @@ export function DeleteDialog() {
     setSelectedProduct,
     selectedProduct,
   } = useProductStore();
+  const t = useT();
   
   // Use TanStack Query mutation for delete operation
   const deleteProductMutation = useDeleteProduct();
@@ -40,10 +44,12 @@ export function DeleteDialog() {
           setSelectedProduct(null);
         }
       }}
-      title="Are you absolutely sure?"
-      description="This action cannot be undone. This will permanently delete the product."
-      actionLabel="Delete"
-      actionLoadingLabel="Deleting..."
+      title={t("Are you absolutely sure?")}
+      description={t(
+        "This action cannot be undone. This will permanently delete the product.",
+      )}
+      actionLabel={t("Delete")}
+      actionLoadingLabel={t("Deleting...")}
       isLoading={deleteProductMutation.isPending}
       onAction={deleteProductFx}
       onCancel={() => {

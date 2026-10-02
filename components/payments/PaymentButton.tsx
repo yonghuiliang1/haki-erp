@@ -11,6 +11,7 @@ import { useCreateCheckout } from "@/hooks/queries";
 import { CreditCard, Loader2 } from "lucide-react";
 import type { CheckoutType } from "@/types";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface PaymentButtonProps {
   type: CheckoutType;
@@ -32,6 +33,7 @@ export default function PaymentButton({
   className,
 }: PaymentButtonProps) {
   const checkoutMutation = useCreateCheckout();
+  const t = useT();
 
   const handlePayment = () => {
     checkoutMutation.mutate({ type, id });
@@ -50,12 +52,14 @@ export default function PaymentButton({
       {isLoading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Processing...
+          {t("Processing...")}
         </>
       ) : (
         <>
           <CreditCard className="mr-2 h-4 w-4" />
-          Pay {amount ? formatStableCurrency(amount) : "Now"}
+          {amount
+            ? t("Pay {amount}", { amount: formatStableCurrency(amount) })
+            : t("Pay Now")}
         </>
       )}
     </Button>

@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, AlertCircle } from "lucide-react";
 import { StatisticsCard } from "@/components/home/StatisticsCard";
 import { useAuth } from "@/contexts";
+import { useT } from "@/lib/i18n/locale-context";
 import type {
   ProductOwnerOption,
   SupportTicket,
@@ -50,6 +51,7 @@ export default function SupportTicketList({
   initialTickets,
   initialStats,
 }: SupportTicketListProps = {}) {
+  const t = useT();
   const isMountedRef = useRef(false);
   const [isMounted, setIsMounted] = useState(false);
   const [viewFilter, setViewFilter] = useState<SupportTicketViewFilter>("all");
@@ -122,54 +124,56 @@ export default function SupportTicketList({
         as="h2"
         icon={MessageSquare}
         tone="violet"
-        title="Store Support Tickets (assigned to you)"
-        description="Manage customer support tickets. Create, view, update status and priority, and add internal notes."
+        title={t("Store Support Tickets (assigned to you)")}
+        description={t(
+          "Manage customer support tickets. Create, view, update status and priority, and add internal notes.",
+        )}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 pb-6 items-stretch">
         <StatisticsCard
-          title="Support Tickets"
+          title={t("Support Tickets")}
           value={dashboard?.counts?.tickets ?? allTickets.length}
-          description="Sent by users, clients & suppliers"
+          description={t("Sent by users, clients & suppliers")}
           icon={MessageSquare}
           variant="violet"
           valueLoading={statusCardsLoading}
           badgeValuesLoading={statusCardsLoading}
           badges={[
             {
-              label: "Open",
+              label: t("Open"),
               value: ticketBreakdown?.open ?? ticketStats.statusCounts.open,
             },
             {
-              label: "In progress",
+              label: t("In progress"),
               value:
                 ticketBreakdown?.in_progress ??
                 ticketStats.statusCounts.in_progress,
             },
             {
-              label: "Resolved",
+              label: t("Resolved"),
               value:
                 ticketBreakdown?.resolved ?? ticketStats.statusCounts.resolved,
             },
             {
-              label: "Closed",
+              label: t("Closed"),
               value: ticketBreakdown?.closed ?? ticketStats.statusCounts.closed,
             },
           ]}
         />
         <StatisticsCard
-          title="Total messages"
+          title={t("Total messages")}
           value={ticketStats.totalMessages}
-          description="Replies across tickets"
+          description={t("Replies across tickets")}
           icon={AlertCircle}
           variant="rose"
           valueLoading={listDerivedLoading}
           badgeValuesLoading={listDerivedLoading}
           badges={[
-            { label: "Low", value: ticketStats.priorityCounts.low },
-            { label: "Medium", value: ticketStats.priorityCounts.medium },
-            { label: "High", value: ticketStats.priorityCounts.high },
-            { label: "Urgent", value: ticketStats.priorityCounts.urgent },
+            { label: t("Low"), value: ticketStats.priorityCounts.low },
+            { label: t("Medium"), value: ticketStats.priorityCounts.medium },
+            { label: t("High"), value: ticketStats.priorityCounts.high },
+            { label: t("Urgent"), value: ticketStats.priorityCounts.urgent },
           ]}
         />
       </div>
@@ -196,7 +200,7 @@ export default function SupportTicketList({
               trigger={
                 <Button className="h-10 rounded-[28px] border border-violet-400/30 dark:border-violet-400/30 bg-gradient-to-r from-violet-500/70 via-violet-500/50 to-violet-500/30 dark:from-violet-500/70 dark:via-violet-500/50 dark:to-violet-500/30 text-white shadow-[0_10px_30px_rgba(139,92,246,0.3)] flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
-                  Create Ticket
+                  {t("Create Ticket")}
                 </Button>
               }
             />

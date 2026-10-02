@@ -27,6 +27,13 @@ import {
   TABLE_CATALOG_LINK_CLASS,
 } from "@/components/shared";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
+
+/** Inline translated text for non-component render fns (table header/cell). */
+function T({ k }: { k: string }) {
+  const t = useT();
+  return <>{t(k)}</>;
+}
 
 type SortableHeaderProps = {
   column: Column<Warehouse, unknown>;
@@ -34,6 +41,7 @@ type SortableHeaderProps = {
 };
 
 const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -49,20 +57,20 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
           className={`flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white ${
             isSorted && "text-primary"
           }`}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -177,7 +185,7 @@ export const createWarehouseColumns = (
   },
   {
     id: "actions",
-    header: "Actions",
+    header: () => <T k="Actions" />,
     cell: ({ row }) => (
       <WarehouseActions row={row} onEdit={onEdit} detailBase={detailBase} />
     ),

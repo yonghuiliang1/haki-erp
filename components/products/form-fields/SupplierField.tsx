@@ -19,6 +19,7 @@ import { LuGitPullRequestDraft } from "react-icons/lu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useSuppliers } from "@/hooks/queries";
+import { useT } from "@/lib/i18n/locale-context";
 
 type SupplierProps = {
   selectedSupplier: string;
@@ -30,6 +31,7 @@ export default function Supplier({
   setSelectedSupplier,
 }: SupplierProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useT();
   // Use TanStack Query for data fetching
   const { data: suppliers = [] } = useSuppliers();
 
@@ -47,15 +49,15 @@ export default function Supplier({
         <PopoverTrigger asChild>
           <Button variant={"secondary"} className="h-10">
             <LuGitPullRequestDraft />
-            Suppliers
+            {t("Suppliers")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 w-56 poppins" side="bottom" align="end">
           <Command className="p-1">
-            <CommandInput placeholder="Supplier" />
+            <CommandInput placeholder={t("Supplier")} />
             <CommandList>
               <CommandEmpty className="text-slate-500 text-sm text-center p-5">
-                No supplier found.
+                {t("No supplier found.")}
               </CommandEmpty>
               <CommandGroup>
                 {suppliers.map((supplier) => (
@@ -81,7 +83,7 @@ export default function Supplier({
                 variant={"ghost"}
                 className="text-[12px] mb-1"
               >
-                Clear Filters
+                {t("Clear Filters")}
               </Button>
             </div>
           </Command>

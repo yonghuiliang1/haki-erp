@@ -81,6 +81,7 @@ import { getOrderItemUnitCounts } from "@/lib/orders/order-list-meta";
 import { cn } from "@/lib/utils";
 import { OrderPickerCommand } from "./OrderPickerCommand";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** ISO date string for native date inputs (REQ-0126). */
 function toDateInputValue(value?: Date | string | null): string {
@@ -120,6 +121,7 @@ export default function InvoiceDialog({
   const dialogCloseRef = useRef<HTMLButtonElement | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  const t = useT();
 
   // Form state (tax/shipping/discount come from the selected order — not editable)
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
@@ -440,8 +442,8 @@ export default function InvoiceDialog({
 
       if (!selectedOrderId) {
         toast({
-          title: "Order Required",
-          description: "Please select an order to generate an invoice.",
+          title: t("Order Required"),
+          description: t("Please select an order to generate an invoice."),
           variant: "destructive",
         });
         return;
@@ -449,8 +451,8 @@ export default function InvoiceDialog({
 
       if (!dueDate) {
         toast({
-          title: "Due Date Required",
-          description: "Please select a due date for the invoice.",
+          title: t("Due Date Required"),
+          description: t("Please select a due date for the invoice."),
           variant: "destructive",
         });
         return;
@@ -477,9 +479,9 @@ export default function InvoiceDialog({
           .map((err) => `${err.path.join(".")}: ${err.message}`)
           .join(". ");
         toast({
-          title: "Validation Error",
+          title: t("Validation Error"),
           description:
-            errorMessages || "Please fix the form errors before submitting.",
+            errorMessages || t("Please fix the form errors before submitting."),
           variant: "destructive",
         });
         return;
@@ -507,6 +509,7 @@ export default function InvoiceDialog({
       createInvoiceMutation,
       setOpen,
       toast,
+      t,
     ],
   );
 
@@ -530,13 +533,19 @@ export default function InvoiceDialog({
           tone="indigo"
           title={
             editingInvoice
-              ? `Edit Invoice ${editingInvoice.invoiceNumber}`
-              : "Generate Invoice from Order"
+              ? t("Edit Invoice {number}", {
+                  number: editingInvoice.invoiceNumber,
+                })
+              : t("Generate Invoice from Order")
           }
           description={
             editingInvoice
-              ? "Update invoice status, payment information, dates, and notes."
-              : "Select an order and set invoice details to generate a new invoice."
+              ? t(
+                  "Update invoice status, payment information, dates, and notes.",
+                )
+              : t(
+                  "Select an order and set invoice details to generate a new invoice.",
+                )
           }
         />
 
@@ -547,9 +556,10 @@ export default function InvoiceDialog({
               onSubmit={editFormMethods.handleSubmit(handleUpdateInvoice, () => {
                 // REQ-0151 — DialogDateField errors were silent; surface validation fail
                 toast({
-                  title: "Check invoice fields",
-                  description:
+                  title: t("Check invoice fields"),
+                  description: t(
                     "Fix invalid dates or fields before updating the invoice.",
+                  ),
                   variant: "destructive",
                 });
               })}
@@ -558,7 +568,7 @@ export default function InvoiceDialog({
                 {/* Invoice Status — REQ-0126 DialogFormLabel + badge select items */}
                 <div className="flex flex-col gap-2">
                   <DialogFormLabel htmlFor="invoice-status">
-                    Invoice Status
+                    {t("Invoice Status")}
                   </DialogFormLabel>
                   <DeferredSelectGate
                     enabled={open}
@@ -602,7 +612,7 @@ export default function InvoiceDialog({
                             DIALOG_FORM_FIELD_INDIGO,
                           )}
                         >
-                          <SelectValue placeholder="Select Status">
+                          <SelectValue placeholder={t("Select Status")}>
                             {/* REQ-0150 — solid white-on-hue when selected */}
                             <InvoiceStatusBadge
                               status={
@@ -653,11 +663,11 @@ export default function InvoiceDialog({
                 {/* Amount Paid — aligned label with status */}
                 <div className="flex flex-col gap-2">
                   <DialogFormLabel htmlFor="amount-paid">
-                    Amount Paid
+                    {t("Amount Paid")}
                   </DialogFormLabel>
                   <FormNumberField
                     name="amountPaid"
-                    label="Amount Paid"
+                    label={t("Amount Paid")}
                     placeholder="0.00"
                     allowNegative={false}
                     labelClassName="sr-only"
@@ -668,31 +678,31 @@ export default function InvoiceDialog({
                 {/* Order Pricing Summary (read-only — values come from the order) */}
                 <div className="sm:col-span-2 p-4 border border-indigo-400/20 rounded-lg bg-white/5 space-y-2">
                   <div className="flex justify-between text-sm text-white/70">
-                    <span>Subtotal:</span>
+                    <span>{t("Subtotal:")}</span>
                     <span>{fmt(editingInvoice.subtotal ?? 0)}</span>
                   </div>
                   {(editingInvoice.tax ?? 0) > 0 && (
                     <div className="flex justify-between text-sm text-white/70">
-                      <span>Tax:</span>
+                      <span>{t("Tax:")}</span>
                       <span>{fmt(editingInvoice.tax ?? 0)}</span>
                     </div>
                   )}
                   {(editingInvoice.shipping ?? 0) > 0 && (
                     <div className="flex justify-between text-sm text-white/70">
-                      <span>Shipping:</span>
+                      <span>{t("Shipping:")}</span>
                       <span>{fmt(editingInvoice.shipping ?? 0)}</span>
                     </div>
                   )}
                   {(editingInvoice.discount ?? 0) > 0 && (
                     <div className="flex justify-between text-sm text-white/70">
-                      <span>Discount:</span>
+                      <span>{t("Discount:")}</span>
                       <span className="text-red-400">
                         -{fmt(editingInvoice.discount ?? 0)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between text-base font-medium text-white pt-2 border-t border-indigo-400/20">
-                    <span>Total:</span>
+                    <span>{t("Total:")}</span>
                     <span>{fmt(editingInvoice.total ?? 0)}</span>
                   </div>
                 </div>
@@ -700,7 +710,7 @@ export default function InvoiceDialog({
                 {/* Due Date — REQ-0126 DialogDateField */}
                 <DialogDateField
                   id="edit-due-date"
-                  label="Due Date"
+                  label={t("Due Date")}
                   labelIcon={null}
                   value={String(
                     editWatch("dueDate") ??
@@ -720,7 +730,7 @@ export default function InvoiceDialog({
                 editWatch("status") === "overdue" ? (
                   <DialogDateField
                     id="edit-sent-at"
-                    label="Sent At"
+                    label={t("Sent At")}
                     optional
                     labelIcon={null}
                     value={String(
@@ -740,7 +750,7 @@ export default function InvoiceDialog({
                 {editWatch("status") === "paid" ? (
                   <DialogDateField
                     id="edit-paid-at"
-                    label="Paid At"
+                    label={t("Paid At")}
                     optional
                     labelIcon={null}
                     value={String(
@@ -760,7 +770,7 @@ export default function InvoiceDialog({
                 {editWatch("status") === "cancelled" ? (
                   <DialogDateField
                     id="edit-cancelled-at"
-                    label="Cancelled At"
+                    label={t("Cancelled At")}
                     optional
                     labelIcon={null}
                     value={String(
@@ -779,7 +789,7 @@ export default function InvoiceDialog({
                 {/* Payment Link */}
                 <FormField
                   name="paymentLink"
-                  label="Payment Link"
+                  label={t("Payment Link")}
                   placeholder="https://..."
                   type="url"
                   labelClassName="text-white/80"
@@ -791,8 +801,8 @@ export default function InvoiceDialog({
                 <div className="sm:col-span-2">
                   <FormField
                     name="notes"
-                    label="Notes"
-                    placeholder="Enter invoice notes..."
+                    label={t("Notes")}
+                    placeholder={t("Enter invoice notes...")}
                     labelClassName="text-white/80"
                     inputClassName={DIALOG_FORM_FIELD_INDIGO}
                   />
@@ -811,12 +821,12 @@ export default function InvoiceDialog({
                   )}
                 >
                   <X className="h-4 w-4 shrink-0" aria-hidden />
-                  Cancel
+                  {t("Cancel")}
                 </Button>
                 <DialogSubmitButton
                   isPending={isUpdating}
-                  pendingLabel="Updating invoice…"
-                  label="Update Invoice"
+                  pendingLabel={t("Updating invoice…")}
+                  label={t("Update Invoice")}
                   icon={Save}
                   hue="indigo"
                   disabled={isUpdating}
@@ -836,7 +846,7 @@ export default function InvoiceDialog({
                   icon={ShoppingCart}
                   required
                 >
-                  Select Order
+                  {t("Select Order")}
                 </DialogFormLabel>
                 {/* REQ-0060: searchable order picker (type-to-filter) replaces plain Select */}
                 <OrderPickerCommand
@@ -900,12 +910,16 @@ export default function InvoiceDialog({
                           <span aria-hidden>·</span>
                           <span className="inline-flex items-center gap-1">
                             <Package className="h-3 w-3 shrink-0" aria-hidden />
-                            {itemCount} item{itemCount === 1 ? "" : "s"}
+                            {t(itemCount === 1 ? "{count} item" : "{count} items", {
+                              count: itemCount,
+                            })}
                           </span>
                           <span aria-hidden>·</span>
                           <span className="inline-flex items-center gap-1">
                             <Boxes className="h-3 w-3 shrink-0" aria-hidden />
-                            {unitCount} unit{unitCount === 1 ? "" : "s"}
+                            {t(unitCount === 1 ? "{count} unit" : "{count} units", {
+                              count: unitCount,
+                            })}
                           </span>
                         </p>
                       );
@@ -971,7 +985,7 @@ export default function InvoiceDialog({
 
               <DialogDateField
                 id="due-date"
-                label="Due Date"
+                label={t("Due Date")}
                 value={dueDate}
                 onChange={setDueDate}
                 inputClassName={DIALOG_FORM_FIELD_INDIGO}
@@ -984,36 +998,37 @@ export default function InvoiceDialog({
               {selectedOrder && (
                 <div className="p-4 border border-indigo-400/20 rounded-lg bg-white/5 space-y-2">
                   <div className="flex justify-between text-sm text-white/70">
-                    <span>Subtotal:</span>
+                    <span>{t("Subtotal:")}</span>
                     <span>{fmt(selectedOrder.subtotal ?? 0)}</span>
                   </div>
                   {(selectedOrder.tax ?? 0) > 0 && (
                     <div className="flex justify-between text-sm text-white/70">
-                      <span>Tax (7%):</span>
+                      <span>{t("Tax (7%):")}</span>
                       <span>{fmt(selectedOrder.tax ?? 0)}</span>
                     </div>
                   )}
                   {(selectedOrder.shipping ?? 0) > 0 && (
                     <div className="flex justify-between text-sm text-white/70">
-                      <span>Shipping:</span>
+                      <span>{t("Shipping:")}</span>
                       <span>{fmt(selectedOrder.shipping ?? 0)}</span>
                     </div>
                   )}
                   {(selectedOrder.discount ?? 0) > 0 && (
                     <div className="flex justify-between text-sm text-white/70">
-                      <span>Discount:</span>
+                      <span>{t("Discount:")}</span>
                       <span className="text-red-400">
                         -{fmt(selectedOrder.discount ?? 0)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between text-base font-medium text-white pt-2 border-t border-indigo-400/20">
-                    <span>Invoice Total:</span>
+                    <span>{t("Invoice Total:")}</span>
                     <span>{fmt(selectedOrder.total ?? 0)}</span>
                   </div>
                   <p className="text-xs text-white/50 pt-1">
-                    Tax, shipping, and discount are calculated from the order
-                    and cannot be changed.
+                    {t(
+                      "Tax, shipping, and discount are calculated from the order and cannot be changed.",
+                    )}
                   </p>
                 </div>
               )}
@@ -1021,13 +1036,13 @@ export default function InvoiceDialog({
               {/* Notes */}
               <div className="space-y-2">
                 <DialogFormLabel htmlFor="notes" icon={StickyNote} optional>
-                  Notes
+                  {t("Notes")}
                 </DialogFormLabel>
                 <Textarea
                   id="notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Add any additional notes for this invoice..."
+                  placeholder={t("Add any additional notes for this invoice...")}
                   rows={3}
                   className={cn("w-full", DIALOG_FORM_FIELD_INDIGO)}
                 />
@@ -1045,12 +1060,12 @@ export default function InvoiceDialog({
                 )}
               >
                 <X className="h-4 w-4 shrink-0" aria-hidden />
-                Cancel
+                {t("Cancel")}
               </Button>
               <DialogSubmitButton
                 isPending={isCreating}
-                pendingLabel="Generating invoice…"
-                label="Generate Invoice"
+                pendingLabel={t("Generating invoice…")}
+                label={t("Generate Invoice")}
                 icon={FileText}
                 hue="indigo"
                 disabled={isCreating || !selectedOrderId || !dueDate}

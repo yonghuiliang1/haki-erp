@@ -20,6 +20,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { DIALOG_TABLE_ACTION_ICON } from "@/components/shared/dialog-edge-scroll";
 import type { TableColumnContext } from "@/components/category/CategoryTableColumns";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface SupplierActionsProps {
   row: {
@@ -41,6 +42,7 @@ export default function SupplierActions({
   onBeforeNavigate,
   context = "page",
 }: SupplierActionsProps) {
+  const t = useT();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
@@ -107,7 +109,7 @@ export default function SupplierActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical
               className={cn(
                 "h-4 w-4",
@@ -128,7 +130,7 @@ export default function SupplierActions({
               className="flex items-center gap-2"
             >
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem asChild>
@@ -137,7 +139,7 @@ export default function SupplierActions({
                 className="flex items-center gap-2"
               >
                 <Eye className="h-4 w-4" />
-                View Details
+                {t("View Details")}
               </Link>
             </DropdownMenuItem>
           )}
@@ -147,7 +149,7 @@ export default function SupplierActions({
             className="flex items-center gap-2"
           >
             <Copy className="h-4 w-4" />
-            {isCopying ? "Duplicating..." : "Create Duplicate"}
+            {isCopying ? t("Duplicating...") : t("Create Duplicate")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleEditSupplier}
@@ -155,7 +157,7 @@ export default function SupplierActions({
             className="flex items-center gap-2"
           >
             <Edit className="h-4 w-4" />
-            Edit Supplier
+            {t("Edit Supplier")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setDeleteDialogOpen(true)}
@@ -163,7 +165,7 @@ export default function SupplierActions({
             className="flex items-center gap-2 text-red-600 dark:text-red-400"
           >
             <Trash2 className="h-4 w-4" />
-            {isDeleting ? "Deleting..." : "Delete Supplier"}
+            {isDeleting ? t("Deleting...") : t("Delete Supplier")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -172,10 +174,10 @@ export default function SupplierActions({
       <AlertDialogWrapper
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Are you absolutely sure?"
-        description={`This action cannot be undone. This will permanently delete the supplier "${row.original.name}".`}
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        title={t("Are you absolutely sure?")}
+        description={t("This action cannot be undone. This will permanently delete the supplier \"{name}\".", { name: row.original.name })}
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={isDeleting}
         onAction={handleDeleteSupplier}
         onCancel={() => setDeleteDialogOpen(false)}

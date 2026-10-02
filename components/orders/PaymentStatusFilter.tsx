@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import {
   filterCommandPopoverClass,
@@ -28,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { FilterCommandCheckboxItem } from "@/lib/ui/filter-command-item";
 import { PaymentStatusBadge } from "@/lib/ui/semantic-badges";
 import type { PaymentStatus } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 type PaymentStatusOption = {
   value: PaymentStatus;
@@ -51,6 +54,7 @@ export function PaymentStatusDropDown({
   setSelectedPaymentStatuses,
 }: PaymentStatusDropDownProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useT();
 
   function handleToggle(value: string) {
     setSelectedPaymentStatuses((prev) =>
@@ -73,7 +77,7 @@ export function PaymentStatusDropDown({
             className="h-10 rounded-[28px] border border-amber-400/30 dark:border-amber-400/30 bg-gradient-to-r from-amber-500/30 via-amber-500/15 to-amber-500/5 dark:from-amber-500/30 dark:via-amber-500/15 dark:to-amber-500/5 text-gray-700 dark:text-white shadow-[0_10px_30px_rgba(245,158,11,0.2)] backdrop-blur-md transition duration-200 hover:border-amber-300/60 hover:from-amber-500/35 hover:via-amber-500/25 hover:to-amber-500/15 dark:hover:border-amber-300/60 dark:hover:from-amber-500/35 dark:hover:via-amber-500/25 dark:hover:to-amber-500/15"
           >
             <CreditCard className="h-4 w-4 mr-1" />
-            Payment
+            {t("Payment")}
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -87,7 +91,7 @@ export function PaymentStatusDropDown({
         >
           <Command className="p-1 bg-transparent">
             <CommandInput
-              placeholder="Filter by payment..."
+              placeholder={t("Filter by payment...")}
               className="bg-transparent border-0 focus:ring-0 focus:outline-none text-gray-700 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/40"
             />
             <CommandList>
@@ -104,14 +108,14 @@ export function PaymentStatusDropDown({
                   >
                     <PaymentStatusBadge
                       status={status.value}
-                      label={status.label}
+                      label={t(status.label)}
                     />
                   </FilterCommandCheckboxItem>
                 ))}
               </CommandGroup>
             </CommandList>
             <CommandEmpty className="text-gray-600 dark:text-white/80 text-sm text-center p-5">
-              No payment status found.
+              {t("No payment status found.")}
             </CommandEmpty>
             <div className="flex flex-col gap-2 text-[23px]">
               <Separator className="bg-gray-300/50 dark:bg-white/10" />
@@ -120,7 +124,7 @@ export function PaymentStatusDropDown({
                 className="text-[12px] mb-1 text-gray-700 dark:text-white/80 hover:text-gray-700 dark:hover:text-white hover:bg-amber-100 dark:hover:bg-white/10"
                 onClick={clearFilters}
               >
-                Clear Filters
+                {t("Clear Filters")}
               </Button>
             </div>
           </Command>

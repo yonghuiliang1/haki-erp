@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Loader2, MessageSquare, Pencil, Star, Trash2 } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 function StarRating({ value }: { value: number }) {
   const { starClass } = getRatingDisplay(value);
@@ -118,6 +119,7 @@ export default function ProductReviewsSection({
   initialReviews,
   initialEligibility,
 }: ProductReviewsSectionProps) {
+  const t = useT();
   const { user } = useAuth();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingReview, setEditingReview] = useState<ProductReview | null>(
@@ -190,12 +192,13 @@ export default function ProductReviewsSection({
   };
 
   const deleteDescription = deleteTarget
-    ? `Delete your review of "${productName}"${
-        deleteTarget.comment
+    ? t('Delete your review of "{product}"{comment}? This cannot be undone.', {
+        product: productName,
+        comment: deleteTarget.comment
           ? `: "${truncateReviewComment(deleteTarget.comment)}"`
-          : ""
-      }? This cannot be undone.`
-    : "Are you sure you want to delete this review? This cannot be undone.";
+          : "",
+      })
+    : t("Are you sure you want to delete this review? This cannot be undone.");
 
   const config = variantConfig[variant];
 
@@ -203,10 +206,10 @@ export default function ProductReviewsSection({
     <AlertDialogWrapper
       open={!!deleteTarget}
       onOpenChange={(open) => !open && setDeleteTarget(null)}
-      title="Delete review"
+      title={t("Delete review")}
       description={deleteDescription}
-      actionLabel="Delete"
-      actionLoadingLabel="Deleting..."
+      actionLabel={t("Delete")}
+      actionLoadingLabel={t("Deleting...")}
       isLoading={deleteReview.isPending}
       onAction={handleConfirmDelete}
       onCancel={() => setDeleteTarget(null)}
@@ -247,7 +250,7 @@ export default function ProductReviewsSection({
                 )}
               >
                 <MessageSquare className="h-3.5 w-3.5 shrink-0" />
-                Write review
+                {t("Write review")}
               </Button>
             </div>
           ) : null}
@@ -283,7 +286,7 @@ export default function ProductReviewsSection({
                     variant="ghost"
                     size="icon"
                     onClick={() => handleEdit(r)}
-                    aria-label="Edit review"
+                    aria-label={t("Edit review")}
                     className="h-8 w-8 rounded-lg text-gray-600 dark:text-gray-300"
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -294,7 +297,7 @@ export default function ProductReviewsSection({
                     size="icon"
                     onClick={() => setDeleteTarget(r)}
                     disabled={deleteReview.isPending}
-                    aria-label="Delete review"
+                    aria-label={t("Delete review")}
                     className="h-8 w-8 rounded-lg text-rose-600 dark:text-rose-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -327,7 +330,7 @@ export default function ProductReviewsSection({
           </div>
           <SectionTitleRow
             as="h3"
-            title="Reviews"
+            title={t("Reviews")}
             count={!reviewsLoading ? reviewsToShow.length : undefined}
           />
         </div>
@@ -346,7 +349,7 @@ export default function ProductReviewsSection({
                 )}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
-                Write a review
+                {t("Write a review")}
               </Button>
             ) : null}
           </div>
@@ -364,8 +367,8 @@ export default function ProductReviewsSection({
         </div>
       ) : reviewsToShow.length === 0 ? (
         <p className={CARD_EMPTY_MESSAGE_CLASS}>
-          No reviews yet.
-          {user && showWrite && " Click “Write a review” above."}
+          {t("No reviews yet.")}
+          {user && showWrite && ` ${t("Click “Write a review” above.")}`}
         </p>
       ) : (
         <ul className="space-y-4">
@@ -373,7 +376,7 @@ export default function ProductReviewsSection({
             const displayName =
               review.reviewerName?.trim() ||
               review.reviewerEmail ||
-              (review.userId === user?.id ? "You" : "User");
+              (review.userId === user?.id ? t("You") : t("User"));
             const avatar = resolveAvatarSourcesFromSeed(
               review.userId,
               review.reviewerImage,
@@ -400,7 +403,7 @@ export default function ProductReviewsSection({
                       </span>
                       {review.status === "pending" && (
                         <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-500/20 px-2 py-0.5 rounded-full">
-                          Pending approval
+                          {t("Pending approval")}
                         </span>
                       )}
                     </div>
@@ -435,7 +438,7 @@ export default function ProductReviewsSection({
                           size="icon"
                           className="h-8 w-8 rounded-lg"
                         >
-                          <span className="sr-only">Actions</span>
+                          <span className="sr-only">{t("Actions")}</span>
                           <Pencil className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -445,7 +448,7 @@ export default function ProductReviewsSection({
                           className="cursor-pointer"
                         >
                           <Pencil className="h-4 w-4 mr-2" />
-                          Edit review
+                          {t("Edit review")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setDeleteTarget(review)}
@@ -453,7 +456,7 @@ export default function ProductReviewsSection({
                           className="cursor-pointer text-rose-600 dark:text-rose-400"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Delete review
+                          {t("Delete review")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

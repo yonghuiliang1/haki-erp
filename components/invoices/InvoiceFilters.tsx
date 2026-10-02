@@ -26,6 +26,7 @@ import {
 import { InvoiceStatusBadge } from "@/lib/ui/semantic-badges";
 import { FILTER_CHIP_COLLAPSED_CLASS } from "@/lib/ui/filter-chip-styles";
 import type { Invoice } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 const INVOICE_SOURCE_LABELS: Record<InvoiceSourceFilterValue, string> = {
   client: "Client invoices",
@@ -62,6 +63,7 @@ export default function InvoiceFilters({
   setInvoiceSourceFilter,
 }: InvoiceFiltersProps) {
   const { toast } = useToast();
+  const t = useT();
 
   /** Client-side status filter — search is API-scoped via parent list data. */
   const filteredInvoices = useMemo(() => {
@@ -79,54 +81,57 @@ export default function InvoiceFilters({
     try {
       if (filteredInvoices.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
+          title: t("No Data to Export"),
+          description: t(
             "There are no invoices to export with the current filters.",
+          ),
           variant: "destructive",
         });
         return;
       }
 
       const csvData = filteredInvoices.map((invoice) => ({
-        "Invoice Number": invoice.invoiceNumber,
-        "Invoice Date": formatStableDate(invoice.createdAt),
-        Status: invoice.status,
-        Subtotal: invoice.subtotal.toFixed(2),
-        Tax: invoice.tax ? invoice.tax.toFixed(2) : "0.00",
-        Discount: invoice.discount ? invoice.discount.toFixed(2) : "0.00",
-        Total: invoice.total.toFixed(2),
-        "Amount Paid": invoice.amountPaid.toFixed(2),
-        "Amount Due": invoice.amountDue.toFixed(2),
-        "Due Date": formatStableDate(invoice.dueDate),
+        [t("Invoice Number")]: invoice.invoiceNumber,
+        [t("Invoice Date")]: formatStableDate(invoice.createdAt),
+        [t("Status")]: invoice.status,
+        [t("Subtotal")]: invoice.subtotal.toFixed(2),
+        [t("Tax")]: invoice.tax ? invoice.tax.toFixed(2) : "0.00",
+        [t("Discount")]: invoice.discount ? invoice.discount.toFixed(2) : "0.00",
+        [t("Total")]: invoice.total.toFixed(2),
+        [t("Amount Paid")]: invoice.amountPaid.toFixed(2),
+        [t("Amount Due")]: invoice.amountDue.toFixed(2),
+        [t("Due Date")]: formatStableDate(invoice.dueDate),
       }));
 
       const columns = [
-        { header: "Invoice Number", key: "Invoice Number" },
-        { header: "Invoice Date", key: "Invoice Date" },
-        { header: "Status", key: "Status" },
-        { header: "Subtotal", key: "Subtotal" },
-        { header: "Tax", key: "Tax" },
-        { header: "Discount", key: "Discount" },
-        { header: "Total", key: "Total" },
-        { header: "Amount Paid", key: "Amount Paid" },
-        { header: "Amount Due", key: "Amount Due" },
-        { header: "Due Date", key: "Due Date" },
+        { header: t("Invoice Number"), key: t("Invoice Number") },
+        { header: t("Invoice Date"), key: t("Invoice Date") },
+        { header: t("Status"), key: t("Status") },
+        { header: t("Subtotal"), key: t("Subtotal") },
+        { header: t("Tax"), key: t("Tax") },
+        { header: t("Discount"), key: t("Discount") },
+        { header: t("Total"), key: t("Total") },
+        { header: t("Amount Paid"), key: t("Amount Paid") },
+        { header: t("Amount Due"), key: t("Amount Due") },
+        { header: t("Due Date"), key: t("Due Date") },
       ];
 
       exportToCSV(csvData, columns, "stockly-invoices");
 
       toast({
-        title: "CSV Export Successful!",
-        description: `${filteredInvoices.length} invoices exported to CSV file.`,
+        title: t("CSV Export Successful!"),
+        description: t("{count} invoices exported to CSV file.", {
+          count: filteredInvoices.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export invoices to CSV. Please try again.",
+        title: t("Export Failed"),
+        description: t("Failed to export invoices to CSV. Please try again."),
         variant: "destructive",
       });
     }
-  }, [filteredInvoices, toast]);
+  }, [filteredInvoices, toast, t]);
 
   /**
    * Export filtered invoices to Excel
@@ -136,57 +141,60 @@ export default function InvoiceFilters({
     try {
       if (filteredInvoices.length === 0) {
         toast({
-          title: "No Data to Export",
-          description:
+          title: t("No Data to Export"),
+          description: t(
             "There are no invoices to export with the current filters.",
+          ),
           variant: "destructive",
         });
         return;
       }
 
       const excelData = filteredInvoices.map((invoice) => ({
-        "Invoice Number": invoice.invoiceNumber,
-        "Invoice Date": formatStableDate(invoice.createdAt),
-        Status: invoice.status,
-        Subtotal: invoice.subtotal.toFixed(2),
-        Tax: invoice.tax ? invoice.tax.toFixed(2) : "0.00",
-        Discount: invoice.discount ? invoice.discount.toFixed(2) : "0.00",
-        Total: invoice.total.toFixed(2),
-        "Amount Paid": invoice.amountPaid.toFixed(2),
-        "Amount Due": invoice.amountDue.toFixed(2),
-        "Due Date": formatStableDate(invoice.dueDate),
+        [t("Invoice Number")]: invoice.invoiceNumber,
+        [t("Invoice Date")]: formatStableDate(invoice.createdAt),
+        [t("Status")]: invoice.status,
+        [t("Subtotal")]: invoice.subtotal.toFixed(2),
+        [t("Tax")]: invoice.tax ? invoice.tax.toFixed(2) : "0.00",
+        [t("Discount")]: invoice.discount ? invoice.discount.toFixed(2) : "0.00",
+        [t("Total")]: invoice.total.toFixed(2),
+        [t("Amount Paid")]: invoice.amountPaid.toFixed(2),
+        [t("Amount Due")]: invoice.amountDue.toFixed(2),
+        [t("Due Date")]: formatStableDate(invoice.dueDate),
       }));
 
       await exportToExcel({
         sheetName: "Invoices",
         fileName: "stockly-invoices",
         columns: [
-          { header: "Invoice Number", key: "Invoice Number", width: 20 },
-          { header: "Invoice Date", key: "Invoice Date", width: 12 },
-          { header: "Status", key: "Status", width: 12 },
-          { header: "Subtotal", key: "Subtotal", width: 12 },
-          { header: "Tax", key: "Tax", width: 10 },
-          { header: "Discount", key: "Discount", width: 12 },
-          { header: "Total", key: "Total", width: 12 },
-          { header: "Amount Paid", key: "Amount Paid", width: 12 },
-          { header: "Amount Due", key: "Amount Due", width: 12 },
-          { header: "Due Date", key: "Due Date", width: 12 },
+          { header: t("Invoice Number"), key: t("Invoice Number"), width: 20 },
+          { header: t("Invoice Date"), key: t("Invoice Date"), width: 12 },
+          { header: t("Status"), key: t("Status"), width: 12 },
+          { header: t("Subtotal"), key: t("Subtotal"), width: 12 },
+          { header: t("Tax"), key: t("Tax"), width: 10 },
+          { header: t("Discount"), key: t("Discount"), width: 12 },
+          { header: t("Total"), key: t("Total"), width: 12 },
+          { header: t("Amount Paid"), key: t("Amount Paid"), width: 12 },
+          { header: t("Amount Due"), key: t("Amount Due"), width: 12 },
+          { header: t("Due Date"), key: t("Due Date"), width: 12 },
         ],
         data: excelData,
       });
 
       toast({
-        title: "Excel Export Successful!",
-        description: `${filteredInvoices.length} invoices exported to Excel file.`,
+        title: t("Excel Export Successful!"),
+        description: t("{count} invoices exported to Excel file.", {
+          count: filteredInvoices.length,
+        }),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description: "Failed to export invoices to Excel. Please try again.",
+        title: t("Export Failed"),
+        description: t("Failed to export invoices to Excel. Please try again."),
         variant: "destructive",
       });
     }
-  }, [filteredInvoices, toast]);
+  }, [filteredInvoices, toast, t]);
 
   const handleResetFilters = useCallback(() => {
     setSelectedStatuses([]);
@@ -199,19 +207,19 @@ export default function InvoiceFilters({
 
     if (showInvoiceSourceFilter && invoiceSourceFilter !== "both") {
       groups.push({
-        label: "Type",
+        label: t("Type"),
         values: [invoiceSourceFilter],
         onClear: () => setInvoiceSourceFilter?.("both"),
         renderBadge: (value) => (
           <span className={FILTER_CHIP_COLLAPSED_CLASS}>
-            {INVOICE_SOURCE_LABELS[value as InvoiceSourceFilterValue] ?? value}
+            {t(INVOICE_SOURCE_LABELS[value as InvoiceSourceFilterValue] ?? value)}
           </span>
         ),
       });
     }
 
     groups.push({
-      label: "Status",
+      label: t("Status"),
       values: selectedStatuses,
       onClear: () => setSelectedStatuses([]),
       renderBadge: (value) => (
@@ -226,6 +234,7 @@ export default function InvoiceFilters({
     selectedStatuses,
     setInvoiceSourceFilter,
     setSelectedStatuses,
+    t,
   ]);
 
   return (
@@ -236,7 +245,7 @@ export default function InvoiceFilters({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by Invoice #..."
+            placeholder={t("Search by Invoice #...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -270,7 +279,7 @@ export default function InvoiceFilters({
         {/* Export Dropdown - Right */}
         <div className="flex-shrink-0 flex items-center gap-2">
           <ExportMenuButton
-            label="Export Invoices"
+            label={t("Export Invoices")}
             accent="violet"
             disabled={filteredInvoices.length === 0}
             onExportCsv={handleExportToCSV}

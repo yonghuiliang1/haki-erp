@@ -47,6 +47,8 @@ import {
   INVOICE_TOTAL_COLUMN_TOOLTIP,
 } from "@/lib/ui/order-invoice-column-tooltips";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 
 const META_MUTED = "text-xs text-gray-600 dark:text-gray-300";
 
@@ -56,6 +58,7 @@ type SortableHeaderProps = {
 };
 
 const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -71,20 +74,20 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
           className={`flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white ${
             isSorted && "text-primary"
           }`}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -112,6 +115,7 @@ export const createInvoiceColumns = (
   /** When set (e.g. "/admin/invoices"), Invoice # links use {detailHrefBase}/{id} */
   detailHrefBase?: string,
   options?: CreateInvoiceColumnsOptions,
+  t: TranslateFn = (text) => text,
 ): ColumnDef<Invoice>[] => {
   const isAdminBase = detailHrefBase?.startsWith("/admin") === true;
   const invoiceHrefBase = detailHrefBase ?? "/invoices";
@@ -129,7 +133,7 @@ export const createInvoiceColumns = (
           <HelpTooltip
             content={INVOICE_NUMBER_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Invoice # column help"
+            ariaLabel={t("Invoice # column help")}
             className="shrink-0"
           />
         </div>
@@ -224,7 +228,7 @@ export const createInvoiceColumns = (
           <HelpTooltip
             content={INVOICE_ORDER_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Order # column help"
+            ariaLabel={t("Order # column help")}
             className="shrink-0"
           />
         </div>
@@ -356,12 +360,16 @@ export const createInvoiceColumns = (
             >
               <Package className="h-3 w-3 shrink-0" aria-hidden />
               <span>
-                {itemCount} item{itemCount !== 1 ? "s" : ""}
+                {t(itemCount !== 1 ? "{count} items" : "{count} item", {
+                  count: itemCount,
+                })}
               </span>
               <span aria-hidden>·</span>
               <Boxes className="h-3 w-3 shrink-0" aria-hidden />
               <span>
-                {unitCount} unit{unitCount !== 1 ? "s" : ""}
+                {t(unitCount !== 1 ? "{count} units" : "{count} unit", {
+                  count: unitCount,
+                })}
               </span>
             </div>
           </div>
@@ -376,7 +384,7 @@ export const createInvoiceColumns = (
           <HelpTooltip
             content={INVOICE_STATUS_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Status column help"
+            ariaLabel={t("Status column help")}
             className="shrink-0"
           />
         </div>
@@ -406,7 +414,7 @@ export const createInvoiceColumns = (
           <HelpTooltip
             content={INVOICE_TOTAL_COLUMN_TOOLTIP}
             side="top"
-            ariaLabel="Total column help"
+            ariaLabel={t("Total column help")}
             className="shrink-0"
           />
         </div>
@@ -425,7 +433,7 @@ export const createInvoiceColumns = (
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => t("Actions"),
       cell: ({ row }) => {
         return (
           <InvoiceActions

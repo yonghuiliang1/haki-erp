@@ -8,6 +8,7 @@
 
 import { WarehouseTypeBadge } from "@/lib/ui/semantic-badges";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type DialogWarehouseOptionRowProps = {
   name: string;
@@ -25,6 +26,7 @@ export function DialogWarehouseOptionRow({
   metaOnDark = false,
   className,
 }: DialogWarehouseOptionRowProps) {
+  const t = useT();
   const nameClass = metaOnDark
     ? "text-sm font-normal text-white/90"
     : "text-sm font-normal text-gray-700 dark:text-gray-100";
@@ -52,7 +54,7 @@ export function DialogWarehouseOptionRow({
           </span>
         ) : null}
         <span className={cn("shrink-0", availClass)}>
-          {available} avail.
+          {t("{count} avail.", { count: available })}
         </span>
       </span>
     </span>

@@ -20,6 +20,7 @@ import WriteEditReviewDialog from "@/components/product-reviews/WriteEditReviewD
 import { useDeleteProductReview } from "@/hooks/queries";
 import { truncateReviewComment } from "@/lib/ui/review-rating-display";
 import { logger } from "@/lib/logger";
+import { useT } from "@/lib/i18n/locale-context";
 import { MoreVertical, Eye, Pencil, Trash2 } from "lucide-react";
 import type { ProductReview } from "@/types";
 
@@ -33,6 +34,7 @@ export default function ProductReviewActions({
   review,
   detailHrefBase = "/admin/product-reviews",
 }: ProductReviewActionsProps) {
+  const t = useT();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const deleteMutation = useDeleteProductReview();
@@ -55,7 +57,7 @@ export default function ProductReviewActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("Open menu")}</span>
             <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
@@ -66,7 +68,7 @@ export default function ProductReviewActions({
           <DropdownMenuItem asChild>
             <Link href={detailHref} className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
-              View Details
+              {t("View Details")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -74,7 +76,7 @@ export default function ProductReviewActions({
             className="flex items-center gap-2"
           >
             <Pencil className="h-4 w-4" />
-            Edit Review
+            {t("Edit Review")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setDeleteDialogOpen(true)}
@@ -82,7 +84,7 @@ export default function ProductReviewActions({
             className="flex items-center gap-2 text-red-600 dark:text-red-400"
           >
             <Trash2 className="h-4 w-4" />
-            {isDeleting ? "Deleting..." : "Delete Review"}
+            {isDeleting ? t("Deleting...") : t("Delete Review")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -100,14 +102,20 @@ export default function ProductReviewActions({
       <AlertDialogWrapper
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete product review?"
+        title={t("Delete product review?")}
         description={
           commentPreview
-            ? `This will permanently delete the review for "${review.productName}": ${commentPreview}`
-            : `This will permanently delete the review for "${review.productName}". This action cannot be undone.`
+            ? t(
+                'This will permanently delete the review for "{product}": {preview}',
+                { product: review.productName, preview: commentPreview },
+              )
+            : t(
+                'This will permanently delete the review for "{product}". This action cannot be undone.',
+                { product: review.productName },
+              )
         }
-        actionLabel="Delete"
-        actionLoadingLabel="Deleting..."
+        actionLabel={t("Delete")}
+        actionLoadingLabel={t("Deleting...")}
         isLoading={isDeleting}
         onAction={handleDelete}
         onCancel={() => setDeleteDialogOpen(false)}

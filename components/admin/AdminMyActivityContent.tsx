@@ -45,6 +45,8 @@ import {
   PAGE_STATS_GRID_IN_SHELL_CLASS,
 } from "@/lib/ui/shell-layout-styles";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 import { buildPaymentMoneyStats } from "@/lib/insights/payment-money-stats";
 import { buildStoreOrderStatusBadges } from "@/lib/ui/store-order-status-badges";
 import { buildStoreInvoiceStatusBadges } from "@/lib/ui/store-invoice-status-badges";
@@ -67,6 +69,7 @@ import type { InvoiceForPage } from "@/lib/server/invoices-data";
 /** REQ-0168 — adapt Order-list ColumnDefs for AdminEmbedDataTable (no sort chrome). */
 function orderColumnDefsToEmbed(
   defs: ColumnDef<Order>[],
+  tr: TranslateFn,
 ): AdminEmbedColumn<OrderForPage>[] {
   const headers: Record<string, string> = {
     orderNumber: "Order #",
@@ -86,7 +89,7 @@ function orderColumnDefsToEmbed(
           : `col-${index}`;
     return {
       id,
-      header: headers[id] ?? id,
+      header: tr(headers[id] ?? id),
       headerClassName: id === "actions" ? "text-right" : undefined,
       cellClassName: id === "actions" ? "text-right" : undefined,
       render: (order) => {
@@ -120,6 +123,7 @@ export default function AdminMyActivityContent({
   initialCategories,
   initialUsers,
 }: AdminMyActivityContentProps = {}) {
+  const t = useT();
   const [searchTerm, setSearchTerm] = useState("");
   const { user: authUser } = useAuth();
 
@@ -333,8 +337,9 @@ export default function AdminMyActivityContent({
       orderColumnDefsToEmbed(
         // REQ-0169 — no onEdit (no OrderDialog host); View/Cancel/invoice still work
         createOrderColumns(undefined, "/admin/orders"),
+        t,
       ),
-    [],
+    [t],
   );
 
   return (
@@ -344,8 +349,10 @@ export default function AdminMyActivityContent({
           as="h1"
           icon={UserRound}
           tone="sky"
-          title="My Activity (self-only as user)"
-          description="Your orders, products, and key metrics as the store owner as you placed order, created products, invoices, and more. This is self-only data. This is different from the Store Analytics & Dashboard, which is the overall store metrics as the store owner & other users."
+          title={t("My Activity (self-only as user)")}
+          description={t(
+            "Your orders, products, and key metrics as the store owner as you placed order, created products, invoices, and more. This is self-only data. This is different from the Store Analytics & Dashboard, which is the overall store metrics as the store owner & other users.",
+          )}
           className={DETAIL_PAGE_HEADER_SPACING_CLASS}
         />
 
@@ -357,9 +364,9 @@ export default function AdminMyActivityContent({
           )}
         >
           <StatisticsCard
-            title="Total Orders"
+            title={t("Total Orders")}
             value={stats.totalOrders}
-            description="All time orders (self)"
+            description={t("All time orders (self)")}
             icon={ShoppingCart}
             variant="rose"
             valueLoading={cardsDataLoading}
@@ -370,98 +377,98 @@ export default function AdminMyActivityContent({
             })}
           />
           <StatisticsCard
-            title="Total order value"
+            title={t("Total order value")}
             value={<ClientCurrency value={stats.totalRevenue} />}
-            description="Your orders history (self)"
+            description={t("Your orders history (self)")}
             icon={DollarSign}
             variant="emerald"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Paid",
+                label: t("Paid"),
                 value: formatStableCurrency(stats.paidAmount),
               },
               {
-                label: "Partial",
+                label: t("Partial"),
                 value: formatStableCurrency(stats.partialAmount),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatStableCurrency(stats.outstandingAmount),
               },
               {
-                label: "Refunded",
+                label: t("Refunded"),
                 value: formatStableCurrency(stats.refundedAmount),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatStableCurrency(stats.cancelledAmount),
               },
               {
-                label: "Pending",
+                label: t("Pending"),
                 value: formatStableCurrency(stats.unpaidAmount),
               },
             ]}
           />
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={stats.totalProducts}
-            description="Total products in inventory"
+            description={t("Total products in inventory")}
             icon={Package}
             variant="violet"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
-              { label: "Available", value: stats.productAvailable },
-              { label: "Stock Low", value: stats.productStockLow },
-              { label: "Stock Out", value: stats.productStockOut },
+              { label: t("Available"), value: stats.productAvailable },
+              { label: t("Stock Low"), value: stats.productStockLow },
+              { label: t("Stock Out"), value: stats.productStockOut },
             ]}
           />
           <StatisticsCard
-            title="Total Users"
+            title={t("Total Users")}
             value={stats.totalUsers}
-            description="Registered users"
+            description={t("Registered users")}
             icon={Users}
             variant="amber"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
-              { label: "Admin", value: stats.userAdmin },
-              { label: "Client", value: stats.userClient },
-              { label: "Supplier", value: stats.userSupplier },
+              { label: t("Admin"), value: stats.userAdmin },
+              { label: t("Client"), value: stats.userClient },
+              { label: t("Supplier"), value: stats.userSupplier },
             ]}
           />
           <StatisticsCard
-            title="Total Suppliers"
+            title={t("Total Suppliers")}
             value={stats.totalSuppliers}
-            description="Suppliers"
+            description={t("Suppliers")}
             icon={Truck}
             variant="sky"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
-              { label: "Active", value: stats.supplierActive },
-              { label: "Inactive", value: stats.supplierInactive },
+              { label: t("Active"), value: stats.supplierActive },
+              { label: t("Inactive"), value: stats.supplierInactive },
             ]}
           />
           <StatisticsCard
-            title="Total Warehouses"
+            title={t("Total Warehouses")}
             value={stats.totalWarehouses}
-            description="Storage locations"
+            description={t("Storage locations")}
             icon={WarehouseIcon}
             variant="blue"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
-              { label: "Active", value: stats.warehouseActive },
-              { label: "Inactive", value: stats.warehouseInactive },
+              { label: t("Active"), value: stats.warehouseActive },
+              { label: t("Inactive"), value: stats.warehouseInactive },
             ]}
           />
           <StatisticsCard
-            title="Invoices"
+            title={t("Invoices")}
             value={stats.totalInvoices}
-            description="Total invoices generated"
+            description={t("Total invoices generated")}
             icon={FileText}
             variant="blue"
             valueLoading={cardsDataLoading}
@@ -476,33 +483,33 @@ export default function AdminMyActivityContent({
             })}
           />
           <StatisticsCard
-            title="Categories"
+            title={t("Categories")}
             value={stats.totalCategories}
-            description="Product categories"
+            description={t("Product categories")}
             icon={FolderTree}
             variant="sky"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
-              { label: "Active", value: stats.categoryActive },
-              { label: "Inactive", value: stats.categoryInactive },
+              { label: t("Active"), value: stats.categoryActive },
+              { label: t("Inactive"), value: stats.categoryInactive },
             ]}
           />
           <StatisticsCard
-            title="Average Order Value"
+            title={t("Average Order Value")}
             value={<ClientCurrency value={stats.avgOrderValue} />}
-            description="Per order average (self)"
+            description={t("Per order average (self)")}
             icon={TrendingUp}
             variant="orange"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Paid Revenue",
+                label: t("Paid Revenue"),
                 value: formatStableCurrency(stats.paidAmount),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatStableCurrency(stats.outstandingAmount),
               },
             ]}
@@ -520,21 +527,19 @@ export default function AdminMyActivityContent({
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
             <SectionTitleRow
               as="h3"
-              title="Recent Orders"
+              title={t("Recent Orders")}
               icon={ShoppingCart}
               iconClassName="text-teal-600 dark:text-teal-400"
               iconTile
-              subtitle={
-                <>
-                  Latest 5 orders (self: {authUser?.name ?? "—"},{" "}
-                  {authUser?.email ?? "—"})
-                </>
-              }
+              subtitle={t("Latest 5 orders (self: {name}, {email})", {
+                name: authUser?.name ?? "—",
+                email: authUser?.email ?? "—",
+              })}
             />
             <div className="relative w-full sm:max-w-md shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
-                placeholder="Search by order #, product, invoice..."
+                placeholder={t("Search by order #, product, invoice...")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn(FILTER_SEARCH_INPUT_SKY_CLASS, "pr-4")}
@@ -545,7 +550,7 @@ export default function AdminMyActivityContent({
             columns={recentOrderColumns}
             data={recentOrders}
             loading={ordersTableLoading}
-            emptyMessage="No orders found"
+            emptyMessage={t("No orders found")}
             emptyIcon={ShoppingCart}
             getRowKey={(order) => order.id}
           />

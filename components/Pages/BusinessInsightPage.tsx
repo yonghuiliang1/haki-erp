@@ -113,6 +113,7 @@ import {
   DIALOG_NATIVE_DATE_HIDE_INDICATOR,
 } from "@/components/shared/dialog-form-field";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** Date range inputs — violet hue ring; REQ-0223 hide native indicator + one Lucide icon. */
 const BUSINESS_INSIGHT_DATE_INPUT_CLASS = cn(
@@ -155,6 +156,7 @@ export default function BusinessInsightPage({
   initialOrders,
   initialWarehouseSummary,
 }: BusinessInsightPageProps = {}) {
+  const t = useT();
   const productsQuery = useProducts(initialProducts as Product[] | undefined);
   const ordersQuery = useOrders(initialOrders as Order[] | undefined);
   const warehouseSummaryQuery = useWarehouseStockSummary(
@@ -586,8 +588,8 @@ export default function BusinessInsightPage({
     try {
       if (analyticsData.totalProducts === 0) {
         toast({
-          title: "No Data to Export",
-          description: "There is no analytics data to export.",
+          title: t("No Data to Export"),
+          description: t("There is no analytics data to export."),
           variant: "destructive",
         });
         return;
@@ -717,18 +719,19 @@ export default function BusinessInsightPage({
       exportToCSV(csvData, columns, "stockly-analytics");
 
       toast({
-        title: "CSV Export Successful!",
-        description: "Analytics data exported to CSV file.",
+        title: t("CSV Export Successful!"),
+        description: t("Analytics data exported to CSV file."),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description:
+        title: t("Export Failed"),
+        description: t(
           "Failed to export analytics data to CSV. Please try again.",
+        ),
         variant: "destructive",
       });
     }
-  }, [analyticsData, toast]);
+  }, [analyticsData, toast, t]);
 
   /**
    * Export analytics data to Excel
@@ -738,8 +741,8 @@ export default function BusinessInsightPage({
     try {
       if (analyticsData.totalProducts === 0) {
         toast({
-          title: "No Data to Export",
-          description: "There is no analytics data to export.",
+          title: t("No Data to Export"),
+          description: t("There is no analytics data to export."),
           variant: "destructive",
         });
         return;
@@ -787,18 +790,19 @@ export default function BusinessInsightPage({
       });
 
       toast({
-        title: "Excel Export Successful!",
-        description: "Analytics data exported to Excel file.",
+        title: t("Excel Export Successful!"),
+        description: t("Analytics data exported to Excel file."),
       });
     } catch (error) {
       toast({
-        title: "Export Failed",
-        description:
+        title: t("Export Failed"),
+        description: t(
           "Failed to export analytics data to Excel. Please try again.",
+        ),
         variant: "destructive",
       });
     }
-  }, [analyticsData, toast]);
+  }, [analyticsData, toast, t]);
 
   /**
    * Handle export button click - shows options for CSV or Excel
@@ -852,7 +856,7 @@ export default function BusinessInsightPage({
       const data = await res.json();
       if (!res.ok) {
         const errMsg =
-          typeof data?.error === "string" ? data.error : "Please try again.";
+          typeof data?.error === "string" ? data.error : t("Please try again.");
         const code =
           typeof data?.details?.code === "string"
             ? data.details.code
@@ -862,21 +866,22 @@ export default function BusinessInsightPage({
           setAiInsightsUnavailable(true);
           if (code === "LLM_BILLING" || code === "OPENROUTER_BILLING") {
             toast({
-              title: "AI credits exhausted",
+              title: t("AI credits exhausted"),
               description: errMsg,
               variant: "destructive",
             });
           } else {
             toast({
-              title: "AI insights not configured",
-              description:
+              title: t("AI insights not configured"),
+              description: t(
                 "Set OPENROUTER_API_KEY and/or GROQ_API_KEY in .env to enable AI-powered insights.",
+              ),
               variant: "destructive",
             });
           }
         } else {
           toast({
-            title: "Failed to generate insights",
+            title: t("Failed to generate insights"),
             description: errMsg,
             variant: "destructive",
           });
@@ -886,20 +891,20 @@ export default function BusinessInsightPage({
       if (data?.data?.text) {
         setAiInsightsText(data.data.text);
         toast({
-          title: "AI insights generated",
-          description: "Recommendations are ready.",
+          title: t("AI insights generated"),
+          description: t("Recommendations are ready."),
         });
       }
     } catch {
       toast({
-        title: "Failed to generate insights",
-        description: "Network error. Please try again.",
+        title: t("Failed to generate insights"),
+        description: t("Network error. Please try again."),
         variant: "destructive",
       });
     } finally {
       setAiInsightsLoading(false);
     }
-  }, [buildAiSummary, toast]);
+  }, [buildAiSummary, toast, t]);
 
   // Radix Tabs: defer until mounted to avoid ID hydration mismatch (REQ-0021 — tabs only, not full page)
   const isMountedRef = useRef(false);
@@ -936,8 +941,10 @@ export default function BusinessInsightPage({
             as="h1"
             icon={BarChart3}
             tone="violet"
-            title="Product Inventory Business Insights"
-            description="Analyze your product inventory performance and get insights to improve your business as product owner."
+            title={t("Product Inventory Business Insights")}
+            description={t(
+              "Analyze your product inventory performance and get insights to improve your business as product owner.",
+            )}
             className={DETAIL_PAGE_HEADER_SPACING_CLASS}
             trailing={
               <Button
@@ -950,7 +957,7 @@ export default function BusinessInsightPage({
                 disabled={dataLoading}
               >
                 <Download className="h-4 w-4" />
-                Export Analytics
+                {t("Export Analytics")}
               </Button>
             }
           />
@@ -964,7 +971,7 @@ export default function BusinessInsightPage({
                     <Calendar className="h-4 w-4 text-gray-700 dark:text-white/80" />
                   </div>
                   <span className="text-sm font-medium text-gray-700 dark:text-white/80">
-                    Filter by Date:
+                    {t("Filter by Date:")}
                   </span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 flex-1">
@@ -973,7 +980,7 @@ export default function BusinessInsightPage({
                       htmlFor="start-date"
                       className="text-sm text-gray-600 dark:text-white/80 whitespace-nowrap w-10 sm:w-auto"
                     >
-                      From:
+                      {t("From:")}
                     </label>
                     <div className="relative flex-1 sm:flex-none sm:min-w-[10.5rem]">
                       <input
@@ -1000,7 +1007,7 @@ export default function BusinessInsightPage({
                           "absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded",
                           "text-violet-600/80 hover:text-violet-700 dark:text-white/80 dark:hover:text-white",
                         )}
-                        aria-label="Open start date calendar"
+                        aria-label={t("Open start date calendar")}
                       >
                         <Calendar className="h-4 w-4" />
                       </button>
@@ -1011,7 +1018,7 @@ export default function BusinessInsightPage({
                       htmlFor="end-date"
                       className="text-sm text-gray-600 dark:text-white/80 whitespace-nowrap w-10 sm:w-auto"
                     >
-                      To:
+                      {t("To:")}
                     </label>
                     <div className="relative flex-1 sm:flex-none sm:min-w-[10.5rem]">
                       <input
@@ -1038,7 +1045,7 @@ export default function BusinessInsightPage({
                           "absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded",
                           "text-violet-600/80 hover:text-violet-700 dark:text-white/80 dark:hover:text-white",
                         )}
-                        aria-label="Open end date calendar"
+                        aria-label={t("Open end date calendar")}
                       >
                         <Calendar className="h-4 w-4" />
                       </button>
@@ -1054,7 +1061,7 @@ export default function BusinessInsightPage({
                       className="flex items-center gap-1 rounded-xl border-rose-400/30 hover:border-rose-300/50 hover:bg-rose-500/10"
                     >
                       <X className="h-3 w-3" />
-                      Clear
+                      {t("Clear")}
                     </Button>
                   )}
                 </div>
@@ -1070,35 +1077,35 @@ export default function BusinessInsightPage({
             )}
           >
             <AnalyticsCard
-              title="Total Products"
+              title={t("Total Products")}
               value={analyticsData.totalProducts}
               icon={Package}
               variant="blue"
-              description="Products in inventory"
+              description={t("Products in inventory")}
               valueLoading={dataLoading}
             />
             <AnalyticsCard
-              title="Total Value"
+              title={t("Total Value")}
               value={formatStableCurrency(analyticsData.totalValue)}
               icon={DollarSign}
               variant="emerald"
-              description="Total inventory value"
+              description={t("Total inventory value")}
               valueLoading={dataLoading}
             />
             <AnalyticsCard
-              title="Low Stock Items"
+              title={t("Low Stock Items")}
               value={analyticsData.lowStockItems}
               icon={AlertTriangle}
               variant="amber"
-              description="Items with quantity <= 20"
+              description={t("Items with quantity <= 20")}
               valueLoading={dataLoading}
             />
             <AnalyticsCard
-              title="Out of Stock"
+              title={t("Out of Stock")}
               value={analyticsData.outOfStockItems}
               icon={ShoppingCart}
               variant="rose"
-              description="Items with zero quantity"
+              description={t("Items with zero quantity")}
               valueLoading={dataLoading}
             />
           </div>
@@ -1125,17 +1132,17 @@ export default function BusinessInsightPage({
             ) : (
               <Tabs value={insightsTab} onValueChange={setInsightsTab}>
                 <TabsList className="hidden sm:grid w-full grid-cols-5 mb-4">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="distribution">Distribution</TabsTrigger>
-                  <TabsTrigger value="trends">Trends</TabsTrigger>
-                  <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
-                  <TabsTrigger value="alerts">Alerts</TabsTrigger>
+                  <TabsTrigger value="overview">{t("Overview")}</TabsTrigger>
+                  <TabsTrigger value="distribution">{t("Distribution")}</TabsTrigger>
+                  <TabsTrigger value="trends">{t("Trends")}</TabsTrigger>
+                  <TabsTrigger value="warehouses">{t("Warehouses")}</TabsTrigger>
+                  <TabsTrigger value="alerts">{t("Alerts")}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 text-xs sm:text-sm">
                     <ChartCard
-                      title="Category Distribution"
+                      title={t("Category Distribution")}
                       icon={PieChartIcon}
                       variant="violet"
                     >
@@ -1172,7 +1179,7 @@ export default function BusinessInsightPage({
                     </ChartCard>
 
                     <ChartCard
-                      title="Product Growth Trend (Full Year)"
+                      title={t("Product Growth Trend (Full Year)")}
                       icon={TrendingUp}
                       variant="sky"
                     >
@@ -1214,7 +1221,7 @@ export default function BusinessInsightPage({
                   {!dataLoading && !ordersLoading && allOrders.length > 0 && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-4 text-xs sm:text-sm">
                       <ChartCard
-                        title="Sales / Order Value Trend"
+                        title={t("Sales / Order Value Trend")}
                         icon={DollarSign}
                         variant="emerald"
                       >
@@ -1241,7 +1248,7 @@ export default function BusinessInsightPage({
                                   value != null
                                     ? formatStableCurrency(Number(value))
                                     : "$0",
-                                  "Revenue",
+                                  t("Revenue"),
                                 ]}
                               />
                               <Area
@@ -1259,7 +1266,7 @@ export default function BusinessInsightPage({
                         </DeferredChartSection>
                       </ChartCard>
                       <ChartCard
-                        title="Order Count by Month"
+                        title={t("Order Count by Month")}
                         icon={ShoppingCart}
                         variant="amber"
                       >
@@ -1301,22 +1308,28 @@ export default function BusinessInsightPage({
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 text-xs sm:text-sm">
                     {/* Status Distribution */}
                     <ChartCard
-                      title="Status Distribution"
+                      title={t("Status Distribution")}
                       icon={Activity}
                       variant="blue"
                     >
                       <div className="mb-3 flex flex-wrap items-center gap-2">
                         <ProductStockStatusBadge
                           status="available"
-                          label={`Available (${analyticsData.availableStockItems})`}
+                          label={t("Available ({count})", {
+                            count: analyticsData.availableStockItems,
+                          })}
                         />
                         <ProductStockStatusBadge
                           status="stock_low"
-                          label={`Stock Low (${analyticsData.lowStockItems})`}
+                          label={t("Stock Low ({count})", {
+                            count: analyticsData.lowStockItems,
+                          })}
                         />
                         <ProductStockStatusBadge
                           status="stock_out"
-                          label={`Stock Out (${analyticsData.outOfStockItems})`}
+                          label={t("Stock Out ({count})", {
+                            count: analyticsData.outOfStockItems,
+                          })}
                         />
                       </div>
                       <DeferredChartSection
@@ -1352,7 +1365,7 @@ export default function BusinessInsightPage({
 
                     {/* Price Range Distribution */}
                     <ChartCard
-                      title="Price Range Distribution"
+                      title={t("Price Range Distribution")}
                       icon={BarChart3}
                       variant="teal"
                     >
@@ -1391,7 +1404,7 @@ export default function BusinessInsightPage({
 
                     {/* Category Performance (by value) */}
                     <ChartCard
-                      title="Category by Value"
+                      title={t("Category by Value")}
                       icon={PieChartIcon}
                       variant="amber"
                     >
@@ -1418,7 +1431,7 @@ export default function BusinessInsightPage({
                                 value != null
                                   ? formatStableCurrency(Number(value))
                                   : "$0",
-                                "Value",
+                                t("Value"),
                               ]}
                             />
                             <Bar
@@ -1433,7 +1446,7 @@ export default function BusinessInsightPage({
 
                     {/* Supplier Performance (by value) */}
                     <ChartCard
-                      title="Supplier Performance"
+                      title={t("Supplier Performance")}
                       icon={Users}
                       variant="orange"
                     >
@@ -1460,7 +1473,7 @@ export default function BusinessInsightPage({
                                 value != null
                                   ? formatStableCurrency(Number(value))
                                   : "$0",
-                                "Value",
+                                t("Value"),
                               ]}
                             />
                             <Bar
@@ -1479,7 +1492,7 @@ export default function BusinessInsightPage({
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 text-xs sm:text-sm">
                     {/* Top Products by Value */}
                     <ChartCard
-                      title="Top Products by Value"
+                      title={t("Top Products by Value")}
                       icon={TrendingUp}
                       variant="emerald"
                     >
@@ -1506,9 +1519,11 @@ export default function BusinessInsightPage({
                                 value
                                   ? formatStableCurrency(Number(value))
                                   : "$0",
-                                "Value",
+                                t("Value"),
                               ]}
-                              labelFormatter={(label) => `Product: ${label}`}
+                              labelFormatter={(label) =>
+                                t("Product: {label}", { label: String(label) })
+                              }
                             />
                             <Bar
                               dataKey="value"
@@ -1522,7 +1537,7 @@ export default function BusinessInsightPage({
 
                     {/* Monthly Product Addition Trend */}
                     <ChartCard
-                      title="Monthly Product Addition"
+                      title={t("Monthly Product Addition")}
                       icon={TrendingDown}
                       variant="rose"
                     >
@@ -1574,7 +1589,7 @@ export default function BusinessInsightPage({
                   <div className="flex flex-col gap-4">
                     {/* Low Stock Alerts */}
                     <ChartCard
-                      title="Low Stock Alerts"
+                      title={t("Low Stock Alerts")}
                       icon={AlertTriangle}
                       variant="amber"
                     >
@@ -1616,7 +1631,7 @@ export default function BusinessInsightPage({
                           <div className="text-center py-8">
                             <AlertTriangle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
                             <p className="text-gray-600 dark:text-white/80">
-                              No low stock alerts at the moment!
+                              {t("No low stock alerts at the moment!")}
                             </p>
                           </div>
                         )}
@@ -1625,7 +1640,7 @@ export default function BusinessInsightPage({
 
                     {/* Out of Stock Alerts */}
                     <ChartCard
-                      title="Out of Stock"
+                      title={t("Out of Stock")}
                       icon={Package}
                       variant="rose"
                     >
@@ -1667,7 +1682,7 @@ export default function BusinessInsightPage({
                           <div className="text-center py-8">
                             <Package className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
                             <p className="text-gray-600 dark:text-white/80">
-                              No out of stock products!
+                              {t("No out of stock products!")}
                             </p>
                           </div>
                         )}
@@ -1688,13 +1703,13 @@ export default function BusinessInsightPage({
                   <Eye className="h-4 w-4 text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                  Quick Insights
+                  {t("Quick Insights")}
                 </h3>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-white/80">
-                    Average Price
+                    {t("Average Price")}
                   </span>
                   <span className="font-medium text-gray-700 dark:text-white">
                     {dataLoading ? (
@@ -1706,7 +1721,7 @@ export default function BusinessInsightPage({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-white/80">
-                    Total Quantity
+                    {t("Total Quantity")}
                   </span>
                   <span className="font-medium text-gray-700 dark:text-white">
                     {dataLoading ? (
@@ -1718,7 +1733,7 @@ export default function BusinessInsightPage({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-white/80">
-                    Stock Utilization
+                    {t("Stock Utilization")}
                   </span>
                   <span className="font-medium text-gray-700 dark:text-white">
                     {dataLoading ? (
@@ -1738,13 +1753,13 @@ export default function BusinessInsightPage({
                   <Users className="h-4 w-4 text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                  Performance
+                  {t("Performance")}
                 </h3>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-white/80">
-                    Inventory Health
+                    {t("Inventory Health")}
                   </span>
                   {dataLoading ? (
                     <DataSlotPulse variant="badge" />
@@ -1756,25 +1771,29 @@ export default function BusinessInsightPage({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-white/80">
-                    Stock Coverage
+                    {t("Stock Coverage")}
                   </span>
                   <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-white">
                     {dataLoading ? (
                       <DataSlotPulse variant="text-sm" />
                     ) : (
-                      `${analyticsData.stockCoverage.toFixed(1)} units avg`
+                      t("{value} units avg", {
+                        value: analyticsData.stockCoverage.toFixed(1),
+                      })
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-white/80">
-                    Value Density
+                    {t("Value Density")}
                   </span>
                   <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-white">
                     {dataLoading ? (
                       <DataSlotPulse variant="currency" />
                     ) : (
-                      `${formatStableCurrency(analyticsData.valueDensity)} per product`
+                      t("{value} per product", {
+                        value: formatStableCurrency(analyticsData.valueDensity),
+                      })
                     )}
                   </span>
                 </div>
@@ -1788,12 +1807,12 @@ export default function BusinessInsightPage({
                   <QrCode className="h-4 w-4 text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                  Quick QR Code
+                  {t("Quick QR Code")}
                 </h3>
               </div>
               <QRCodeComponent
                 data={qrUrl || "https://localhost:3000/business-insights"}
-                title="Dashboard QR"
+                title={t("Dashboard QR")}
                 size={120}
                 showDownload={false}
               />
@@ -1806,13 +1825,14 @@ export default function BusinessInsightPage({
                   <Sparkles className="h-4 w-4 text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                  AI Insights
+                  {t("AI Insights")}
                 </h3>
               </div>
               {aiInsightsUnavailable ? (
                 <p className="text-sm text-gray-600 dark:text-white/80">
-                  Configure OPENROUTER_API_KEY and/or GROQ_API_KEY in .env to
-                  enable AI-powered recommendations.
+                  {t(
+                    "Configure OPENROUTER_API_KEY and/or GROQ_API_KEY in .env to enable AI-powered recommendations.",
+                  )}
                 </p>
               ) : aiInsightsText ? (
                 <div className="space-y-2">
@@ -1836,12 +1856,12 @@ export default function BusinessInsightPage({
                           className="h-4 w-4 shrink-0 animate-spin"
                           aria-hidden
                         />
-                        Generating insights…
+                        {t("Generating insights…")}
                       </>
                     ) : (
                       <>
                         <RefreshCw className="h-4 w-4 shrink-0" aria-hidden />
-                        Regenerate
+                        {t("Regenerate")}
                       </>
                     )}
                   </Button>
@@ -1849,7 +1869,9 @@ export default function BusinessInsightPage({
               ) : (
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600 dark:text-white/80">
-                    Get short AI recommendations based on your current metrics.
+                    {t(
+                      "Get short AI recommendations based on your current metrics.",
+                    )}
                   </p>
                   <Button
                     size="sm"
@@ -1868,12 +1890,12 @@ export default function BusinessInsightPage({
                           className="h-4 w-4 shrink-0 animate-spin"
                           aria-hidden
                         />
-                        Generating insights…
+                        {t("Generating insights…")}
                       </>
                     ) : (
                       <>
                         <Sparkles className="h-4 w-4 shrink-0" aria-hidden />
-                        Generate AI insights
+                        {t("Generate AI insights")}
                       </>
                     )}
                   </Button>

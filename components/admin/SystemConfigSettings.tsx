@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { DataSlotPulse } from "@/components/shared";
+import { useT } from "@/lib/i18n/locale-context";
 import { useSystemConfigs, useUpdateSystemConfigs } from "@/hooks/queries";
 import { isDataSlotLoading } from "@/lib/react-query";
 import type {
@@ -55,6 +56,7 @@ type SystemConfigSettingsProps = {
 export default function SystemConfigSettings({
   initialConfigs,
 }: SystemConfigSettingsProps) {
+  const t = useT();
   const configsQuery = useSystemConfigs(initialConfigs ?? undefined);
   const data = configsQuery.data ?? initialConfigs ?? null;
   const dataLoading = isDataSlotLoading(configsQuery, initialConfigs);
@@ -146,7 +148,7 @@ export default function SystemConfigSettings({
             )}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
+            {t("Refresh")}
           </Button>
         </div>
         <div className="flex items-center gap-2">
@@ -158,7 +160,7 @@ export default function SystemConfigSettings({
               disabled={actionsDisabled || updateMutation.isPending}
               className={cn(GLASS_BUTTON_ICON_HOVER, GLASS_GHOST_BUTTON, "h-9")}
             >
-              Reset
+              {t("Reset")}
             </Button>
           )}
           <Button
@@ -174,7 +176,7 @@ export default function SystemConfigSettings({
             )}
           >
             <Save className="h-4 w-4 mr-2" />
-            {updateMutation.isPending ? "Saving..." : "Save Changes"}
+            {updateMutation.isPending ? t("Saving...") : t("Save Changes")}
           </Button>
         </div>
       </div>
@@ -192,7 +194,9 @@ export default function SystemConfigSettings({
                 {categoryLabel}
               </CardTitle>
               <CardDescription>
-                Configure {category.toLowerCase()} settings for your application
+                {t("Configure {category} settings for your application", {
+                  category: category.toLowerCase(),
+                })}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -204,7 +208,7 @@ export default function SystemConfigSettings({
                 </>
               ) : configs.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No settings in this category.
+                  {t("No settings in this category.")}
                 </p>
               ) : (
                 configs.map((config, index) => (
@@ -229,7 +233,7 @@ export default function SystemConfigSettings({
         <Card>
           <CardContent className="py-10 text-center">
             <p className="text-muted-foreground">
-              No configuration settings found.
+              {t("No configuration settings found.")}
             </p>
           </CardContent>
         </Card>
@@ -263,6 +267,7 @@ function ConfigField({
   isChanged,
   disabled,
 }: ConfigFieldProps) {
+  const t = useT();
   if (config.type === "boolean") {
     return (
       <div className="flex items-center justify-between">
@@ -272,7 +277,7 @@ function ConfigField({
             className={cn("font-medium", isChanged && "text-sky-600")}
           >
             {config.label}
-            {isChanged && <span className="ml-2 text-xs">(changed)</span>}
+            {isChanged && <span className="ml-2 text-xs">{t("(changed)")}</span>}
           </Label>
           {config.description && (
             <p className="text-sm text-muted-foreground">
@@ -298,7 +303,7 @@ function ConfigField({
           className={cn("font-medium", isChanged && "text-sky-600")}
         >
           {config.label}
-          {isChanged && <span className="ml-2 text-xs">(changed)</span>}
+          {isChanged && <span className="ml-2 text-xs">{t("(changed)")}</span>}
         </Label>
         {config.description && (
           <p className="text-sm text-muted-foreground">{config.description}</p>
@@ -322,7 +327,7 @@ function ConfigField({
         className={cn("font-medium", isChanged && "text-sky-600")}
       >
         {config.label}
-        {isChanged && <span className="ml-2 text-xs">(changed)</span>}
+        {isChanged && <span className="ml-2 text-xs">{t("(changed)")}</span>}
       </Label>
       {config.description && (
         <p className="text-sm text-muted-foreground">{config.description}</p>

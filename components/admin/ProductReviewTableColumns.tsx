@@ -29,6 +29,7 @@ import {
 import { ProductThumb } from "@/components/products/ProductOptionRow";
 import ProductReviewActions from "@/components/admin/ProductReviewActions";
 import { getRatingDisplay } from "@/lib/ui/review-rating-display";
+import { useT } from "@/lib/i18n/locale-context";
 import type { ProductReview } from "@/types";
 
 type SortableHeaderProps = {
@@ -36,7 +37,14 @@ type SortableHeaderProps = {
   label: string;
 };
 
+/** Inline text rendered as a client component so non-component code can translate. */
+function TranslatedText({ text }: { text: string }) {
+  const t = useT();
+  return <>{t(text)}</>;
+}
+
 function SortableHeader({ column, label }: SortableHeaderProps) {
+  const t = useT();
   const isSorted = column.getIsSorted();
   const SortingIcon =
     isSorted === "asc"
@@ -53,20 +61,20 @@ function SortableHeader({ column, label }: SortableHeaderProps) {
             "flex items-center select-none cursor-pointer gap-1 py-2 text-sm font-normal text-gray-700 dark:text-white",
             isSorted && "text-primary",
           )}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("Sort by {label}", { label: t(label) })}
         >
-          {label}
+          {t(label)}
           <SortingIcon className="h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="bottom">
         <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="mr-2 h-4 w-4" />
-          Asc
+          {t("Asc")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="mr-2 h-4 w-4" />
-          Desc
+          {t("Desc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -150,7 +158,7 @@ export function createProductReviewColumns(
     },
     {
       id: "comment",
-      header: "Comment",
+      header: () => <TranslatedText text="Comment" />,
       cell: ({ row }) => {
         const r = row.original;
         const comment = r.comment ?? "";
@@ -178,7 +186,7 @@ export function createProductReviewColumns(
     },
     {
       id: "reviewer",
-      header: "Reviewer",
+      header: () => <TranslatedText text="Reviewer" />,
       // REQ-0185 — supplier-style avatar | sky name | muted email+copy
       cell: ({ row }) => {
         const r = row.original;
@@ -209,7 +217,9 @@ export function createProductReviewColumns(
         return (
           <div className="flex flex-col whitespace-nowrap text-xs">
             <span>
-              <span className="text-muted-foreground">Created: </span>
+              <span className="text-muted-foreground">
+                <TranslatedText text="Created:" />
+              </span>{" "}
               {r.createdAt ? (
                 <ClientDateTime date={r.createdAt} semantic="created" />
               ) : (
@@ -217,7 +227,9 @@ export function createProductReviewColumns(
               )}
             </span>
             <span className="mt-0.5">
-              <span className="text-muted-foreground">Updated: </span>
+              <span className="text-muted-foreground">
+                <TranslatedText text="Updated:" />
+              </span>{" "}
               {r.updatedAt ? (
                 <ClientDateTime date={r.updatedAt} semantic="updated" />
               ) : (
@@ -230,7 +242,7 @@ export function createProductReviewColumns(
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <TranslatedText text="Actions" />,
       cell: ({ row }) => (
         <ProductReviewActions
           review={row.original}

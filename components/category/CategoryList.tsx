@@ -18,6 +18,7 @@ import { Category } from "@/types";
 import type { CategoryForHome } from "@/lib/server/home-data";
 import type { DashboardStats } from "@/types";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const formatCurrency = formatStableCurrency;
 
@@ -40,6 +41,7 @@ const CategoryList = React.memo(function CategoryList({
   initialCategories,
   initialStats,
 }: CategoryListProps = {}) {
+  const t = useT();
   const pathname = usePathname();
   const { user } = useAuth();
   const isUserCategoriesPage = pathname === "/categories";
@@ -90,51 +92,51 @@ const CategoryList = React.memo(function CategoryList({
         as="h2"
         icon={FolderTree}
         tone="amber"
-        title="Category Management"
-        description="Organize your inventory with a comprehensive category system. Create, manage, and maintain product categories to streamline your inventory organization and improve product discoverability."
+        title={t("Category Management")}
+        description={t("Organize your inventory with a comprehensive category system. Create, manage, and maintain product categories to streamline your inventory organization and improve product discoverability.")}
       />
 
       {isUserCategoriesPage && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={categoriesPageStats?.counts.products ?? 0}
-            description="Products availability"
+            description={t("Products availability")}
             icon={Package}
             variant="rose"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value:
                   categoriesPageStats?.productStatusBreakdown?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value:
                   categoriesPageStats?.productStatusBreakdown?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value:
                   categoriesPageStats?.productStatusBreakdown?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Value"
+            title={t("Total Value")}
             value={formatCurrency(
               categoriesPageStats?.totalInventoryValue ?? 0,
             )}
-            description="Total inventory value"
+            description={t("Total inventory value")}
             icon={DollarSign}
             variant="violet"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Orders",
+                label: t("Orders"),
                 value: formatCurrency(
                   categoriesPageStats?.orderAnalytics
                     ?.totalRevenueExcludingCancelled ??
@@ -143,19 +145,19 @@ const CategoryList = React.memo(function CategoryList({
                 ),
               },
               {
-                label: "Invoices",
+                label: t("Invoices"),
                 value: formatCurrency(
                   categoriesPageStats?.revenue?.fromInvoices ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   categoriesPageStats?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatCurrency(
                   categoriesPageStats?.orderAnalytics?.cancelledOrderAmount ??
                     0,
@@ -164,42 +166,42 @@ const CategoryList = React.memo(function CategoryList({
             ]}
           />
           <StatisticsCard
-            title="Total Suppliers"
+            title={t("Total Suppliers")}
             value={categoriesPageStats?.counts.suppliers ?? 0}
-            description="Suppliers"
+            description={t("Suppliers")}
             icon={Truck}
             variant="emerald"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value:
                   categoriesPageStats?.supplierStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   categoriesPageStats?.supplierStatusBreakdown?.inactive ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Categories"
+            title={t("Categories")}
             value={categoriesPageStats?.counts.categories ?? 0}
-            description="Product categories"
+            description={t("Product categories")}
             icon={FolderTree}
             variant="amber"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value:
                   categoriesPageStats?.categoryStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   categoriesPageStats?.categoryStatusBreakdown?.inactive ?? 0,
               },

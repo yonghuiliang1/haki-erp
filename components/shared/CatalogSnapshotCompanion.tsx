@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * REQ-0141 — compact KPI card beside category/supplier stock pie
  * (avoids lg:col-span-2 when stockChartCompanion is omitted).
@@ -17,6 +19,7 @@ import { GlassCard, GlassCardBody } from "@/lib/ui/glass-card";
 import { TYPO_CARD_TITLE, TYPO_SUBTITLE } from "@/lib/ui/typography-scale";
 import { formatStableCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CatalogSnapshotStats = {
   totalProducts: number;
@@ -43,6 +46,7 @@ export function CatalogSnapshotCompanion({
   dataLoading = false,
   className,
 }: CatalogSnapshotCompanionProps) {
+  const t = useT();
   return (
     <GlassCard
       variant="amber"
@@ -54,14 +58,14 @@ export function CatalogSnapshotCompanion({
             <Package className="h-4 w-4 text-gray-700 dark:text-white" />
           </div>
           <div>
-            <h3 className={TYPO_CARD_TITLE}>Catalog Snapshot</h3>
-            <p className={TYPO_SUBTITLE}>Products, sales, and stock signals</p>
+            <h3 className={TYPO_CARD_TITLE}>{t("Catalog Snapshot")}</h3>
+            <p className={TYPO_SUBTITLE}>{t("Products, sales, and stock signals")}</p>
           </div>
         </div>
         <div className="mt-4 space-y-2">
           <DetailInfoRow
             icon={Package}
-            label="Total products:"
+            label={t("Total products:")}
             tone="sky"
             loading={dataLoading}
           >
@@ -69,7 +73,7 @@ export function CatalogSnapshotCompanion({
           </DetailInfoRow>
           <DetailInfoRow
             icon={ShoppingCart}
-            label="Qty sold:"
+            label={t("Qty sold:")}
             tone="violet"
             loading={dataLoading}
           >
@@ -77,7 +81,7 @@ export function CatalogSnapshotCompanion({
           </DetailInfoRow>
           <DetailInfoRow
             icon={DollarSign}
-            label="Orders:"
+            label={t("Orders:")}
             tone="emerald"
             loading={dataLoading}
           >
@@ -85,7 +89,7 @@ export function CatalogSnapshotCompanion({
           </DetailInfoRow>
           <DetailInfoRow
             icon={Wallet}
-            label="Inventory value:"
+            label={t("Inventory value:")}
             tone="blue"
             loading={dataLoading}
           >
@@ -97,7 +101,7 @@ export function CatalogSnapshotCompanion({
           </DetailInfoRow>
           <DetailInfoRow
             icon={AlertTriangle}
-            label="Low stock:"
+            label={t("Low stock:")}
             tone="amber"
             loading={dataLoading}
           >
@@ -105,7 +109,7 @@ export function CatalogSnapshotCompanion({
           </DetailInfoRow>
           <DetailInfoRow
             icon={PackageX}
-            label="Out of stock:"
+            label={t("Out of stock:")}
             tone="rose"
             loading={dataLoading}
           >

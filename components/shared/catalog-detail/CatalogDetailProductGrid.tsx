@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * REQ-0086 — product grid for category/supplier detail pages.
  * REQ-0141 — name · SKU on line 1; category link · stock · price on line 2.
@@ -24,6 +26,7 @@ import { ProductThumb } from "@/components/products/ProductOptionRow";
 import { CARD_EMPTY_MESSAGE_CLASS } from "@/lib/ui/card-empty-styles";
 import type { CatalogDetailProductItem } from "@/types/catalog-detail-lists";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CatalogDetailProductGridProps = {
   products: CatalogDetailProductItem[];
@@ -47,6 +50,7 @@ export function CatalogDetailProductGrid({
   categoryHref,
   className,
 }: CatalogDetailProductGridProps) {
+  const t = useT();
   if (loading) {
     return (
       <div className={cn("mt-4 space-y-2", className)}>
@@ -132,7 +136,7 @@ export function CatalogDetailProductGrid({
                   ) : null}
                   <Package className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   <span className="shrink-0">
-                    Stock: {product.quantity ?? 0}
+                    {t("Stock: {count}", { count: product.quantity ?? 0 })}
                   </span>
                   {getDisplayCommittedQuantity(product) > 0 ? (
                     <>
@@ -141,7 +145,9 @@ export function CatalogDetailProductGrid({
                       </span>
                       <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
                       <span>
-                        {getDisplayCommittedQuantity(product)} reserved
+                        {t("{count} reserved", {
+                          count: getDisplayCommittedQuantity(product),
+                        })}
                       </span>
                     </>
                   ) : null}
@@ -158,12 +164,12 @@ export function CatalogDetailProductGrid({
                 {product.owner && (
                   <span className="inline-flex items-center gap-1.5 min-w-0">
                     <User className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                    Owner:{" "}
+                    {t("Owner:")}{" "}
                     <AvatarInlineLink
                       seed={product.owner.id}
                       image={product.owner.image}
                       label={
-                        product.owner.name ?? product.owner.email ?? "Owner"
+                        product.owner.name ?? product.owner.email ?? t("Owner")
                       }
                       href={ownerProductsHref(product.owner.id)}
                       size={20}
@@ -180,7 +186,7 @@ export function CatalogDetailProductGrid({
                 {product.supplier && (
                   <span className="inline-flex items-center gap-1.5 min-w-0">
                     <Truck className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                    Supplier:{" "}
+                    {t("Supplier:")}{" "}
                     <AvatarInlineLink
                       seed={product.supplier.id}
                       label={product.supplier.name}

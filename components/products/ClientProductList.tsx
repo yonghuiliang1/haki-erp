@@ -19,6 +19,7 @@ import { Users, Truck, FolderTree, Warehouse, ShoppingBag } from "lucide-react";
 import { PageSectionHeader } from "@/components/shared";
 import { cn } from "@/lib/utils";
 import ProductFilters from "./ProductFilters";
+import { useT } from "@/lib/i18n/locale-context";
 
 const ProductTable = dynamic(
   () =>
@@ -63,6 +64,7 @@ export default function ClientProductList({
   initialBrowseProducts,
   initialOwnerId = "",
 }: ClientProductListProps = {}) {
+  const t = useT();
   const [internalOwnerId, setInternalOwnerId] =
     useState<string>(initialOwnerId);
   const selectedOwnerId = controlledOwnerId ?? internalOwnerId;
@@ -123,47 +125,47 @@ export default function ClientProductList({
       {/* Stat Cards */}
       <div className={cn(PAGE_STATS_GRID_CLASS, "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4")}>
         <StatisticsCard
-          title="Product Owners"
+          title={t("Product Owners")}
           value={stats.admins}
-          description="Admin/User accounts"
+          description={t("Admin/User accounts")}
           icon={Users}
           variant="sky"
           badges={[
-            { label: "Admins", value: stats.admins },
-            { label: "Clients", value: stats.clients },
+            { label: t("Admins"), value: stats.admins },
+            { label: t("Clients"), value: stats.clients },
           ]}
         />
         <StatisticsCard
-          title="Suppliers"
+          title={t("Suppliers")}
           value={stats.suppliers.total}
-          description="Total suppliers"
+          description={t("Total suppliers")}
           icon={Truck}
           variant="emerald"
           badges={[
-            { label: "Active", value: stats.suppliers.active },
-            { label: "Inactive", value: stats.suppliers.inactive },
+            { label: t("Active"), value: stats.suppliers.active },
+            { label: t("Inactive"), value: stats.suppliers.inactive },
           ]}
         />
         <StatisticsCard
-          title="Categories"
+          title={t("Categories")}
           value={stats.categories.total}
-          description="Total categories"
+          description={t("Total categories")}
           icon={FolderTree}
           variant="amber"
           badges={[
-            { label: "Active", value: stats.categories.active },
-            { label: "Inactive", value: stats.categories.inactive },
+            { label: t("Active"), value: stats.categories.active },
+            { label: t("Inactive"), value: stats.categories.inactive },
           ]}
         />
         <StatisticsCard
-          title="Warehouses"
+          title={t("Warehouses")}
           value={stats.warehouses.total}
-          description="Storage locations"
+          description={t("Storage locations")}
           icon={Warehouse}
           variant="rose"
           badges={[
-            { label: "Active", value: stats.warehouses.active },
-            { label: "Inactive", value: stats.warehouses.inactive },
+            { label: t("Active"), value: stats.warehouses.active },
+            { label: t("Inactive"), value: stats.warehouses.inactive },
           ]}
         />
       </div>
@@ -173,8 +175,8 @@ export default function ClientProductList({
         as="h2"
         icon={ShoppingBag}
         tone="sky"
-        title="Browse & Purchase Products"
-        description="Explore products from our store. Filter by category, supplier, or status, or choose a product owner to browse their catalog."
+        title={t("Browse & Purchase Products")}
+        description={t("Explore products from our store. Filter by category, supplier, or status, or choose a product owner to browse their catalog.")}
       />
 
       <div className={cn(PAGE_SECTION_SPACING_CLASS, "flex justify-center")}>

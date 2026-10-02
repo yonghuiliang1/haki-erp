@@ -64,6 +64,7 @@ import {
 import type { Order, ShippingCarrier } from "@/types";
 import { OrderPartiesCard } from "@/components/orders/detail/OrderPartiesCard";
 import { OrderShippingAddressCard } from "@/components/orders/detail/OrderShippingAddressCard";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface ShippingManagementProps {
   order: Order;
@@ -86,6 +87,7 @@ export default function ShippingManagement({
 }: ShippingManagementProps) {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"auto" | "manual">("auto");
+  const t = useT();
 
   const [carrier, setCarrier] = useState<ShippingCarrier>("usps");
   const [manualTrackingNumber, setManualTrackingNumber] = useState("");
@@ -136,7 +138,7 @@ export default function ShippingManagement({
       <div className="flex items-center gap-2 text-sm">
         <CheckCircle className="h-4 w-4 text-green-500" />
         <span className="text-muted-foreground">
-          Tracking:{" "}
+          {t("Tracking:")}{" "}
           {order.trackingNumber ? (
             <CopyableText value={order.trackingNumber} className="inline">
               {order.trackingNumber}
@@ -144,7 +146,7 @@ export default function ShippingManagement({
           ) : null}
         </span>
         <Badge variant="secondary" className="text-xs">
-          {order.trackingCarrier?.toUpperCase() || "Unknown"}
+          {order.trackingCarrier?.toUpperCase() || t("Unknown")}
         </Badge>
       </div>
     );
@@ -164,7 +166,7 @@ export default function ShippingManagement({
             className="gap-2"
           >
             <Truck className="h-4 w-4" />
-            {order.paymentStatus === "paid" ? "Ship Order" : "Add Shipping"}
+            {order.paymentStatus === "paid" ? t("Ship Order") : t("Add Shipping")}
           </Button>
         )}
       </DialogTrigger>
@@ -180,10 +182,13 @@ export default function ShippingManagement({
         <DialogHeader className={DIALOG_EDGE_SCROLL_HEADER}>
           <DialogTitle className="flex items-center gap-2 text-white">
             <Package className="h-5 w-5" />
-            Shipping Management
+            {t("Shipping Management")}
           </DialogTitle>
           <DialogDescription className="text-white/80">
-            Generate a shipping label or add a tracking number for order{" "}
+            {t(
+              "Generate a shipping label or add a tracking number for order {number}",
+              { number: order.orderNumber },
+            )}{" "}
             <CopyableText
               value={order.orderNumber}
               className="font-mono font-medium text-white inline"
@@ -202,7 +207,7 @@ export default function ShippingManagement({
           <div className={cn(DIALOG_EDGE_SCROLL_INNER, "gap-4")}>
             {/* Order context densify */}
             <div className="rounded-xl border border-white/15 bg-white/5 p-3 space-y-3">
-              <p className="text-xs font-medium text-white/80">Order items</p>
+              <p className="text-xs font-medium text-white/80">{t("Order items")}</p>
               <ProductLineItemsList
                 items={order.items ?? []}
                 linkMode="none"
@@ -210,7 +215,7 @@ export default function ShippingManagement({
                 order={order}
                 orderSubtotal={order.subtotal}
                 orderTotal={order.total}
-                emptyMessage="No line items"
+                emptyMessage={t("No line items")}
               />
             </div>
             {/* REQ-0210 — stack parties + address so Auto/Manual tabs stay above fold */}
@@ -230,14 +235,14 @@ export default function ShippingManagement({
                   className="h-9 gap-2 rounded-md data-[state=active]:border data-[state=active]:border-emerald-400 data-[state=active]:ring-2 data-[state=active]:ring-emerald-500/50 data-[state=active]:bg-background data-[state=active]:text-slate-700 dark:data-[state=active]:text-white dark:data-[state=active]:bg-white/20"
                 >
                   <Truck className="h-4 w-4" />
-                  Auto Generate
+                  {t("Auto Generate")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="manual"
                   className="h-9 gap-2 rounded-md data-[state=active]:border data-[state=active]:border-emerald-400 data-[state=active]:ring-2 data-[state=active]:ring-emerald-500/50 data-[state=active]:bg-background data-[state=active]:text-slate-700 dark:data-[state=active]:text-white dark:data-[state=active]:bg-white/20"
                 >
                   <Tag className="h-4 w-4" />
-                  Manual Entry
+                  {t("Manual Entry")}
                 </TabsTrigger>
               </TabsList>
 
@@ -250,18 +255,16 @@ export default function ShippingManagement({
                     <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
                     <p className="text-xs text-amber-700 dark:text-amber-400">
                       {/* REQ-0211 — test keys use sandbox US addresses; UI still shows order ship-to */}
-                      Generates a Shippo label and sets status to
-                      &quot;shipped&quot;. With a test API key, label purchase
-                      uses sandbox US addresses (USPS); the order still shows
-                      the customer shipping address above. Confirm or collect
-                      payment first.
+                      {t(
+                        `Generates a Shippo label and sets status to "shipped". With a test API key, label purchase uses sandbox US addresses (USPS); the order still shows the customer shipping address above. Confirm or collect payment first.`,
+                      )}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <DialogFormLabel icon={Truck} htmlFor="carrier">
-                    Carrier
+                    {t("Carrier")}
                   </DialogFormLabel>
                   <DeferredSelectGate
                     enabled={open}
@@ -273,8 +276,10 @@ export default function ShippingManagement({
                         )}
                         aria-hidden
                       >
-                        {CARRIERS.find((c) => c.value === carrier)?.label ??
-                          "Select carrier"}
+                        {t(
+                          CARRIERS.find((c) => c.value === carrier)?.label ??
+                            "Select carrier",
+                        )}
                       </div>
                     }
                   >
@@ -291,7 +296,7 @@ export default function ShippingManagement({
                             DIALOG_FORM_FIELD_EMERALD,
                           )}
                         >
-                          <SelectValue placeholder="Select carrier" />
+                          <SelectValue placeholder={t("Select carrier")} />
                         </SelectTrigger>
                         <SelectContent
                           className={cn(DIALOG_SELECT_CONTENT_CLASS)}
@@ -305,7 +310,7 @@ export default function ShippingManagement({
                               value={c.value}
                               className={DIALOG_SELECT_ITEM_CLASS}
                             >
-                              {c.label}
+                              {t(c.label)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -330,12 +335,12 @@ export default function ShippingManagement({
                     {generateLabelMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating Label...
+                        {t("Generating Label...")}
                       </>
                     ) : (
                       <>
                         <Truck className="mr-2 h-4 w-4" />
-                        Generate Shipping Label
+                        {t("Generate Shipping Label")}
                       </>
                     )}
                   </Button>
@@ -347,13 +352,14 @@ export default function ShippingManagement({
                 className="space-y-4 mt-4 data-[state=inactive]:hidden"
               >
                 <p className="text-sm text-white/70">
-                  Already have a tracking number from another source? Enter it
-                  here to update the order.
+                  {t(
+                    "Already have a tracking number from another source? Enter it here to update the order.",
+                  )}
                 </p>
 
                 <div className="space-y-2">
                   <DialogFormLabel icon={Truck} htmlFor="manual-carrier">
-                    Carrier
+                    {t("Carrier")}
                   </DialogFormLabel>
                   <DeferredSelectGate
                     enabled={open}
@@ -365,8 +371,10 @@ export default function ShippingManagement({
                         )}
                         aria-hidden
                       >
-                        {CARRIERS.find((c) => c.value === manualCarrier)
-                          ?.label ?? "Select carrier"}
+                        {t(
+                          CARRIERS.find((c) => c.value === manualCarrier)
+                            ?.label ?? "Select carrier",
+                        )}
                       </div>
                     }
                   >
@@ -385,7 +393,7 @@ export default function ShippingManagement({
                             DIALOG_FORM_FIELD_EMERALD,
                           )}
                         >
-                          <SelectValue placeholder="Select carrier" />
+                          <SelectValue placeholder={t("Select carrier")} />
                         </SelectTrigger>
                         <SelectContent
                           className={cn(DIALOG_SELECT_CONTENT_CLASS)}
@@ -399,7 +407,7 @@ export default function ShippingManagement({
                               value={c.value}
                               className={DIALOG_SELECT_ITEM_CLASS}
                             >
-                              {c.label}
+                              {t(c.label)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -410,11 +418,11 @@ export default function ShippingManagement({
 
                 <div className="space-y-2">
                   <DialogFormLabel icon={Hash} htmlFor="tracking-number">
-                    Tracking Number
+                    {t("Tracking Number")}
                   </DialogFormLabel>
                   <Input
                     id="tracking-number"
-                    placeholder="Enter tracking number"
+                    placeholder={t("Enter tracking number")}
                     value={manualTrackingNumber}
                     onChange={(e) => setManualTrackingNumber(e.target.value)}
                     className={cn("h-11 w-full", DIALOG_FORM_FIELD_EMERALD)}
@@ -437,12 +445,12 @@ export default function ShippingManagement({
                     {addTrackingMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding Tracking...
+                        {t("Adding Tracking...")}
                       </>
                     ) : (
                       <>
                         <Tag className="mr-2 h-4 w-4" />
-                        Add Tracking Number
+                        {t("Add Tracking Number")}
                       </>
                     )}
                   </Button>

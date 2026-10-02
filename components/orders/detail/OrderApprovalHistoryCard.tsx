@@ -12,6 +12,7 @@ import type { Order } from "@/types";
 import { cn } from "@/lib/utils";
 import { ClientDateTime, DataSlotPulse } from "@/components/shared";
 import { ReviewStatusBadge } from "@/lib/ui/semantic-badges";
+import { useT } from "@/lib/i18n/locale-context";
 import { GlassCard, variantConfig } from "./order-detail-primitives";
 
 export type OrderApprovalHistoryCardProps = {
@@ -25,6 +26,7 @@ export function OrderApprovalHistoryCard({
   dataLoading,
   className,
 }: OrderApprovalHistoryCardProps) {
+  const t = useT();
   const approvals = order?.approvals ?? [];
 
   // Nothing to show until the order has been reviewed at least once.
@@ -43,7 +45,7 @@ export function OrderApprovalHistoryCard({
           <History className="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
         <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-          Approval History
+          {t("Approval History")}
         </h3>
       </div>
       <ul className="space-y-2">

@@ -54,6 +54,7 @@ import {
   YAxis,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CatalogInsightsSectionProps = {
   insights: CatalogEntityInsights;
@@ -126,6 +127,7 @@ export function CatalogInsightsSection({
   catalogAllocationSummary,
   className,
 }: CatalogInsightsSectionProps) {
+  const t = useT();
   const showUrgentTable =
     isAdminRole &&
     productHref &&
@@ -155,9 +157,9 @@ export function CatalogInsightsSection({
               <Package className="h-4 w-4 text-gray-700 dark:text-white" />
             </div>
             <div>
-              <h3 className={TYPO_CARD_TITLE}>Catalog Allocation</h3>
+              <h3 className={TYPO_CARD_TITLE}>{t("Catalog Allocation")}</h3>
               <p className={TYPO_SUBTITLE}>
-                Catalog vs warehouse breakdown for this SKU
+                {t("Catalog vs warehouse breakdown for this SKU")}
               </p>
             </div>
           </div>
@@ -171,7 +173,7 @@ export function CatalogInsightsSection({
             <div className="space-y-2">
               <DetailInfoRow
                 icon={Package}
-                label="In warehouses:"
+                label={t("In warehouses:")}
                 tone="teal"
                 loading={dataLoading}
                 valueClassName={productStockAvailableTextClass(
@@ -182,7 +184,7 @@ export function CatalogInsightsSection({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={AlertCircle}
-                label="Reserved:"
+                label={t("Reserved:")}
                 tone="amber"
                 loading={dataLoading}
                 valueClassName="text-amber-600 dark:text-amber-400"
@@ -191,7 +193,7 @@ export function CatalogInsightsSection({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={PackageX}
-                label="Unallocated:"
+                label={t("Unallocated:")}
                 tone="sky"
                 loading={dataLoading}
                 valueClassName="text-emerald-600 dark:text-emerald-400"
@@ -219,14 +221,14 @@ export function CatalogInsightsSection({
             <TrendingUp className="h-4 w-4 text-gray-700 dark:text-white" />
           </div>
           <div>
-            <h3 className={TYPO_CARD_TITLE}>{title}</h3>
-            <p className={TYPO_SUBTITLE}>{subtitle}</p>
+            <h3 className={TYPO_CARD_TITLE}>{t(title)}</h3>
+            <p className={TYPO_SUBTITLE}>{t(subtitle)}</p>
           </div>
         </div>
         <div className="space-y-2 mt-4">
           <DetailInfoRow
             icon={AlertTriangle}
-            label="Low stock products:"
+            label={t("Low stock products:")}
             tone="amber"
             loading={dataLoading}
           >
@@ -234,7 +236,7 @@ export function CatalogInsightsSection({
           </DetailInfoRow>
           <DetailInfoRow
             icon={PackageX}
-            label="Out of stock:"
+            label={t("Out of stock:")}
             tone="rose"
             loading={dataLoading}
           >
@@ -242,7 +244,7 @@ export function CatalogInsightsSection({
           </DetailInfoRow>
           <DetailInfoRow
             icon={DollarSign}
-            label="Avg order value:"
+            label={t("Avg order value:")}
             tone="emerald"
             loading={dataLoading}
           >
@@ -254,7 +256,7 @@ export function CatalogInsightsSection({
           </DetailInfoRow>
           <DetailInfoRow
             icon={TrendingUp}
-            label="Demand velocity (units/day):"
+            label={t("Demand velocity (units/day):")}
             tone="violet"
             loading={dataLoading}
           >
@@ -264,7 +266,7 @@ export function CatalogInsightsSection({
             <>
               <DetailInfoRow
                 icon={Clock}
-                label="Days until stockout:"
+                label={t("Days until stockout:")}
                 tone="rose"
                 loading={forecastLoading}
               >
@@ -272,7 +274,7 @@ export function CatalogInsightsSection({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={Sparkles}
-                label="Predicted daily sales:"
+                label={t("Predicted daily sales:")}
                 tone="sky"
                 loading={forecastLoading}
               >
@@ -281,7 +283,7 @@ export function CatalogInsightsSection({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={AlertCircle}
-                label="Reorder status:"
+                label={t("Reorder status:")}
                 tone="amber"
                 loading={forecastLoading}
               >
@@ -299,7 +301,7 @@ export function CatalogInsightsSection({
             <>
               <DetailInfoRow
                 icon={AlertCircle}
-                label="Urgent reorder:"
+                label={t("Urgent reorder:")}
                 tone="rose"
                 loading={forecastLoading}
               >
@@ -307,7 +309,7 @@ export function CatalogInsightsSection({
               </DetailInfoRow>
               <DetailInfoRow
                 icon={Sparkles}
-                label="Predicted daily demand:"
+                label={t("Predicted daily demand:")}
                 tone="sky"
                 loading={forecastLoading}
               >
@@ -319,8 +321,8 @@ export function CatalogInsightsSection({
       </GlassCard>
 
       <ChartCard
-        title={salesChartTitle}
-        description={salesChartDescription}
+        title={t(salesChartTitle)}
+        description={t(salesChartDescription)}
         icon={BarChart3}
         variant="sky"
       >
@@ -358,7 +360,7 @@ export function CatalogInsightsSection({
               <Bar
                 dataKey="revenue"
                 fill="hsl(var(--chart-1))"
-                name="Revenue"
+                name={t("Revenue")}
                 radius={[4, 4, 0, 0]}
                 label={createChartBarLabelRenderer(formatChartCurrencyLabel)}
               />
@@ -368,8 +370,8 @@ export function CatalogInsightsSection({
       </ChartCard>
 
       <ChartCard
-        title={stockChartTitle}
-        description={stockChartDescription}
+        title={t(stockChartTitle)}
+        description={t(stockChartDescription)}
         icon={PieChartIcon}
         variant="amber"
         className={defaultCompanion ? undefined : "lg:col-span-2"}

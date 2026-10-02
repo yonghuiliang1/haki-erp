@@ -13,6 +13,8 @@ import {
   type ActivityLogPeriod,
 } from "@/hooks/queries/use-audit-logs";
 import { isDataSlotLoading } from "@/lib/react-query";
+import { useT } from "@/lib/i18n/locale-context";
+import type { TranslateFn } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
 import type { AuditLog } from "@/types";
 import {
@@ -60,7 +62,7 @@ const variantConfig = {
 };
 
 /** Build activity details: action + entity, then dynamic lines from details (status, tracking, product, fields updated, etc.). */
-function getActivityDetails(log: AuditLog): React.ReactNode {
+function getActivityDetails(log: AuditLog, tr: TranslateFn): React.ReactNode {
   const action =
     log.action.charAt(0).toUpperCase() +
     (log.action?.slice(1) ?? "").replace(/_/g, " ");
@@ -101,31 +103,31 @@ function getActivityDetails(log: AuditLog): React.ReactNode {
     };
 
     if (d.statusFrom != null && d.statusTo != null) {
-      lines.push(`Status: ${String(d.statusFrom)} → ${String(d.statusTo)}`);
+      lines.push(`${tr("Status:")} ${String(d.statusFrom)} → ${String(d.statusTo)}`);
     }
     if (d.trackingNumber != null && String(d.trackingNumber).trim()) {
       const carrier = d.trackingCarrier
         ? ` (${String(d.trackingCarrier)})`
         : "";
-      lines.push(`Tracking: ${String(d.trackingNumber)}${carrier}`);
+      lines.push(`${tr("Tracking:")} ${String(d.trackingNumber)}${carrier}`);
     }
     if (d.labelSource != null && String(d.labelSource).trim()) {
-      lines.push(`Label: ${String(d.labelSource)}`);
+      lines.push(`${tr("Label:")} ${String(d.labelSource)}`);
     }
     if (d.productName != null && String(d.productName).trim()) {
-      lines.push(`Product: ${String(d.productName)}`);
+      lines.push(`${tr("Product:")} ${String(d.productName)}`);
     }
     if (d.orderNumber != null && String(d.orderNumber).trim()) {
-      lines.push(`Order: ${String(d.orderNumber)}`);
+      lines.push(`${tr("Order:")} ${String(d.orderNumber)}`);
     }
     if (d.invoiceNumber != null && String(d.invoiceNumber).trim()) {
-      lines.push(`Invoice: ${String(d.invoiceNumber)}`);
+      lines.push(`${tr("Invoice:")} ${String(d.invoiceNumber)}`);
     }
     if (d.subject != null && String(d.subject).trim()) {
-      lines.push(`Subject: ${String(d.subject)}`);
+      lines.push(`${tr("Subject:")} ${String(d.subject)}`);
     }
     if (d.rating != null && d.rating !== "") {
-      lines.push(`Rating: ${d.rating}/5`);
+      lines.push(`${tr("Rating:")} ${d.rating}/5`);
     }
     if (Array.isArray(d.fieldsUpdated) && d.fieldsUpdated.length > 0) {
       const labels = d.fieldsUpdated.map((f) =>
@@ -134,13 +136,13 @@ function getActivityDetails(log: AuditLog): React.ReactNode {
           .replace(/^./, (s) => s.toUpperCase())
           .trim(),
       );
-      lines.push(`Fields updated: ${labels.join(", ")}`);
+      lines.push(`${tr("Fields updated:")} ${labels.join(", ")}`);
     }
     if (d.name != null && String(d.name).trim() && !d.productName) {
-      lines.push(`Name: ${String(d.name)}`);
+      lines.push(`${tr("Name:")} ${String(d.name)}`);
     }
     if (d.sku != null && String(d.sku).trim()) {
-      lines.push(`SKU: ${String(d.sku)}`);
+      lines.push(`${tr("SKU:")} ${String(d.sku)}`);
     }
     const msg = d.message ?? d.summary;
     if (typeof msg === "string" && msg.trim()) {
@@ -194,6 +196,7 @@ export default function ActivityLogSection({
   initialLogs,
   initialPeriod = "7days",
 }: ActivityLogSectionProps) {
+  const t = useT();
   const [period, setPeriod] = useState<ActivityLogPeriod>(initialPeriod);
   const [searchTerm, setSearchTerm] = useState("");
   const initialAuditData =
@@ -230,7 +233,7 @@ export default function ActivityLogSection({
     () => [
       {
         id: "adminUser",
-        header: "Admin User",
+        header: t("Admin User"),
         cell: ({ row }) => {
           const log = row.original;
           const name =
@@ -256,12 +259,12 @@ export default function ActivityLogSection({
       },
       {
         id: "action",
-        header: "Action",
+        header: t("Action"),
         cell: ({ row }) => <AuditActionBadge action={row.original.action} />,
       },
       {
         id: "entity",
-        header: "Entity",
+        header: t("Entity"),
         cell: ({ row }) => {
           const log = row.original;
           const link = entityLink(log.entityType, log.entityId);
@@ -282,16 +285,16 @@ export default function ActivityLogSection({
       },
       {
         id: "activityDetails",
-        header: "Activity details",
+        header: t("Activity details"),
         cell: ({ row }) => (
           <div className="max-w-[320px] min-w-[180px]">
-            {getActivityDetails(row.original)}
+            {getActivityDetails(row.original, t)}
           </div>
         ),
       },
       {
         id: "when",
-        header: "When",
+        header: t("When"),
         cell: ({ row }) => (
           <ClientDateTime
             date={row.original.createdAt}
@@ -301,7 +304,7 @@ export default function ActivityLogSection({
         ),
       },
     ],
-    [],
+    [t],
   );
 
   const table = useReactTable({
@@ -323,18 +326,18 @@ export default function ActivityLogSection({
       <SectionCardHeader
         icon={ScrollText}
         tone="sky"
-        title="Activity Logs"
-        description={
-          <>
-            Your actions & activities (create, update, delete). Last{" "}
-            {period === "today"
-              ? "24 hours"
-              : period === "7days"
-                ? "7 days"
-                : "30 days"}
-            .
-          </>
-        }
+        title={t("Activity Logs")}
+        description={t(
+          "Your actions & activities (create, update, delete). Last {range}.",
+          {
+            range:
+              period === "today"
+                ? t("24 hours")
+                : period === "7days"
+                  ? t("7 days")
+                  : t("30 days"),
+          },
+        )}
         className="mb-4"
       />
       {/* REQ-0168 — filter → table gap (match Import History / Orders list) */}
@@ -342,7 +345,7 @@ export default function ActivityLogSection({
         <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-white/80 z-10" />
           <Input
-            placeholder="Search by user, action, entity..."
+            placeholder={t("Search by user, action, entity...")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={FILTER_SEARCH_INPUT_SKY_CLASS}
@@ -370,7 +373,7 @@ export default function ActivityLogSection({
               )}
               aria-hidden
             >
-              {PERIODS.find((p) => p.value === period)?.label ?? "Last 7 days"}
+              {t(PERIODS.find((p) => p.value === period)?.label ?? "Last 7 days")}
             </div>
           }
         >
@@ -401,7 +404,7 @@ export default function ActivityLogSection({
                     value={p.value}
                     className="cursor-pointer"
                   >
-                    {p.label}
+                    {t(p.label)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -437,8 +440,8 @@ export default function ActivityLogSection({
       ) : logs.length === 0 ? (
         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 py-6 text-center">
           {searchTerm.trim()
-            ? "No matching activity."
-            : "No activity in this period."}
+            ? t("No matching activity.")
+            : t("No activity in this period.")}
         </p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-violet-200/30 dark:border-white/10">

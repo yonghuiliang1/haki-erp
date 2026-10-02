@@ -4,6 +4,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CatalogAllocationSummaryTextProps = {
   catalogQty: number;
@@ -21,6 +22,7 @@ export function CatalogAllocationSummaryText({
   reservedCommitment = 0,
   className,
 }: CatalogAllocationSummaryTextProps) {
+  const t = useT();
   return (
     <span
       className={cn(
@@ -30,7 +32,7 @@ export function CatalogAllocationSummaryText({
       )}
     >
       <span>
-        Catalog{" "}
+        {t("Catalog")}{" "}
         <span className="text-gray-700 dark:text-gray-300 font-medium">
           {catalogQty}
         </span>
@@ -39,7 +41,7 @@ export function CatalogAllocationSummaryText({
         ·
       </span>
       <span>
-        Allocated{" "}
+        {t("Allocated")}{" "}
         <span className="text-sky-600 dark:text-sky-400 font-medium">
           {allocatedTotal}
         </span>
@@ -48,7 +50,7 @@ export function CatalogAllocationSummaryText({
         ·
       </span>
       <span>
-        Unallocated{" "}
+        {t("Unallocated")}{" "}
         <span className="text-emerald-600 dark:text-emerald-400 font-medium">
           {unallocated}
         </span>
@@ -62,7 +64,7 @@ export function CatalogAllocationSummaryText({
             <span className="text-amber-600 dark:text-amber-400 font-medium">
               {reservedCommitment}
             </span>{" "}
-            Reserved
+            {t("Reserved")}
           </span>
         </>
       ) : null}

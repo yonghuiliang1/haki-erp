@@ -25,6 +25,7 @@ import {
 import { SafeAvatarImage } from "@/components/ui/safe-avatar-image";
 import { resolveAvatarSourcesFromSeed } from "@/lib/ui/user-avatar-sources";
 import { AVATAR_RING_CLASS } from "@/lib/ui/avatar-ring-styles";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type ProductOwnerOption = {
   id: string;
@@ -96,6 +97,7 @@ export function ProductOwnerSelect({
   onOwnerChange,
   triggerClassName,
 }: ProductOwnerSelectProps) {
+  const t = useT();
   const [open, setOpen] = React.useState(false);
 
   const selectedOwner = React.useMemo(
@@ -125,7 +127,7 @@ export function ProductOwnerSelect({
           {selectedOwner ? (
             <OwnerPickerRow owner={selectedOwner} avatarSize={28} />
           ) : (
-            <span>Product Owner</span>
+            <span>{t("Product Owner")}</span>
           )}
           <ChevronDown className="h-4 w-4 shrink-0" />
         </Button>
@@ -140,12 +142,12 @@ export function ProductOwnerSelect({
       >
         <Command className="bg-transparent">
           <CommandInput
-            placeholder="Search product owner..."
+            placeholder={t("Search product owner...")}
             className="bg-transparent border-0 focus:ring-0 text-gray-700 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/40"
           />
           <CommandList className="max-h-[min(60vh,280px)]">
             <CommandEmpty className="text-gray-600 dark:text-white/80 text-sm text-center p-5">
-              No product owner found.
+              {t("No product owner found.")}
             </CommandEmpty>
             <CommandGroup>
               {options.map((owner) => (

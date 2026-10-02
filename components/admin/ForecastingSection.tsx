@@ -31,6 +31,7 @@ import {
   useSyncSsrQueryData,
 } from "@/lib/react-query";
 import { PAGE_STATS_GRID_IN_SHELL_CLASS } from "@/lib/ui/shell-layout-styles";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -98,6 +99,7 @@ export type ForecastingSectionProps = {
 export default function ForecastingSection({
   initialForecasting,
 }: ForecastingSectionProps = {}) {
+  const t = useT();
   const forecastingQuery = useForecastingSummary(initialForecasting);
   const summary = forecastingQuery.data ?? initialForecasting;
   const dataLoading = isDataSlotUnsettled(forecastingQuery, initialForecasting);
@@ -108,12 +110,12 @@ export default function ForecastingSection({
     return (
       <ChartCard
         variant="rose"
-        title="Demand Forecasting"
+        title={t("Demand Forecasting")}
         icon={AlertTriangle}
-        description="Unable to load forecasting data"
+        description={t("Unable to load forecasting data")}
       >
         <p className="text-muted-foreground text-center text-gray-700 dark:text-white py-4">
-          Failed to load forecasting data
+          {t("Failed to load forecasting data")}
         </p>
       </ChartCard>
     );
@@ -135,7 +137,7 @@ export default function ForecastingSection({
         )}
       >
         <StatisticsCard
-          title="Products Analyzed"
+          title={t("Products Analyzed")}
           value={summary?.totalProducts ?? 0}
           icon={Package}
           variant="blue"
@@ -143,7 +145,7 @@ export default function ForecastingSection({
           compact
         />
         <StatisticsCard
-          title="At Risk of Stockout"
+          title={t("At Risk of Stockout")}
           value={summary?.productsAtRisk ?? 0}
           icon={AlertTriangle}
           variant="rose"
@@ -151,7 +153,7 @@ export default function ForecastingSection({
           compact
         />
         <StatisticsCard
-          title="Overstocked"
+          title={t("Overstocked")}
           value={summary?.productsOverstocked ?? 0}
           icon={TrendingDown}
           variant="orange"
@@ -159,7 +161,7 @@ export default function ForecastingSection({
           compact
         />
         <StatisticsCard
-          title="Anomalies Detected"
+          title={t("Anomalies Detected")}
           value={summary?.anomaliesDetected ?? 0}
           icon={AlertCircle}
           variant="violet"
@@ -171,18 +173,18 @@ export default function ForecastingSection({
       {dataLoading ? (
         <ChartCard
           variant="violet"
-          title="AI Insights"
+          title={t("AI Insights")}
           icon={Sparkles}
-          description="Natural-language summary of demand and stock risk"
+          description={t("Natural-language summary of demand and stock risk")}
         >
           <DataSlotPulse variant="text-sm" className="w-full min-h-[4rem]" />
         </ChartCard>
       ) : summary?.aiInsights ? (
         <ChartCard
           variant="violet"
-          title="AI Insights"
+          title={t("AI Insights")}
           icon={Sparkles}
-          description="Natural-language summary of demand and stock risk"
+          description={t("Natural-language summary of demand and stock risk")}
         >
           <p className="text-sm text-gray-600 dark:text-white/80 whitespace-pre-line">
             {summary.aiInsights}
@@ -193,19 +195,23 @@ export default function ForecastingSection({
       {dataLoading ? (
         <ChartCard
           variant="rose"
-          title="Reorder Recommendations"
+          title={t("Reorder Recommendations")}
           icon={Clock}
-          description="Products that need attention based on predicted stockout dates"
+          description={t(
+            "Products that need attention based on predicted stockout dates",
+          )}
         >
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-right">Available</TableHead>
-                <TableHead className="text-right">Daily Sales</TableHead>
-                <TableHead className="text-right">Days Left</TableHead>
-                <TableHead className="text-right">Suggested Order</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t("Product")}</TableHead>
+                <TableHead className="text-right">{t("Available")}</TableHead>
+                <TableHead className="text-right">{t("Daily Sales")}</TableHead>
+                <TableHead className="text-right">{t("Days Left")}</TableHead>
+                <TableHead className="text-right">
+                  {t("Suggested Order")}
+                </TableHead>
+                <TableHead>{t("Status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBodyPulseRows rows={5} columnCount={6} />
@@ -214,19 +220,23 @@ export default function ForecastingSection({
       ) : urgentProducts.length > 0 || soonProducts.length > 0 ? (
         <ChartCard
           variant="rose"
-          title="Reorder Recommendations"
+          title={t("Reorder Recommendations")}
           icon={Clock}
-          description="Products that need attention based on predicted stockout dates"
+          description={t(
+            "Products that need attention based on predicted stockout dates",
+          )}
         >
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-right">Available</TableHead>
-                <TableHead className="text-right">Daily Sales</TableHead>
-                <TableHead className="text-right">Days Left</TableHead>
-                <TableHead className="text-right">Suggested Order</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t("Product")}</TableHead>
+                <TableHead className="text-right">{t("Available")}</TableHead>
+                <TableHead className="text-right">{t("Daily Sales")}</TableHead>
+                <TableHead className="text-right">{t("Days Left")}</TableHead>
+                <TableHead className="text-right">
+                  {t("Suggested Order")}
+                </TableHead>
+                <TableHead>{t("Status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -279,19 +289,21 @@ export default function ForecastingSection({
       {dataLoading ? (
         <ChartCard
           variant="violet"
-          title="Sales Anomalies"
+          title={t("Sales Anomalies")}
           icon={TrendingUp}
-          description="Unusual sales patterns detected in the last 30 days"
+          description={t(
+            "Unusual sales patterns detected in the last 30 days",
+          )}
         >
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Expected</TableHead>
-                <TableHead className="text-right">Actual</TableHead>
-                <TableHead className="text-right">Deviation</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>{t("Product")}</TableHead>
+                <TableHead>{t("Date")}</TableHead>
+                <TableHead className="text-right">{t("Expected")}</TableHead>
+                <TableHead className="text-right">{t("Actual")}</TableHead>
+                <TableHead className="text-right">{t("Deviation")}</TableHead>
+                <TableHead>{t("Type")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBodyPulseRows rows={5} columnCount={6} />
@@ -300,19 +312,21 @@ export default function ForecastingSection({
       ) : (summary?.anomalies.length ?? 0) > 0 ? (
         <ChartCard
           variant="violet"
-          title="Sales Anomalies"
+          title={t("Sales Anomalies")}
           icon={TrendingUp}
-          description="Unusual sales patterns detected in the last 30 days"
+          description={t(
+            "Unusual sales patterns detected in the last 30 days",
+          )}
         >
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Expected</TableHead>
-                <TableHead className="text-right">Actual</TableHead>
-                <TableHead className="text-right">Deviation</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>{t("Product")}</TableHead>
+                <TableHead>{t("Date")}</TableHead>
+                <TableHead className="text-right">{t("Expected")}</TableHead>
+                <TableHead className="text-right">{t("Actual")}</TableHead>
+                <TableHead className="text-right">{t("Deviation")}</TableHead>
+                <TableHead>{t("Type")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -363,21 +377,23 @@ export default function ForecastingSection({
 
       <ChartCard
         variant="emerald"
-        title="All Product Forecasts"
+        title={t("All Product Forecasts")}
         icon={Package}
-        description="Demand predictions and stock levels for all products (sorted by urgency)"
+        description={t(
+          "Demand predictions and stock levels for all products (sorted by urgency)",
+        )}
       >
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead className="text-right">Current</TableHead>
-              <TableHead className="text-right">Available</TableHead>
-              <TableHead className="text-right">Avg Daily</TableHead>
-              <TableHead className="text-right">Predicted</TableHead>
-              <TableHead className="text-right">Days Left</TableHead>
-              <TableHead className="text-right">Confidence</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("Product")}</TableHead>
+              <TableHead className="text-right">{t("Current")}</TableHead>
+              <TableHead className="text-right">{t("Available")}</TableHead>
+              <TableHead className="text-right">{t("Avg Daily")}</TableHead>
+              <TableHead className="text-right">{t("Predicted")}</TableHead>
+              <TableHead className="text-right">{t("Days Left")}</TableHead>
+              <TableHead className="text-right">{t("Confidence")}</TableHead>
+              <TableHead>{t("Status")}</TableHead>
             </TableRow>
           </TableHeader>
           {dataLoading ? (

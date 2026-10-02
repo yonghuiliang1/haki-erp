@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { MdError } from "react-icons/md";
 import { useFormContext } from "react-hook-form";
+import { useT } from "@/lib/i18n/locale-context";
 
 export default function ProductName() {
   const {
@@ -14,10 +15,12 @@ export default function ProductName() {
     formState: { errors },
   } = useFormContext();
 
+  const t = useT();
+
   return (
     <div className="mt-5 flex flex-col gap-2">
       <DialogFormLabel htmlFor="product-name" icon={Package} required>
-        Product Name
+        {t("Product Name")}
       </DialogFormLabel>
       <div className="flex gap-2 items-center">
         <Input
@@ -32,7 +35,7 @@ export default function ProductName() {
       {errors.productName && (
         <div className="text-red-500 flex gap-1 items-center text-[13px]">
           <MdError />
-          <p>The product name is required</p>
+          <p>{t("The product name is required")}</p>
         </div>
       )}
     </div>

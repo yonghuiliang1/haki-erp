@@ -13,6 +13,7 @@ import {
   DIALOG_FORM_REQUIRED_MARK,
 } from "@/components/shared/dialog-edge-scroll";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type DialogFormLabelProps = {
   htmlFor?: string;
@@ -34,6 +35,7 @@ export function DialogFormLabel({
   wrapperClassName,
   className,
 }: DialogFormLabelProps) {
+  const t = useT();
   return (
     <div className={wrapperClassName}>
       <Label
@@ -52,7 +54,11 @@ export function DialogFormLabel({
             </span>
           ) : null}
           {optional ? (
-            <span className="text-xs font-normal text-white/50"> (optional)</span>
+            <span className="text-xs font-normal text-white/50">
+              {" ("}
+              {t("Optional")}
+              {")"}
+            </span>
           ) : null}
         </span>
       </Label>

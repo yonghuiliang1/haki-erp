@@ -72,6 +72,7 @@ import {
 import { AvatarInlineLink } from "@/components/shared/AvatarInlineLink";
 import { cn } from "@/lib/utils";
 import { Package, PackagePlus, Tag, Truck, X } from "lucide-react";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface AddProductDialogProps {
   allProducts: Product[];
@@ -86,6 +87,7 @@ export default function AddProductDialog({
   children,
   onOpenChange,
 }: AddProductDialogProps) {
+  const t = useT();
   const methods = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -277,7 +279,7 @@ export default function AddProductDialog({
         if (!reconcilePlan.ok) {
           setQuantityReconcileError(
             reconcilePlan.blockedReason ??
-              "Cannot lower catalog quantity with current warehouse allocations.",
+              t("Cannot lower catalog quantity with current warehouse allocations."),
           );
           return;
         }
@@ -366,7 +368,7 @@ export default function AddProductDialog({
       <DialogTrigger asChild>
         {children || (
           <Button className="h-10 font-medium inline-flex items-center justify-center rounded-xl border border-rose-400/30 dark:border-rose-400/30 bg-gradient-to-r from-rose-500/40 via-rose-500/30 to-rose-500/20 dark:from-rose-500/40 dark:via-rose-500/30 dark:to-rose-500/20 text-white shadow-[0_15px_35px_rgba(225,29,72,0.35)] backdrop-blur-md transition duration-200 hover:border-rose-300/50 hover:from-rose-500/50 hover:via-rose-500/40 hover:to-rose-500/30 dark:hover:border-rose-300/50 dark:hover:from-rose-500/50 dark:hover:via-rose-500/40 dark:hover:to-rose-500/30">
-            +Add Product
+            +{t("Add Product")}
           </Button>
         )}
       </DialogTrigger>
@@ -381,8 +383,8 @@ export default function AddProductDialog({
           className={DIALOG_EDGE_SCROLL_HEADER}
           icon={Package}
           tone="rose"
-          title={selectedProduct ? "Update Product" : "Add Product"}
-          description="Enter the details of the product below."
+          title={selectedProduct ? t("Update Product") : t("Add Product")}
+          description={t("Enter the details of the product below.")}
         />
         <FormProvider {...methods}>
           <form
@@ -408,8 +410,10 @@ export default function AddProductDialog({
                   </p>
                   {reconcilePreview.reservedCommitment > 0 ? (
                     <p className={DIALOG_FORM_HINT_TEXT}>
-                      {reconcilePreview.reservedCommitment} reserved on active orders
-                      — catalog cannot go below that
+                      {t(
+                        "{count} reserved on active orders — catalog cannot go below that",
+                        { count: reconcilePreview.reservedCommitment },
+                      )}
                     </p>
                   ) : null}
                   {!reconcilePreview.ok && reconcilePreview.blockedReason ? (
@@ -419,8 +423,10 @@ export default function AddProductDialog({
                   ) : null}
                   {reconcilePreview.ok && reconcilePreview.shrinkUnits > 0 ? (
                     <p className={DIALOG_FORM_WARN_TEXT}>
-                      Will remove {reconcilePreview.shrinkUnits} unreserved unit(s)
-                      from warehouse allocations on save
+                      {t(
+                        "Will remove {count} unreserved unit(s) from warehouse allocations on save",
+                        { count: reconcilePreview.shrinkUnits },
+                      )}
                     </p>
                   ) : null}
                   {quantityReconcileError ? (
@@ -432,7 +438,7 @@ export default function AddProductDialog({
               ) : null}
               <div className="mt-5 flex flex-col gap-2">
                 <DialogFormLabel icon={Tag} required>
-                  Category
+                  {t("Category")}
                 </DialogFormLabel>
                 {/* Always string value — avoids controlled/uncontrolled flip from `|| undefined` */}
                 <DeferredSelectGate
@@ -491,7 +497,7 @@ export default function AddProductDialog({
               </div>
               <div className="mt-5 flex flex-col gap-2">
                 <DialogFormLabel icon={Truck} required>
-                  Supplier
+                  {t("Supplier")}
                 </DialogFormLabel>
                 <DeferredSelectGate
                   enabled={openProductDialog}
@@ -601,15 +607,15 @@ export default function AddProductDialog({
                   className={cn("h-11 w-full sm:w-auto px-11 gap-2", GLASS_GHOST_BUTTON)}
                 >
                   <X className="h-4 w-4 shrink-0" aria-hidden />
-                  Cancel
+                  {t("Cancel")}
                 </Button>
               </DialogClose>
               <DialogSubmitButton
                 isPending={isSubmitting}
                 pendingLabel={
-                  selectedProduct ? "Updating product…" : "Adding product…"
+                  selectedProduct ? t("Updating product…") : t("Adding product…")
                 }
-                label={selectedProduct ? "Update Product" : "Add Product"}
+                label={selectedProduct ? t("Update Product") : t("Add Product")}
                 icon={PackagePlus}
                 hue="rose"
                 disabled={!canSubmitUpdate}
@@ -624,10 +630,10 @@ export default function AddProductDialog({
       <AlertDialogWrapper
         open={shrinkConfirmOpen}
         onOpenChange={setShrinkConfirmOpen}
-        title="Reduce warehouse allocations?"
-        description={`Lowering catalog quantity will remove ${pendingShrinkUnits} unreserved unit(s) from warehouse allocations. Reserved stock is not affected.`}
-        actionLabel="Update product"
-        actionLoadingLabel="Updating…"
+        title={t("Reduce warehouse allocations?")}
+        description={t("Lowering catalog quantity will remove {count} unreserved unit(s) from warehouse allocations. Reserved stock is not affected.", { count: pendingShrinkUnits })}
+        actionLabel={t("Update product")}
+        actionLoadingLabel={t("Updating…")}
         isLoading={updateProductMutation.isPending}
         onAction={async () => {
           if (!pendingUpdatePayload) return;

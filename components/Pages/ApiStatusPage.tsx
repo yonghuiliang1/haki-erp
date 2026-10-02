@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/lib/i18n/locale-context";
 import { cn } from "@/lib/utils";
 import { DETAIL_PAGE_HEADER_SPACING_CLASS } from "@/lib/ui/shell-layout-styles";
 import {
@@ -151,6 +152,7 @@ interface SystemStatus {
 }
 
 export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
+  const t = useT();
   const roleEndpoints = getApiStatusEndpointsForRole(userRole);
   const isAdminMetricsRole = userRole === "admin" || userRole === "user";
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
@@ -219,8 +221,8 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
     } catch (error) {
       if (isCancelled()) return;
       toast({
-        title: "Error Loading Status",
-        description: "Failed to load system status. Please try again.",
+        title: t("Error Loading Status"),
+        description: t("Failed to load system status. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -235,8 +237,8 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
     await loadSystemStatus();
     setIsRefreshing(false);
     toast({
-      title: "Status Updated",
-      description: "System status has been refreshed.",
+      title: t("Status Updated"),
+      description: t("System status has been refreshed."),
     });
   };
 
@@ -295,8 +297,10 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
             className={DETAIL_PAGE_HEADER_SPACING_CLASS}
             icon={Activity}
             tone="emerald"
-            title="API & Project Status"
-            description="Real-time monitoring of Stockly's API endpoints and system health"
+            title={t("API & Project Status")}
+            description={t(
+              "Real-time monitoring of Stockly's API endpoints and system health",
+            )}
             trailing={
               <Button
                 onClick={handleRefresh}
@@ -310,7 +314,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                 <FiRefreshCw
                   className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
                 />
-                <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+                <span>{isRefreshing ? t("Refreshing...") : t("Refresh")}</span>
               </Button>
             }
           />
@@ -339,7 +343,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
               <GlassCard variant="blue">
                 <GlassCardBody>
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-600 dark:text-white/80 mb-2">
-                    Project
+                    {t("Project")}
                   </p>
                   <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                     {systemStatus.project}
@@ -350,7 +354,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
               <GlassCard variant="violet">
                 <GlassCardBody>
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-600 dark:text-white/80 mb-2">
-                    Environment
+                    {t("Environment")}
                   </p>
                   <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-white capitalize">
                     {systemStatus.environment}
@@ -361,7 +365,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
               <GlassCard variant="amber">
                 <GlassCardBody>
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-600 dark:text-white/80 mb-2">
-                    Current Time
+                    {t("Current Time")}
                   </p>
                   <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                     {systemStatus.currentTime}
@@ -372,7 +376,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
               <GlassCard variant="teal">
                 <GlassCardBody>
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-600 dark:text-white/80 mb-2">
-                    Uptime
+                    {t("Uptime")}
                   </p>
                   <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                     {systemStatus.uptime}
@@ -397,8 +401,8 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <SectionCardHeader
                     icon={Activity}
                     tone="emerald"
-                    title="API Health"
-                    description="Overall health status of all API endpoints"
+                    title={t("API Health")}
+                    description={t("Overall health status of all API endpoints")}
                     className="mb-4"
                   />
                 )}
@@ -409,7 +413,9 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                 <div className="flex items-center gap-2">
                   {getStatusIcon(systemStatus.apiHealth)}
                   <Badge className={getStatusColor(systemStatus.apiHealth)}>
-                    API is {systemStatus.apiHealth.toLowerCase()}.
+                    {t("API is {status}.", {
+                      status: systemStatus.apiHealth.toLowerCase(),
+                    })}
                   </Badge>
                 </div>
               ) : null}
@@ -431,8 +437,10 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <SectionCardHeader
                     icon={Server}
                     tone="sky"
-                    title="Endpoints"
-                    description="Individual endpoint health and response times"
+                    title={t("Endpoints")}
+                    description={t(
+                      "Individual endpoint health and response times",
+                    )}
                     className="mb-4"
                   />
                 )}
@@ -497,8 +505,8 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <SectionCardHeader
                     icon={Cloud}
                     tone="violet"
-                    title="External Services"
-                    description="Health status of external APIs and services"
+                    title={t("External Services")}
+                    description={t("Health status of external APIs and services")}
                     className="mb-4"
                   />
                 )}
@@ -523,7 +531,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       <FiDatabase className="h-5 w-5 text-gray-700 dark:text-white" />
                       <div>
                         <h4 className="font-medium text-sm text-gray-700 dark:text-white">
-                          Database
+                          {t("Database")}
                         </h4>
                         <p className="text-xs text-gray-600 dark:text-white/80">
                           {systemStatus.services.database.message}
@@ -553,7 +561,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       <FiActivity className="h-5 w-5 text-gray-700 dark:text-white" />
                       <div>
                         <h4 className="font-medium text-sm text-gray-700 dark:text-white">
-                          Redis Cache
+                          {t("Redis Cache")}
                         </h4>
                         <p className="text-xs text-gray-600 dark:text-white/80">
                           {systemStatus.services.redis.message}
@@ -585,7 +593,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       <FiImage className="h-5 w-5 text-gray-700 dark:text-white" />
                       <div>
                         <h4 className="font-medium text-sm text-gray-700 dark:text-white">
-                          ImageKit
+                          {t("ImageKit")}
                         </h4>
                         <p className="text-xs text-gray-600 dark:text-white/80">
                           {systemStatus.services.imagekit.message}
@@ -618,7 +626,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       <FiMail className="h-5 w-5 text-gray-700 dark:text-white" />
                       <div>
                         <h4 className="font-medium text-sm text-gray-700 dark:text-white">
-                          Brevo Email
+                          {t("Brevo Email")}
                         </h4>
                         <p className="text-xs text-gray-600 dark:text-white/80">
                           {systemStatus.services.brevo.message}
@@ -655,8 +663,10 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                 <SectionCardHeader
                   icon={TrendingUp}
                   tone="orange"
-                  title="Performance Metrics"
-                  description="API endpoint performance statistics and trends"
+                  title={t("Performance Metrics")}
+                  description={t(
+                    "API endpoint performance statistics and trends",
+                  )}
                   className="mb-4"
                 />
                 <div className="space-y-4">
@@ -664,7 +674,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div className="p-4 rounded-xl border border-blue-400/20 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent backdrop-blur-md">
                       <div className="text-sm text-gray-600 dark:text-white/80 mb-1">
-                        Total Endpoints
+                        {t("Total Endpoints")}
                       </div>
                       <div className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                         {systemStatus.performance.totalEndpoints}
@@ -672,7 +682,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                     </div>
                     <div className="p-4 rounded-xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent backdrop-blur-md">
                       <div className="text-sm text-gray-600 dark:text-white/80 mb-1">
-                        Total Requests
+                        {t("Total Requests")}
                       </div>
                       <div className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                         {systemStatus.performance.totalRequests.toLocaleString()}
@@ -681,7 +691,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                     <div className="p-4 rounded-xl border border-amber-400/20 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-md">
                       <div className="text-sm text-gray-600 dark:text-white/80 mb-1 flex items-center gap-1">
                         <FiClock className="h-3 w-3" />
-                        Avg Response
+                        {t("Avg Response")}
                       </div>
                       <div className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                         {systemStatus.performance.averageResponseTime}ms
@@ -689,7 +699,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                     </div>
                     <div className="p-4 rounded-xl border border-rose-400/20 bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent backdrop-blur-md">
                       <div className="text-sm text-gray-600 dark:text-white/80 mb-1">
-                        Error Rate
+                        {t("Error Rate")}
                       </div>
                       <div className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                         {systemStatus.performance.overallErrorRate}%
@@ -701,7 +711,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   {systemStatus.performance.topSlowEndpoints.length > 0 && (
                     <div>
                       <h4 className="font-medium mb-3 text-sm text-gray-700 dark:text-white">
-                        Slowest Endpoints
+                        {t("Slowest Endpoints")}
                       </h4>
                       <div className="space-y-2">
                         {systemStatus.performance.topSlowEndpoints.map(
@@ -716,7 +726,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                                 </div>
                                 <div className="text-xs text-gray-600 dark:text-white/80">
                                   {endpoint.totalRequests.toLocaleString()}{" "}
-                                  requests
+                                  {t("requests")}
                                 </div>
                               </div>
                               <div className="text-right">
@@ -735,7 +745,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   {systemStatus.performance.topErrorEndpoints.length > 0 && (
                     <div>
                       <h4 className="font-medium mb-3 text-sm text-gray-700 dark:text-white">
-                        Highest Error Rates
+                        {t("Highest Error Rates")}
                       </h4>
                       <div className="space-y-2">
                         {systemStatus.performance.topErrorEndpoints.map(
@@ -750,7 +760,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                                 </div>
                                 <div className="text-xs text-gray-600 dark:text-white/80">
                                   {endpoint.totalRequests.toLocaleString()}{" "}
-                                  requests
+                                  {t("requests")}
                                 </div>
                               </div>
                               <div className="text-right">
@@ -767,10 +777,11 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
 
                   {systemStatus.performance.totalEndpoints === 0 && (
                     <div className="text-center py-8 text-gray-600 dark:text-white/80">
-                      <p>No performance data available yet.</p>
+                      <p>{t("No performance data available yet.")}</p>
                       <p className="text-sm mt-2">
-                        Performance metrics will appear as API endpoints are
-                        used.
+                        {t(
+                          "Performance metrics will appear as API endpoints are used.",
+                        )}
                       </p>
                     </div>
                   )}
@@ -786,8 +797,10 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                 <SectionCardHeader
                   icon={Cpu}
                   tone="teal"
-                  title="System Metrics"
-                  description="Cache statistics, database performance, and system resources"
+                  title={t("System Metrics")}
+                  description={t(
+                    "Cache statistics, database performance, and system resources",
+                  )}
                   className="mb-4"
                 />
                 <div className="space-y-4">
@@ -795,12 +808,12 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <div>
                     <h4 className="font-medium mb-3 text-sm flex items-center gap-2 text-gray-700 dark:text-white">
                       <FiHardDrive className="h-4 w-4" />
-                      Cache Statistics
+                      {t("Cache Statistics")}
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       <div className="p-2 rounded-xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1">
-                          Cache Hits
+                          {t("Cache Hits")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-emerald-600 dark:text-emerald-400">
                           {systemStatus.systemMetrics.cache.hits.toLocaleString()}
@@ -808,7 +821,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       </div>
                       <div className="p-2 rounded-xl border border-orange-400/20 bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1">
-                          Cache Misses
+                          {t("Cache Misses")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-orange-600 dark:text-orange-400">
                           {systemStatus.systemMetrics.cache.misses.toLocaleString()}
@@ -816,7 +829,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       </div>
                       <div className="p-2 rounded-xl border border-blue-400/20 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1">
-                          Hit Rate
+                          {t("Hit Rate")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-gray-700 dark:text-white">
                           {systemStatus.systemMetrics.cache.hitRate}%
@@ -824,7 +837,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       </div>
                       <div className="p-2 rounded-xl border border-violet-400/20 bg-gradient-to-br from-violet-500/10 via-violet-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1">
-                          Total Requests
+                          {t("Total Requests")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-gray-700 dark:text-white">
                           {systemStatus.systemMetrics.cache.totalRequests.toLocaleString()}
@@ -837,12 +850,12 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <div>
                     <h4 className="font-medium mb-3 text-sm flex items-center gap-2 text-gray-700 dark:text-white">
                       <FiDatabase className="h-4 w-4" />
-                      Database Performance
+                      {t("Database Performance")}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                       <div className="p-2 rounded-xl border border-sky-400/20 bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1">
-                          Total Queries
+                          {t("Total Queries")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-gray-700 dark:text-white">
                           {systemStatus.systemMetrics.database.totalQueries.toLocaleString()}
@@ -851,7 +864,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       <div className="p-2 rounded-xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1 flex items-center gap-1">
                           <FiClock className="h-3 w-3" />
-                          Avg Query Time
+                          {t("Avg Query Time")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-gray-700 dark:text-white">
                           {systemStatus.systemMetrics.database.averageQueryTime}
@@ -860,7 +873,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       </div>
                       <div className="p-2 rounded-xl border border-amber-400/20 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-md">
                         <div className="text-xs text-gray-600 dark:text-white/80 mb-1">
-                          Slow Queries (&gt;1s)
+                          {t("Slow Queries (>1s)")}
                         </div>
                         <div className="text-sm sm:text-lg font-medium text-amber-600 dark:text-amber-400">
                           {systemStatus.systemMetrics.database.slowQueries.toLocaleString()}
@@ -873,17 +886,17 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   <div>
                     <h4 className="font-medium mb-3 text-sm flex items-center gap-2 text-gray-700 dark:text-white">
                       <FiCpu className="h-4 w-4" />
-                      System Resources
+                      {t("System Resources")}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <div className="p-4 rounded-xl border border-rose-400/20 bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent backdrop-blur-md">
                         <h5 className="font-medium mb-3 text-sm text-gray-700 dark:text-white">
-                          Memory Usage
+                          {t("Memory Usage")}
                         </h5>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              RSS:
+                              {t("RSS:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {
@@ -895,7 +908,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              Heap Total:
+                              {t("Heap Total:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {
@@ -907,7 +920,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              Heap Used:
+                              {t("Heap Used:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {
@@ -919,7 +932,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              External:
+                              {t("External:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {
@@ -933,12 +946,12 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                       </div>
                       <div className="p-4 rounded-xl border border-violet-400/20 bg-gradient-to-br from-violet-500/10 via-violet-500/5 to-transparent backdrop-blur-md">
                         <h5 className="font-medium mb-3 text-sm text-gray-700 dark:text-white">
-                          Process Info
+                          {t("Process Info")}
                         </h5>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              Node.js:
+                              {t("Node.js:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {systemStatus.systemMetrics.resources.nodeVersion}
@@ -946,7 +959,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              Platform:
+                              {t("Platform:")}
                             </span>
                             <span className="font-medium capitalize text-gray-700 dark:text-white">
                               {systemStatus.systemMetrics.resources.platform}
@@ -954,7 +967,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              Process Uptime:
+                              {t("Process Uptime:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {Math.floor(
@@ -972,7 +985,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-white/80">
-                              CPU Time:
+                              {t("CPU Time:")}
                             </span>
                             <span className="font-medium text-gray-700 dark:text-white">
                               {
@@ -1005,7 +1018,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                 <SectionCardHeader
                   icon={Package}
                   tone="rose"
-                  title="Deployment Information"
+                  title={t("Deployment Information")}
                   className="mb-4"
                 />
               )}
@@ -1024,7 +1037,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div className="p-2 rounded-xl border border-gray-300/20 dark:border-white/10 bg-white/30 dark:bg-white/5 backdrop-blur-md">
                     <h4 className="font-medium mb-2 text-xs sm:text-sm text-gray-700 dark:text-white">
-                      Deployment
+                      {t("Deployment")}
                     </h4>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-white/80">
                       {systemStatus.deployment}
@@ -1032,7 +1045,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
                   </div>
                   <div className="p-2 rounded-xl border border-gray-300/20 dark:border-white/10 bg-white/30 dark:bg-white/5 backdrop-blur-md">
                     <h4 className="font-medium mb-2 text-xs sm:text-sm text-gray-700 dark:text-white">
-                      Last checked
+                      {t("Last checked")}
                     </h4>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-white/80">
                       {systemStatus.lastChecked}

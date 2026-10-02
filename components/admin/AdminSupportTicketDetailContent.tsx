@@ -95,6 +95,7 @@ import SupportTicketReplyThread from "@/components/support-tickets/SupportTicket
 import { AlertDialogWrapper } from "@/components/dialogs";
 import { computeTicketMessageStats } from "@/lib/support-tickets/ticket-message-stats";
 import { resolveDetailAuditUserHref } from "@/lib/navigation/audit-user-href";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type AdminSupportTicketDetailContentProps = {
   initialTicket?: SupportTicket;
@@ -108,6 +109,7 @@ export default function AdminSupportTicketDetailContent({
   initialReplies,
   productOwners = [],
 }: AdminSupportTicketDetailContentProps = {}) {
+  const tr = useT();
   const params = useParams();
   const { user } = useAuth();
   const { navigateTo, handleBack } = useBackWithRefresh("support-ticket");
@@ -212,27 +214,41 @@ export default function AdminSupportTicketDetailContent({
   const descPreview = (ticket?.description ?? "").trim();
   const deleteDescription =
     descPreview.length > 80
-      ? `This will permanently delete the ticket "${ticket?.subject}": ${descPreview.slice(0, 80)}…`
+      ? tr('This will permanently delete the ticket "{subject}": {preview}', {
+          subject: ticket?.subject ?? "",
+          preview: `${descPreview.slice(0, 80)}…`,
+        })
       : ticket
-        ? `This will permanently delete the ticket "${ticket.subject}". This action cannot be undone.`
-        : "This will permanently delete this support ticket.";
+        ? tr(
+            'This will permanently delete the ticket "{subject}". This action cannot be undone.',
+            { subject: ticket.subject },
+          )
+        : tr("This will permanently delete this support ticket.");
 
   // REQ-0193 — dynamic confirm copy for clear-notes (subject + notes preview)
   const notesPreview = (ticket?.notes ?? "").trim();
   const clearNotesDescription =
     notesPreview.length > 80
-      ? `Clear internal notes for "${ticket?.subject}": ${notesPreview.slice(0, 80)}…`
+      ? tr('Clear internal notes for "{subject}": {preview}', {
+          subject: ticket?.subject ?? "",
+          preview: `${notesPreview.slice(0, 80)}…`,
+        })
       : ticket && notesPreview
-        ? `Clear internal notes for "${ticket.subject}": ${notesPreview}`
+        ? tr('Clear internal notes for "{subject}": {preview}', {
+            subject: ticket.subject,
+            preview: notesPreview,
+          })
         : ticket
-          ? `Clear internal notes for "${ticket.subject}"? This cannot be undone.`
-          : "Clear internal notes for this ticket?";
+          ? tr('Clear internal notes for "{subject}"? This cannot be undone.', {
+              subject: ticket.subject,
+            })
+          : tr("Clear internal notes for this ticket?");
 
   if (isError) {
     return (
       <PageContentWrapper>
         <div className="p-6 text-destructive">
-          {error instanceof Error ? error.message : "Failed to load ticket"}
+          {error instanceof Error ? error.message : tr("Failed to load ticket")}
         </div>
       </PageContentWrapper>
     );
@@ -257,7 +273,7 @@ export default function AdminSupportTicketDetailContent({
               <ArrowLeft className="h-5 w-5" />
             </Button>
           }
-          title="Support Ticket Details"
+          title={tr("Support Ticket Details")}
           description={
             dataLoading ? (
               <DataSlotPulse variant="text-md" className="w-64" />
@@ -271,8 +287,10 @@ export default function AdminSupportTicketDetailContent({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 items-stretch">
           <GlassCard variant="amber">
 <SectionCardHeader
-                title="Status"
-                description="Ticket workflow state — edit via Edit Ticket"
+                title={tr("Status")}
+                description={tr(
+                  "Ticket workflow state — edit via Edit Ticket",
+                )}
                 icon={CircleDot}
                 tone="amber"
                 className="mb-4"
@@ -289,8 +307,8 @@ export default function AdminSupportTicketDetailContent({
 
           <GlassCard variant="rose">
 <SectionCardHeader
-                title="Priority"
-                description="Urgency — edit via Edit Ticket"
+                title={tr("Priority")}
+                description={tr("Urgency — edit via Edit Ticket")}
                 icon={Flag}
                 tone="rose"
                 className="mb-4"
@@ -311,8 +329,8 @@ export default function AdminSupportTicketDetailContent({
 
           <GlassCard variant="violet">
 <SectionCardHeader
-                title="Messages"
-                description="Opening description + thread replies"
+                title={tr("Messages")}
+                description={tr("Opening description + thread replies")}
                 icon={MessagesSquare}
                 tone="violet"
                 className="mb-4"
@@ -322,18 +340,18 @@ export default function AdminSupportTicketDetailContent({
               ) : (
                 <div className="flex flex-col gap-1 text-sm">
                   <span className={DETAIL_DATA_VALUE_CLASS}>
-                    Total{" "}
+                    {tr("Total")}{" "}
                     <span className="text-violet-600 dark:text-violet-300 font-medium">
                       {messageStats.total}
                     </span>
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    From creator{" "}
+                    {tr("From creator")}{" "}
                     <span className="text-sky-600 dark:text-sky-300">
                       {messageStats.fromCreator}
                     </span>
                     {" · "}
-                    From staff{" "}
+                    {tr("From staff")}{" "}
                     <span className="text-emerald-600 dark:text-emerald-300">
                       {messageStats.fromStaff}
                     </span>
@@ -347,8 +365,8 @@ export default function AdminSupportTicketDetailContent({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 items-stretch">
           <GlassCard variant="violet">
 <SectionCardHeader
-                title="Ticket information"
-                description="Creator, Send-to, dates, and ticket number"
+                title={tr("Ticket information")}
+                description={tr("Creator, Send-to, dates, and ticket number")}
                 icon={Hash}
                 tone="violet"
                 className="mb-4"
@@ -359,7 +377,7 @@ export default function AdminSupportTicketDetailContent({
                 <div className="space-y-2">
                   <DetailInfoRow
                     icon={Hash}
-                    label="Ticket #:"
+                    label={tr("Ticket #:")}
                     tone="violet"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -372,7 +390,7 @@ export default function AdminSupportTicketDetailContent({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={MessageSquare}
-                    label="Subject:"
+                    label={tr("Subject:")}
                     tone="emerald"
                     valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                   >
@@ -382,7 +400,7 @@ export default function AdminSupportTicketDetailContent({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={User}
-                    label="Creator:"
+                    label={tr("Creator:")}
                     tone="sky"
                     valueClassName="min-w-0"
                   >
@@ -401,7 +419,7 @@ export default function AdminSupportTicketDetailContent({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={UserRoundPen}
-                    label="Sent to:"
+                    label={tr("Sent to:")}
                     tone="teal"
                     valueClassName="min-w-0"
                   >
@@ -420,7 +438,7 @@ export default function AdminSupportTicketDetailContent({
                       />
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        — No specific owner —
+                        {tr("— No specific owner —")}
                       </span>
                     )}
                   </DetailInfoRow>
@@ -428,7 +446,7 @@ export default function AdminSupportTicketDetailContent({
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 [&>*]:flex-1 [&>*]:min-w-0">
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Created:"
+                      label={tr("Created:")}
                       tone="orange"
                       valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                     >
@@ -440,7 +458,7 @@ export default function AdminSupportTicketDetailContent({
                     {t.updatedAt ? (
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Updated:"
+                        label={tr("Updated:")}
                         tone="amber"
                         valueClassName={cn("text-sm", DETAIL_DATA_VALUE_CLASS)}
                       >
@@ -457,8 +475,8 @@ export default function AdminSupportTicketDetailContent({
 
           <GlassCard variant="amber">
 <SectionCardHeader
-                title="Description"
-                description="Message submitted with the ticket"
+                title={tr("Description")}
+                description={tr("Message submitted with the ticket")}
                 icon={MessageSquare}
                 tone="amber"
                 className="mb-4"
@@ -482,8 +500,10 @@ export default function AdminSupportTicketDetailContent({
         {!dataLoading && t && hasRelated ? (
           <GlassCard variant="sky">
             <SectionCardHeader
-              title="Related Product"
-              description="Linked product, order, or supplier for quick overview"
+              title={tr("Related Product")}
+              description={tr(
+                "Linked product, order, or supplier for quick overview",
+              )}
               icon={Package}
               tone="sky"
               className="mb-4"
@@ -512,7 +532,7 @@ export default function AdminSupportTicketDetailContent({
                 {t.orderId ? (
                   <DetailInfoRow
                     icon={Boxes}
-                    label="Order:"
+                    label={tr("Order:")}
                     tone="emerald"
                     valueClassName="min-w-0"
                   >
@@ -541,7 +561,7 @@ export default function AdminSupportTicketDetailContent({
                 {t.supplierId ? (
                   <DetailInfoRow
                     icon={Building2}
-                    label="Supplier:"
+                    label={tr("Supplier:")}
                     tone="amber"
                     valueClassName="min-w-0"
                   >
@@ -580,8 +600,10 @@ export default function AdminSupportTicketDetailContent({
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-2">
               <SectionCardHeader
-                title="Internal Notes"
-                description="Admin-only notes. Not visible to the ticket creator."
+                title={tr("Internal Notes")}
+                description={tr(
+                  "Admin-only notes. Not visible to the ticket creator.",
+                )}
                 icon={NotebookPen}
                 tone="teal"
               />
@@ -594,7 +616,7 @@ export default function AdminSupportTicketDetailContent({
                     className="h-8 w-8"
                     onClick={startNotesEdit}
                     disabled={actionsDisabled || dataLoading}
-                    aria-label="Edit notes"
+                    aria-label={tr("Edit notes")}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -609,7 +631,7 @@ export default function AdminSupportTicketDetailContent({
                       dataLoading ||
                       !(t?.notes && t.notes.trim())
                     }
-                    aria-label="Clear notes"
+                    aria-label={tr("Clear notes")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -623,7 +645,7 @@ export default function AdminSupportTicketDetailContent({
                     className="h-8 w-8"
                     onClick={cancelNotesEdit}
                     disabled={updateMutation.isPending}
-                    aria-label="Cancel"
+                    aria-label={tr("Cancel")}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -634,7 +656,7 @@ export default function AdminSupportTicketDetailContent({
                     className="h-8 w-8 text-emerald-600"
                     onClick={saveNotes}
                     disabled={updateMutation.isPending}
-                    aria-label="Save notes"
+                    aria-label={tr("Save notes")}
                   >
                     <Check className="h-4 w-4" />
                   </Button>
@@ -649,7 +671,7 @@ export default function AdminSupportTicketDetailContent({
                 onChange={(e) => setNotesDraft(e.target.value)}
                 disabled={updateMutation.isPending}
                 className="min-h-[100px] rounded-xl resize-none"
-                placeholder="Internal notes…"
+                placeholder={tr("Internal notes…")}
               />
             ) : (
               <p
@@ -658,7 +680,7 @@ export default function AdminSupportTicketDetailContent({
                   !t?.notes?.trim() && "text-muted-foreground italic",
                 )}
               >
-                {t?.notes?.trim() || "No internal notes yet."}
+                {t?.notes?.trim() || tr("No internal notes yet.")}
               </p>
             )}
           </div>
@@ -673,7 +695,7 @@ export default function AdminSupportTicketDetailContent({
             )}
           >
             <ArrowLeft className="h-4 w-4 shrink-0" />
-            Back
+            {tr("Back")}
           </Button>
           {canMutate && t ? (
             <Button
@@ -686,7 +708,7 @@ export default function AdminSupportTicketDetailContent({
               )}
             >
               <Pencil className="h-4 w-4 shrink-0" />
-              Edit Ticket
+              {tr("Edit Ticket")}
             </Button>
           ) : null}
           {canReassign && t ? (
@@ -700,7 +722,7 @@ export default function AdminSupportTicketDetailContent({
               )}
             >
               <UserRoundPen className="h-4 w-4 shrink-0" />
-              Reassign Ticket
+              {tr("Reassign Ticket")}
             </Button>
           ) : null}
           {canMutate ? (
@@ -709,8 +731,8 @@ export default function AdminSupportTicketDetailContent({
                 <DialogSubmitButton
                   type="button"
                   isPending={isDeleting}
-                  pendingLabel="Deleting…"
-                  label="Delete Ticket"
+                  pendingLabel={tr("Deleting…")}
+                  label={tr("Delete Ticket")}
                   icon={Trash2}
                   hue="rose"
                   disabled={actionsDisabled}
@@ -719,21 +741,21 @@ export default function AdminSupportTicketDetailContent({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete support ticket?</AlertDialogTitle>
+                  <AlertDialogTitle>{tr("Delete support ticket?")}</AlertDialogTitle>
                   <AlertDialogDescription>
                     {deleteDescription}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={isDeleting}>
-                    Cancel
+                    {tr("Cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDelete}
                     disabled={isDeleting || actionsDisabled}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    {isDeleting ? "Deleting..." : "Delete"}
+                    {isDeleting ? tr("Deleting...") : tr("Delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -763,10 +785,10 @@ export default function AdminSupportTicketDetailContent({
             <AlertDialogWrapper
               open={notesClearOpen}
               onOpenChange={setNotesClearOpen}
-              title="Clear internal notes?"
+              title={tr("Clear internal notes?")}
               description={clearNotesDescription}
-              actionLabel="Clear notes"
-              actionLoadingLabel="Clearing…"
+              actionLabel={tr("Clear notes")}
+              actionLoadingLabel={tr("Clearing…")}
               isLoading={updateMutation.isPending}
               onAction={clearNotes}
               onCancel={() => setNotesClearOpen(false)}

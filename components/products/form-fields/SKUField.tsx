@@ -10,6 +10,7 @@ import { MdError } from "react-icons/md";
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
 import { Product } from "@/types";
+import { useT } from "@/lib/i18n/locale-context";
 
 interface SKUProps {
   allProducts: Product[];
@@ -23,6 +24,7 @@ export default function SKU({ allProducts }: SKUProps) {
     formState: { errors },
   } = useFormContext();
 
+  const t = useT();
   const [skuError, setSkuError] = useState<string | null>(null);
 
   const handleSkuChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,8 +36,8 @@ export default function SKU({ allProducts }: SKUProps) {
     );
 
     if (isSkuTaken) {
-      setSkuError("SKU is already used. Try a new one.");
-      setError("sku", { type: "manual", message: "SKU is already used." });
+      setSkuError(t("SKU is already used. Try a new one."));
+      setError("sku", { type: "manual", message: t("SKU is already used.") });
     } else {
       setSkuError(null);
       clearErrors("sku");
@@ -46,12 +48,12 @@ export default function SKU({ allProducts }: SKUProps) {
     <div className="mt-5 flex flex-col gap-2">
       <div className="flex items-center gap-1">
         <DialogFormLabel htmlFor="sku" icon={Hash} required>
-          SKU
+          {t("SKU")}
         </DialogFormLabel>
         <HelpTooltip
-          content="Unique code; letters, numbers, hyphens, underscores only."
+          content={t("Unique code; letters, numbers, hyphens, underscores only.")}
           side="top"
-          ariaLabel="SKU format help"
+          ariaLabel={t("SKU format help")}
         />
       </div>
       <Input

@@ -24,6 +24,7 @@ import { Supplier } from "@/types";
 import type { SupplierForHome } from "@/lib/server/home-data";
 import type { DashboardStats } from "@/types";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 const formatCurrency = formatStableCurrency;
 
@@ -56,6 +57,7 @@ const SupplierList = React.memo(function SupplierList({
   initialSuppliers,
   initialStats,
 }: SupplierListProps = {}) {
+  const t = useT();
   const isMountedRef = useRef(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -124,50 +126,50 @@ const SupplierList = React.memo(function SupplierList({
         as="h2"
         icon={Truck}
         tone="teal"
-        title="Supplier Management"
-        description="Manage your supplier relationships efficiently. Track supplier information, status, and maintain detailed records for better inventory management and procurement planning."
+        title={t("Supplier Management")}
+        description={t("Manage your supplier relationships efficiently. Track supplier information, status, and maintain detailed records for better inventory management and procurement planning.")}
       />
 
       {/* Store-wide state cards — only on /suppliers page (user), same as homepage/products */}
       {isUserSuppliersPage && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={suppliersPageStats?.counts.products ?? 0}
-            description="Products availability"
+            description={t("Products availability")}
             icon={Package}
             variant="rose"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value:
                   suppliersPageStats?.productStatusBreakdown?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value:
                   suppliersPageStats?.productStatusBreakdown?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value:
                   suppliersPageStats?.productStatusBreakdown?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Value"
+            title={t("Total Value")}
             value={formatCurrency(suppliersPageStats?.totalInventoryValue ?? 0)}
-            description="Total inventory value"
+            description={t("Total inventory value")}
             icon={DollarSign}
             variant="violet"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Orders",
+                label: t("Orders"),
                 value: formatCurrency(
                   suppliersPageStats?.orderAnalytics
                     ?.totalRevenueExcludingCancelled ??
@@ -176,19 +178,19 @@ const SupplierList = React.memo(function SupplierList({
                 ),
               },
               {
-                label: "Invoices",
+                label: t("Invoices"),
                 value: formatCurrency(
                   suppliersPageStats?.revenue?.fromInvoices ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   suppliersPageStats?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatCurrency(
                   suppliersPageStats?.orderAnalytics?.cancelledOrderAmount ?? 0,
                 ),
@@ -196,40 +198,40 @@ const SupplierList = React.memo(function SupplierList({
             ]}
           />
           <StatisticsCard
-            title="Total Suppliers"
+            title={t("Total Suppliers")}
             value={suppliersPageStats?.counts.suppliers ?? 0}
-            description="Suppliers"
+            description={t("Suppliers")}
             icon={Truck}
             variant="emerald"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: suppliersPageStats?.supplierStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   suppliersPageStats?.supplierStatusBreakdown?.inactive ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Categories"
+            title={t("Categories")}
             value={suppliersPageStats?.counts.categories ?? 0}
-            description="Product categories"
+            description={t("Product categories")}
             icon={FolderTree}
             variant="amber"
             valueLoading={cardsDataLoading}
             badgeValuesLoading={cardsDataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: suppliersPageStats?.categoryStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   suppliersPageStats?.categoryStatusBreakdown?.inactive ?? 0,
               },

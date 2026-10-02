@@ -13,6 +13,7 @@ import { FileText, Package, User, MapPin, Users } from "lucide-react";
 import { DataSlotPulse } from "@/components/shared";
 import { PersonInlineRow } from "@/components/shared/PersonInlineRow";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type PartyPerson = {
   userId?: string;
@@ -115,6 +116,7 @@ export function PartiesRolesCard({
   productOwners = [],
   stableOrderPartySlots = false,
 }: PartiesRolesCardProps) {
+  const t = useT();
   const showInvoiceCreated = dataLoading || invoiceCreatedBy != null;
   const showOrderedBy =
     stableOrderPartySlots || dataLoading || orderedBy != null;
@@ -134,12 +136,12 @@ export function PartiesRolesCard({
           <HeaderIcon className="h-5 w-5 text-teal-600 dark:text-teal-400" />
         </div>
         <h3 className="text-sm sm:text-base font-medium leading-none text-gray-700 dark:text-white">
-          Parties & Roles
+          {t("Parties & Roles")}
         </h3>
       </div>
       <div className="flex flex-col gap-2 text-sm">
         {showInvoiceCreated && (
-          <PartyFieldRow label="Invoice created by" icon={FileText}>
+          <PartyFieldRow label={t("Invoice created by")} icon={FileText}>
             <PartyPersonDisplay
               person={invoiceCreatedBy}
               loading={dataLoading}
@@ -147,17 +149,17 @@ export function PartiesRolesCard({
           </PartyFieldRow>
         )}
         {showOrderedBy && (
-          <PartyFieldRow label="Ordered by" icon={User}>
+          <PartyFieldRow label={t("Ordered by")} icon={User}>
             <PartyPersonDisplay person={orderedBy} loading={dataLoading} />
           </PartyFieldRow>
         )}
         {showCustomer && (
-          <PartyFieldRow label={customerLabel} icon={MapPin}>
+          <PartyFieldRow label={t(customerLabel)} icon={MapPin}>
             <PartyPersonDisplay person={customer} loading={dataLoading} />
           </PartyFieldRow>
         )}
         {showOwners && (
-          <PartyFieldRow label="Product owner(s)" icon={Users}>
+          <PartyFieldRow label={t("Product owner(s)")} icon={Users}>
             {productOwners.length > 0 ? (
               <div className="flex flex-col gap-2">
                 {productOwners.map((owner) => (

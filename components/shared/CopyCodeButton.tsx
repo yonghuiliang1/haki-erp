@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/lib/i18n/locale-context";
 
 export interface CopyCodeButtonProps {
   /** Text to copy to clipboard */
@@ -20,25 +21,26 @@ export interface CopyCodeButtonProps {
  */
 export function CopyCodeButton({
   text,
-  ariaLabel = "Copy to clipboard",
+  ariaLabel,
   className,
 }: CopyCodeButtonProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const t = useT();
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       toast({
-        title: "Copied!",
-        description: "Code copied to clipboard.",
+        title: t("Copied!"),
+        description: t("Code copied to clipboard."),
       });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast({
-        title: "Copy failed",
-        description: "Could not copy to clipboard.",
+        title: t("Copy failed"),
+        description: t("Could not copy to clipboard."),
         variant: "destructive",
       });
     }
@@ -51,14 +53,14 @@ export function CopyCodeButton({
       size="sm"
       onClick={handleCopy}
       className={className}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? t("Copy to clipboard")}
     >
       {copied ? (
         <Check className="h-4 w-4 text-green-600" />
       ) : (
         <Copy className="h-4 w-4" />
       )}
-      <span className="sr-only">{copied ? "Copied" : "Copy"}</span>
+      <span className="sr-only">{copied ? t("Copied") : t("Copy")}</span>
     </Button>
   );
 }

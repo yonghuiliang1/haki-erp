@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { Order } from "@/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 import { GlassCard, DetailInfoRow, variantConfig } from "./order-detail-primitives";
 
 export type OrderTradeInfoCardProps = {
@@ -32,6 +33,7 @@ export function OrderTradeInfoCard({
   dataLoading,
   className,
 }: OrderTradeInfoCardProps) {
+  const t = useT();
   const hasTradeInfo =
     !!order &&
     (!!order.customer ||
@@ -62,12 +64,12 @@ export function OrderTradeInfoCard({
           <Globe2 className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
         </div>
         <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-          Export Trade
+          {t("Export Trade")}
         </h3>
       </div>
       <div className="space-y-2">
         {customer && (
-          <DetailInfoRow icon={Building2} label="Customer:" tone="cyan">
+          <DetailInfoRow icon={Building2} label={t("Customer:")} tone="cyan">
             <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
               <span>{customer.name}</span>
               <span className="text-xs text-gray-600 dark:text-gray-300">
@@ -82,7 +84,7 @@ export function OrderTradeInfoCard({
           </DetailInfoRow>
         )}
         {order?.currency && (
-          <DetailInfoRow icon={Coins} label="Currency:" tone="amber">
+          <DetailInfoRow icon={Coins} label={t("Currency:")} tone="amber">
             <span className="inline-flex flex-wrap items-center gap-x-2 min-w-0">
               <span>{order.currency}</span>
               {order.exchangeRate != null && (
@@ -94,22 +96,22 @@ export function OrderTradeInfoCard({
           </DetailInfoRow>
         )}
         {order?.tradeTerms && (
-          <DetailInfoRow icon={Handshake} label="Trade Terms:" tone="violet">
+          <DetailInfoRow icon={Handshake} label={t("Trade Terms:")} tone="violet">
             {order.tradeTerms}
           </DetailInfoRow>
         )}
         {order?.customsNo && (
-          <DetailInfoRow icon={FileCheck2} label="Customs No.:" tone="teal">
+          <DetailInfoRow icon={FileCheck2} label={t("Customs No.:")} tone="teal">
             <span className="font-mono text-xs">{order.customsNo}</span>
           </DetailInfoRow>
         )}
         {order?.portOfLoading && (
-          <DetailInfoRow icon={Anchor} label="Port of Loading:" tone="sky">
+          <DetailInfoRow icon={Anchor} label={t("Port of Loading:")} tone="sky">
             {order.portOfLoading}
           </DetailInfoRow>
         )}
         {order?.portOfDischarge && (
-          <DetailInfoRow icon={MapPin} label="Port of Discharge:" tone="emerald">
+          <DetailInfoRow icon={MapPin} label={t("Port of Discharge:")} tone="emerald">
             {order.portOfDischarge}
           </DetailInfoRow>
         )}

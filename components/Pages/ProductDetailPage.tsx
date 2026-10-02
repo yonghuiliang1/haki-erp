@@ -122,6 +122,7 @@ import { SafeImage } from "@/components/ui/safe-image";
 import ProductFormDialog from "@/components/products/ProductFormDialog";
 import { AlertDialogWrapper } from "@/components/dialogs";
 import ProductReviewsSection from "@/components/product-reviews/ProductReviewsSection";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type ProductDetailPageProps = {
   embedInAdmin?: boolean;
@@ -143,6 +144,7 @@ export default function ProductDetailPage({
   initialStockByProduct,
   initialForecasting,
 }: ProductDetailPageProps = {}) {
+  const t = useT();
   const params = useParams();
   const router = useRouter();
   const { handleBack, navigateTo } = useBackWithRefresh("product");
@@ -376,16 +378,16 @@ export default function ProductDetailPage({
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2">
           <div className="text-center">
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white mb-2">
-              Product Not Found
+              {t("Product Not Found")}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               {productQuery.error instanceof Error
                 ? productQuery.error.message
-                : "Failed to load product details"}
+                : t("Failed to load product details")}
             </p>
             <Button onClick={() => router.push("/")} variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t("Back to Home")}
             </Button>
           </div>
         </div>
@@ -418,16 +420,20 @@ export default function ProductDetailPage({
     insights?.warehouseStock && catalogQuantity != null && !dataLoading ? (
       <>
         <SectionCountBadge>
-          {insights.warehouseStock.available} in warehouses
+          {t("{count} in warehouses", {
+            count: insights.warehouseStock.available,
+          })}
         </SectionCountBadge>
         {insights.warehouseStock.unallocated != null &&
         insights.warehouseStock.unallocated > 0 ? (
           <SectionCountBadge hue="amber">
-            {insights.warehouseStock.unallocated} unallocated
+            {t("{count} unallocated", {
+              count: insights.warehouseStock.unallocated,
+            })}
           </SectionCountBadge>
         ) : null}
         <SectionCountBadge hue="sky">
-          {catalogQuantity} catalog
+          {t("{count} catalog", { count: catalogQuantity ?? 0 })}
         </SectionCountBadge>
       </>
     ) : undefined;
@@ -469,11 +475,11 @@ export default function ProductDetailPage({
                 <DataSlotPulse variant="text-sm" className="w-40" />
               ) : (
                 <>
-                  SKU:{" "}
+                  {t("SKU:")}{" "}
                   <CopyableText value={product!.sku}>
                     {product!.sku}
                   </CopyableText>{" "}
-                  • Created{" "}
+                  • {t("Created")}{" "}
                   {createdAt ? (
                     <ClientRelativeTime date={createdAt} semantic="created" />
                   ) : (
@@ -494,7 +500,7 @@ export default function ProductDetailPage({
                       className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0"
                       aria-hidden
                     />
-                    Status
+                    {t("Status")}
                   </p>
                   {/* self-start — flex-col parent would otherwise stretch inline-flex badge to w-full */}
                   <ProductStockStatusBadge
@@ -513,7 +519,7 @@ export default function ProductDetailPage({
                       className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0"
                       aria-hidden
                     />
-                    Stock
+                    {t("Stock")}
                   </p>
                   <p
                     className={cn(
@@ -525,14 +531,14 @@ export default function ProductDetailPage({
                   >
                     {(product?.quantity ?? 0) - displayCommitted}
                     <span className="text-sm font-normal text-muted-foreground ml-1">
-                      available
+                      {t("available")}
                     </span>
                   </p>
                   {displayCommitted > 0 && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      <span>{displayCommitted} reserved</span>
+                      <span>{t("{count} reserved", { count: displayCommitted })}</span>
                       <span className="mx-1">·</span>
-                      {product?.quantity} total
+                      {product?.quantity} {t("total")}
                     </p>
                   )}
                 </GlassCardBody>
@@ -545,7 +551,7 @@ export default function ProductDetailPage({
                       className="h-4 w-4 text-sky-600 dark:text-sky-400 shrink-0"
                       aria-hidden
                     />
-                    Price
+                    {t("Price")}
                   </p>
                   <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                     {formatStableCurrency(product?.price ?? 0)}
@@ -560,7 +566,7 @@ export default function ProductDetailPage({
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-300/30 bg-sky-100/50 dark:border-white/15 dark:bg-white/10">
                     <ImageIcon className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
-                  <h3 className={TYPO_CARD_TITLE}>Product Image</h3>
+                  <h3 className={TYPO_CARD_TITLE}>{t("Product Image")}</h3>
                 </div>
                 {product?.imageUrl ? (
                   <div className="relative w-full flex-1 min-h-64 rounded-xl overflow-hidden bg-white/50 dark:bg-white/5 border border-gray-300/20 dark:border-white/10">
@@ -575,7 +581,7 @@ export default function ProductDetailPage({
                 ) : (
                   <div className="w-full flex-1 min-h-64 rounded-xl bg-white/30 dark:bg-white/5 border border-gray-300/20 dark:border-white/10 flex items-center justify-center">
                     <p className="text-gray-500 dark:text-white/80">
-                      No image available
+                      {t("No image available")}
                     </p>
                   </div>
                 )}
@@ -588,13 +594,13 @@ export default function ProductDetailPage({
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-violet-300/30 bg-violet-100/50 dark:border-white/15 dark:bg-white/10">
                     <QrCode className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
-                  <h3 className={TYPO_CARD_TITLE}>QR Code / Barcode</h3>
+                  <h3 className={TYPO_CARD_TITLE}>{t("QR Code / Barcode")}</h3>
                 </div>
                 {product?.qrCodeUrl ? (
                   <div className="relative w-full flex-1 min-h-64 rounded-xl overflow-hidden bg-white border border-gray-300/20 dark:border-white/10">
                     <SafeImage
                       src={product?.qrCodeUrl}
-                      alt={`QR Code for ${product?.sku}`}
+                      alt={t("QR Code for {sku}", { sku: product?.sku ?? "" })}
                       fill
                       className="object-contain p-4"
                       sizes="(max-width: 1024px) 100vw, 33vw"
@@ -603,7 +609,7 @@ export default function ProductDetailPage({
                 ) : (
                   <div className="w-full flex-1 min-h-64 rounded-xl bg-white/30 dark:bg-white/5 border border-gray-300/20 dark:border-white/10 flex items-center justify-center">
                     <p className="text-gray-500 dark:text-white/80">
-                      No QR code available
+                      {t("No QR code available")}
                     </p>
                   </div>
                 )}
@@ -621,14 +627,14 @@ export default function ProductDetailPage({
                     <Package className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
                   <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
-                    Product Information
+                    {t("Product Information")}
                   </h3>
                 </div>
                 <div className="space-y-2">
                   {!dataLoading && product && (
                     <DetailInfoRow
                       icon={Hash}
-                      label="Product ID:"
+                      label={t("Product ID:")}
                       tone="violet"
                     >
                       <CopyableText value={product.id}>
@@ -638,7 +644,7 @@ export default function ProductDetailPage({
                   )}
                   <DetailInfoRow
                     icon={Tag}
-                    label="SKU:"
+                    label={t("SKU:")}
                     tone="teal"
                     loading={dataLoading}
                   >
@@ -651,7 +657,7 @@ export default function ProductDetailPage({
                   {!dataLoading &&
                     product?.category &&
                     typeof product.category === "object" && (
-                      <DetailInfoRow icon={Tag} label="Category:" tone="sky">
+                      <DetailInfoRow icon={Tag} label={t("Category:")} tone="sky">
                         <Link
                           href={
                             embedInAdmin
@@ -669,7 +675,7 @@ export default function ProductDetailPage({
                     typeof product.supplier === "object" && (
                       <DetailInfoRow
                         icon={Truck}
-                        label="Supplier:"
+                        label={t("Supplier:")}
                         tone="orange"
                       >
                         <PersonInlineRow
@@ -696,7 +702,7 @@ export default function ProductDetailPage({
                   <DetailInfoRowGroup>
                     <DetailInfoRow
                       icon={Calendar}
-                      label="Created:"
+                      label={t("Created:")}
                       tone="teal"
                       loading={dataLoading && !createdAt}
                     >
@@ -707,7 +713,7 @@ export default function ProductDetailPage({
                     {(dataLoading || updatedAt) && (
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Updated:"
+                        label={t("Updated:")}
                         tone="sky"
                         loading={dataLoading && !updatedAt}
                       >
@@ -719,7 +725,7 @@ export default function ProductDetailPage({
                     {!dataLoading && expirationDate && (
                       <DetailInfoRow
                         icon={Calendar}
-                        label="Expiration:"
+                        label={t("Expiration:")}
                         tone="amber"
                       >
                         <ClientDate
@@ -733,7 +739,7 @@ export default function ProductDetailPage({
                     <DetailInfoRowGroup>
                       <DetailInfoRow
                         icon={Package}
-                        label="Stock qty:"
+                        label={t("Stock qty:")}
                         tone="blue"
                         valueClassName="text-gray-700 dark:text-gray-300"
                       >
@@ -742,7 +748,7 @@ export default function ProductDetailPage({
                       {displayCommitted > 0 && (
                         <DetailInfoRow
                           icon={Package}
-                          label="Reserved:"
+                          label={t("Reserved:")}
                           tone="violet"
                           valueClassName="text-amber-600 dark:text-amber-400"
                         >
@@ -751,7 +757,7 @@ export default function ProductDetailPage({
                       )}
                       <DetailInfoRow
                         icon={Package}
-                        label="Available:"
+                        label={t("Available:")}
                         tone="emerald"
                         valueClassName={productStockAvailableTextClass(
                           (product.quantity ?? 0) - displayCommitted,
@@ -762,7 +768,7 @@ export default function ProductDetailPage({
                     </DetailInfoRowGroup>
                   )}
                   {!dataLoading && product?.deletedAt && (
-                    <DetailInfoRow icon={Package} label="Archived:" tone="rose">
+                    <DetailInfoRow icon={Package} label={t("Archived:")} tone="rose">
                       <ClientDateTime
                         date={new Date(product.deletedAt)}
                         semantic="cancelled"
@@ -770,7 +776,7 @@ export default function ProductDetailPage({
                     </DetailInfoRow>
                   )}
                   <AuditUserDetailRow
-                    label="Created by:"
+                    label={t("Created by:")}
                     tone="violet"
                     user={product?.creator}
                     loading={dataLoading && !product?.creator}
@@ -781,7 +787,7 @@ export default function ProductDetailPage({
                     }
                   />
                   <AuditUserDetailRow
-                    label="Updated by:"
+                    label={t("Updated by:")}
                     tone="blue"
                     user={product?.updater}
                     loading={dataLoading && !product?.updater}
@@ -806,16 +812,16 @@ export default function ProductDetailPage({
                     <BarChart3 className="h-4 w-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
-                    <h3 className={TYPO_CARD_TITLE}>Sales Statistics</h3>
+                    <h3 className={TYPO_CARD_TITLE}>{t("Sales Statistics")}</h3>
                     <p className={TYPO_SUBTITLE}>
-                      Summary of sales and inventory data
+                      {t("Summary of sales and inventory data")}
                     </p>
                   </div>
                 </div>
                 <div className="space-y-2 mt-4">
                   <DetailInfoRow
                     icon={Package}
-                    label="Total Quantity Sold:"
+                    label={t("Total Quantity Sold:")}
                     tone="emerald"
                     loading={dataLoading}
                   >
@@ -823,7 +829,7 @@ export default function ProductDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={DollarSign}
-                    label="Total Revenue:"
+                    label={t("Total Revenue:")}
                     tone="emerald"
                     loading={dataLoading}
                   >
@@ -835,7 +841,7 @@ export default function ProductDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={ShoppingCart}
-                    label="Orders Containing This Product:"
+                    label={t("Orders Containing This Product:")}
                     tone="violet"
                     loading={dataLoading}
                   >
@@ -843,7 +849,7 @@ export default function ProductDetailPage({
                   </DetailInfoRow>
                   <DetailInfoRow
                     icon={Wallet}
-                    label="Inventory value (list price):"
+                    label={t("Inventory value (list price):")}
                     tone="blue"
                     loading={dataLoading}
                   >
@@ -853,7 +859,7 @@ export default function ProductDetailPage({
                           {formatStableCurrency(stats.totalValue ?? 0)}
                         </span>
                         <span className={cn("text-xs", TYPO_BODY_MUTED)}>
-                          (price × on-hand qty)
+                          {t("(price × on-hand qty)")}
                         </span>
                       </span>
                     )}
@@ -870,19 +876,19 @@ export default function ProductDetailPage({
               dataLoading={false}
               isAdminRole={isAdminRole}
               forecastLoading={forecastLoading}
-              title="Product Insights"
-              subtitle="Sales velocity and stock signals for this SKU"
-              salesChartTitle="Sales Trend (6 months)"
-              salesChartDescription="Revenue from this product's order lines"
+              title={t("Product Insights")}
+              subtitle={t("Sales velocity and stock signals for this SKU")}
+              salesChartTitle={t("Sales Trend (6 months)")}
+              salesChartDescription={t("Revenue from this product's order lines")}
               stockChartTitle={
                 insights.warehouseStock
-                  ? "Warehouse Allocated Stock"
-                  : "Stock Status"
+                  ? t("Warehouse Allocated Stock")
+                  : t("Stock Status")
               }
               stockChartDescription={
                 insights.warehouseStock
-                  ? "Available vs reserved across warehouses"
-                  : "On-hand stock status"
+                  ? t("Available vs reserved across warehouses")
+                  : t("On-hand stock status")
               }
               stockChartTrailing={warehouseStockChartTrailing}
               salesChartData={salesChartData}
@@ -905,23 +911,29 @@ export default function ProductDetailPage({
                   icon={Building2}
                   iconClassName="text-teal-600 dark:text-teal-400"
                   iconTile
-                  title="Warehouse Stock"
+                  title={t("Warehouse Stock")}
                   trailing={
                     !warehouseStockLoading && product != null ? (
                       <>
                         {warehouseAllocations.length > 0 ? (
                           <SectionCountBadge>
-                            {warehouseAllocations.length} warehouses
+                            {t("{count} warehouses", {
+                              count: warehouseAllocations.length,
+                            })}
                           </SectionCountBadge>
                         ) : null}
                         {catalogAvailableQty != null ? (
                           <SectionCountBadge>
-                            {catalogAvailableQty} catalog avail
+                            {t("{count} catalog avail", {
+                              count: catalogAvailableQty,
+                            })}
                           </SectionCountBadge>
                         ) : null}
                         {warehouseAllocations.length > 0 ? (
                           <SectionCountBadge>
-                            {totalWarehouseAvailable} in warehouses
+                            {t("{count} in warehouses", {
+                              count: totalWarehouseAvailable,
+                            })}
                           </SectionCountBadge>
                         ) : null}
                       </>
@@ -930,8 +942,7 @@ export default function ProductDetailPage({
                   subtitle={
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3 w-full">
                       <span className="shrink-0">
-                        Allocated per warehouse; unallocated qty stays on
-                        catalog total
+                        {t("Allocated per warehouse; unallocated qty stays on catalog total")}
                       </span>
                       {allocationSummaryParts ? (
                         <CatalogAllocationSummaryText
@@ -1033,12 +1044,14 @@ export default function ProductDetailPage({
                             >
                               {avail}{" "}
                               <span className="font-normal text-gray-500 dark:text-gray-300">
-                                available
+                                {t("available")}
                               </span>
                             </span>
                             {row.reservedQuantity > 0 ? (
                               <span className="text-xs text-amber-600 dark:text-amber-400">
-                                {row.reservedQuantity} reserved
+                                {t("{count} reserved", {
+                                  count: row.reservedQuantity,
+                                })}
                               </span>
                             ) : null}
                           </div>
@@ -1048,7 +1061,7 @@ export default function ProductDetailPage({
                   </div>
                 ) : (
                   <p className={CARD_EMPTY_MESSAGE_CLASS}>
-                    No warehouse allocations for this product yet.
+                    {t("No warehouse allocations for this product yet.")}
                   </p>
                 )}
               </GlassCardBody>
@@ -1063,19 +1076,19 @@ export default function ProductDetailPage({
                 icon={ShoppingCart}
                 iconClassName="text-rose-600 dark:text-rose-400"
                 iconTile
-                title="Recent Orders"
+                title={t("Recent Orders")}
                 count={
                   !dataLoading && recentOrderCount > 0
                     ? recentOrderCount
                     : undefined
                 }
-                subtitle="Latest orders containing this product"
+                subtitle={t("Latest orders containing this product")}
               />
               <CatalogDetailRecentOrdersList
                 loading={dataLoading}
                 orders={catalogRecentOrders}
                 hideProductMeta
-                emptyMessage="No recent orders for this product yet."
+                emptyMessage={t("No recent orders for this product yet.")}
                 orderHref={orderHref}
                 productHref={productHref}
                 ownerProductsHref={ownerProductsHref}
@@ -1106,7 +1119,7 @@ export default function ProductDetailPage({
               className={glassDetailBackButtonClass("w-full sm:w-auto gap-2")}
             >
               <ArrowLeft className="h-4 w-4 shrink-0" />
-              Back
+              {t("Back")}
             </Button>
             <Button
               onClick={handleEditProduct}
@@ -1114,7 +1127,7 @@ export default function ProductDetailPage({
               className={glassDetailFooterButtonClass("blue")}
             >
               <Edit className="h-4 w-4 shrink-0" />
-              Edit Product
+              {t("Edit Product")}
             </Button>
             <Button
               onClick={handleDuplicateProduct}
@@ -1122,14 +1135,14 @@ export default function ProductDetailPage({
               className={glassDetailFooterButtonClass("violet")}
             >
               <Copy className="h-4 w-4 shrink-0" />
-              {isCopying ? "Duplicating..." : "Create Duplicate"}
+              {isCopying ? t("Duplicating...") : t("Create Duplicate")}
             </Button>
             <DialogSubmitButton
               type="button"
               onClick={() => setDeleteDialogOpen(true)}
               isPending={isDeleting}
-              pendingLabel="Deleting…"
-              label="Delete Product"
+              pendingLabel={t("Deleting…")}
+              label={t("Delete Product")}
               icon={Trash2}
               hue="rose"
               disabled={disableCrud}
@@ -1141,10 +1154,10 @@ export default function ProductDetailPage({
           <AlertDialogWrapper
             open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
-            title="Delete Product"
-            description={`Are you sure you want to delete "${product?.name}"? This action cannot be undone.`}
-            actionLabel="Delete"
-            actionLoadingLabel="Deleting..."
+            title={t("Delete Product")}
+            description={t("Are you sure you want to delete \"{name}\"? This action cannot be undone.", { name: product?.name ?? "" })}
+            actionLabel={t("Delete")}
+            actionLoadingLabel={t("Deleting...")}
             isLoading={isDeleting}
             onAction={handleConfirmDeleteProduct}
             onCancel={() => setDeleteDialogOpen(false)}

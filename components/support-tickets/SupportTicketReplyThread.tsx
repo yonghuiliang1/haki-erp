@@ -26,6 +26,7 @@ import { resolveAvatarSourcesFromSeed } from "@/lib/ui/user-avatar-sources";
 import { AVATAR_RING_CLASS } from "@/lib/ui/avatar-ring-styles";
 import { GlassCard } from "@/components/orders/detail";
 import { useCreateSupportTicketReply } from "@/hooks/queries";
+import { useT } from "@/lib/i18n/locale-context";
 import { resolveTicketReplyTarget } from "@/lib/support-tickets/ticket-reply-target";
 import {
   TICKET_CHAT_BUBBLE_LEFT,
@@ -161,6 +162,7 @@ export default function SupportTicketReplyThread({
   sessionUserId,
   isAdminRole = false,
 }: SupportTicketReplyThreadProps) {
+  const t = useT();
   const [replyBody, setReplyBody] = useState("");
   const createReply = useCreateSupportTicketReply(ticket.id);
   const creatorName =
@@ -192,7 +194,7 @@ export default function SupportTicketReplyThread({
 
   const titleNode = (
     <span className="inline-flex flex-wrap items-center gap-x-1.5">
-      <span>Reply to</span>
+      <span>{t("Reply to")}</span>
       {replyTargetHref ? (
         <Link href={replyTargetHref} className={TITLE_CREATOR_LINK_CLASS}>
           {replyTarget.name}
@@ -215,7 +217,15 @@ export default function SupportTicketReplyThread({
       <div className="space-y-4 overflow-visible">
         <SectionCardHeader
           title={titleNode}
-          description={`Messages appear in this thread. ${replyTarget.name === "Support" ? "Support staff" : replyTarget.name} will be notified when you send a reply.`}
+          description={t(
+            "Messages appear in this thread. {name} will be notified when you send a reply.",
+            {
+              name:
+                replyTarget.name === "Support"
+                  ? t("Support staff")
+                  : replyTarget.name,
+            },
+          )}
           icon={MessageSquare}
           tone={variant === "violet" ? "violet" : "sky"}
         />
@@ -226,7 +236,7 @@ export default function SupportTicketReplyThread({
             <DataSlotPulse variant="text-md" className="w-full h-16" />
           ) : showEmpty ? (
             <p className="text-sm text-muted-foreground">
-              No replies yet. Be the first to respond.
+              {t("No replies yet. Be the first to respond.")}
             </p>
           ) : (
             <>
@@ -275,7 +285,9 @@ export default function SupportTicketReplyThread({
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <Textarea
-            placeholder={`Write a reply to ${replyTarget.name}…`}
+            placeholder={t("Write a reply to {name}…", {
+              name: replyTarget.name,
+            })}
             value={replyBody}
             onChange={(e) => setReplyBody(e.target.value)}
             disabled={createReply.isPending}
@@ -283,8 +295,8 @@ export default function SupportTicketReplyThread({
           />
           <DialogSubmitButton
             isPending={createReply.isPending}
-            pendingLabel="Sending…"
-            label="Send Reply"
+            pendingLabel={t("Sending…")}
+            label={t("Send Reply")}
             icon={Send}
             hue={variant === "violet" ? "violet" : "sky"}
             disabled={!replyBody.trim()}

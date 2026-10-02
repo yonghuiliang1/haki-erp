@@ -17,6 +17,7 @@ import {
   type ExportAccent,
 } from "@/lib/ui/catalog-filter-tokens";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type ExportMenuButtonProps = {
   label: string;
@@ -36,6 +37,7 @@ export function ExportMenuButton({
   className,
   disabled = false,
 }: ExportMenuButtonProps) {
+  const t = useT();
   const styles = EXPORT_MENU_STYLES[accent];
 
   return (
@@ -59,14 +61,14 @@ export function ExportMenuButton({
       <DropdownMenuContent align="end" className={styles.contentClass}>
         <DropdownMenuItem onClick={onExportCsv} className={styles.itemFocusClass}>
           <FiFileText className="mr-2 h-4 w-4" />
-          Export as CSV
+          {t("Export as CSV")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={onExportExcel}
           className={styles.itemFocusClass}
         >
           <FiGrid className="mr-2 h-4 w-4" />
-          Export as Excel
+          {t("Export as Excel")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

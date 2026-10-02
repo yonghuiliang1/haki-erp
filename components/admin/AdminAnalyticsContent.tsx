@@ -65,6 +65,7 @@ import {
 } from "@/components/shared";
 import { ProductThumb } from "@/components/products/ProductOptionRow";
 import { formatStableCurrency, formatClientCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 import type { DashboardStats } from "@/types";
 import ForecastingSection from "@/components/admin/ForecastingSection";
 import {
@@ -101,6 +102,7 @@ export default function AdminAnalyticsContent({
   initialStats,
   initialForecasting,
 }: AdminAnalyticsContentProps = {}) {
+  const t = useT();
   const { toast } = useToast();
   const { user } = useAuth();
   const dashboardQuery = useDashboard(initialStats ?? undefined);
@@ -153,15 +155,16 @@ export default function AdminAnalyticsContent({
         if (res.status === 503) {
           setAiUnavailable(true);
           toast({
-            title: "AI insights not configured",
-            description:
+            title: t("AI insights not configured"),
+            description: t(
               "Set OPENROUTER_API_KEY and/or GROQ_API_KEY in .env to enable AI-powered insights.",
+            ),
             variant: "destructive",
           });
         } else {
           toast({
-            title: "Failed to generate insights",
-            description: (data?.error as string) ?? "Please try again.",
+            title: t("Failed to generate insights"),
+            description: (data?.error as string) ?? t("Please try again."),
             variant: "destructive",
           });
         }
@@ -171,20 +174,20 @@ export default function AdminAnalyticsContent({
       if (text) {
         setAiText(text);
         toast({
-          title: "AI insights generated",
-          description: "Recommendations are ready.",
+          title: t("AI insights generated"),
+          description: t("Recommendations are ready."),
         });
       }
     } catch {
       toast({
-        title: "Failed to generate insights",
-        description: "Network error. Please try again.",
+        title: t("Failed to generate insights"),
+        description: t("Network error. Please try again."),
         variant: "destructive",
       });
     } finally {
       setAiLoading(false);
     }
-  }, [buildAiSummary, toast]);
+  }, [buildAiSummary, toast, t]);
 
   const revenueFromOrders =
     stats?.orderAnalytics?.totalRevenueExcludingCancelled ??
@@ -198,47 +201,51 @@ export default function AdminAnalyticsContent({
           as="h1"
           icon={BarChart3}
           tone="violet"
-          title="Store Analytics & Dashboard (self + client + supplier + other users)"
-          description="Overview, statistics, trends, and AI-powered insights across products, users, suppliers, categories, orders, invoices, warehouses, tickets, and reviews. Store-wide metrics."
+          title={t(
+            "Store Analytics & Dashboard (self + client + supplier + other users)",
+          )}
+          description={t(
+            "Overview, statistics, trends, and AI-powered insights across products, users, suppliers, categories, orders, invoices, warehouses, tickets, and reviews. Store-wide metrics.",
+          )}
           className={DETAIL_PAGE_HEADER_SPACING_CLASS}
         />
 
         {/* Overview cards — REQ-0021 shell-first: titles/icons always visible */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 items-stretch">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={stats?.counts?.products ?? 0}
-            description="Products availability"
+            description={t("Products availability")}
             icon={Package}
             variant="rose"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value: stats?.productStatusBreakdown?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value: stats?.productStatusBreakdown?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value: stats?.productStatusBreakdown?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Value"
+            title={t("Total Value")}
             value={formatCurrency(stats?.totalInventoryValue ?? 0)}
-            description="Total inventory value"
+            description={t("Total inventory value")}
             icon={DollarSign}
             variant="violet"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Orders",
+                label: t("Orders"),
                 value: formatCurrency(
                   stats?.orderAnalytics?.totalRevenueExcludingCancelled ??
                     stats?.revenue?.fromOrders ??
@@ -246,17 +253,17 @@ export default function AdminAnalyticsContent({
                 ),
               },
               {
-                label: "Invoices",
+                label: t("Invoices"),
                 value: formatCurrency(stats?.revenue?.fromInvoices ?? 0),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   stats?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
               },
               {
-                label: "Cancelled",
+                label: t("Cancelled"),
                 value: formatCurrency(
                   stats?.orderAnalytics?.cancelledOrderAmount ?? 0,
                 ),
@@ -264,40 +271,40 @@ export default function AdminAnalyticsContent({
             ]}
           />
           <StatisticsCard
-            title="Total Revenue"
+            title={t("Total Revenue")}
             value={formatCurrency(revenueFromOrders)}
-            description="Profits (excl. cancelled)"
+            description={t("Profits (excl. cancelled)")}
             icon={DollarSign}
             variant="emerald"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Paid",
+                label: t("Paid"),
                 value: formatCurrency(
                   stats?.orderAnalytics?.paidOrderAmount ?? 0,
                 ),
               },
               {
-                label: "Partial",
+                label: t("Partial"),
                 value: formatCurrency(
                   stats?.orderAnalytics?.partialOrderAmount ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   stats?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
               },
               {
-                label: "Refund",
+                label: t("Refund"),
                 value: formatCurrency(
                   stats?.orderAnalytics?.refundedAmount ?? 0,
                 ),
               },
               {
-                label: "Pending",
+                label: t("Pending"),
                 value: formatCurrency(
                   stats?.orderAnalytics?.pendingOrderAmount ?? 0,
                 ),
@@ -305,9 +312,9 @@ export default function AdminAnalyticsContent({
             ]}
           />
           <StatisticsCard
-            title="Total Orders"
+            title={t("Total Orders")}
             value={stats?.counts?.orders ?? 0}
-            description="Total orders placed (self + client)"
+            description={t("Total orders placed (self + client)")}
             icon={ShoppingCart}
             variant="blue"
             valueLoading={dataLoading}
@@ -318,70 +325,70 @@ export default function AdminAnalyticsContent({
             })}
           />
           <StatisticsCard
-            title="Total Users"
+            title={t("Total Users")}
             value={stats?.counts?.users ?? 0}
-            description="Registered users"
+            description={t("Registered users")}
             icon={Users}
             variant="amber"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Admin",
+                label: t("Admin"),
                 value: stats?.userRoleBreakdown?.admin ?? 0,
               },
               {
-                label: "Client",
+                label: t("Client"),
                 value: stats?.userRoleBreakdown?.client ?? 0,
               },
               {
-                label: "Supplier",
+                label: t("Supplier"),
                 value: stats?.userRoleBreakdown?.supplier ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Suppliers"
+            title={t("Total Suppliers")}
             value={stats?.counts?.suppliers ?? 0}
-            description="Suppliers"
+            description={t("Suppliers")}
             icon={Truck}
             variant="emerald"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: stats?.supplierStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value: stats?.supplierStatusBreakdown?.inactive ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Warehouses"
+            title={t("Total Warehouses")}
             value={stats?.counts?.warehouses ?? 0}
-            description="Storage locations"
+            description={t("Storage locations")}
             icon={Warehouse}
             variant="teal"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: stats?.warehouseAnalytics?.activeWarehouses ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value: stats?.warehouseAnalytics?.inactiveWarehouses ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Invoices"
+            title={t("Invoices")}
             value={stats?.counts?.invoices ?? 0}
-            description="Total invoices (store-wide)"
+            description={t("Total invoices (store-wide)")}
             icon={FileText}
             variant="sky"
             valueLoading={dataLoading}
@@ -401,93 +408,93 @@ export default function AdminAnalyticsContent({
             })}
           />
           <StatisticsCard
-            title="Categories"
+            title={t("Categories")}
             value={stats?.counts?.categories ?? 0}
-            description="Product categories"
+            description={t("Product categories")}
             icon={FolderTree}
             variant="amber"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: stats?.categoryStatusBreakdown?.active ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value: stats?.categoryStatusBreakdown?.inactive ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Support Tickets"
+            title={t("Support Tickets")}
             value={stats?.counts?.tickets ?? 0}
-            description="Tickets"
+            description={t("Tickets")}
             icon={MessageSquare}
             variant="rose"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Open",
+                label: t("Open"),
                 value: stats?.ticketStatusBreakdown?.open ?? 0,
               },
               {
-                label: "In progress",
+                label: t("In progress"),
                 value: stats?.ticketStatusBreakdown?.in_progress ?? 0,
               },
               {
-                label: "Resolved",
+                label: t("Resolved"),
                 value: stats?.ticketStatusBreakdown?.resolved ?? 0,
               },
               {
-                label: "Closed",
+                label: t("Closed"),
                 value: stats?.ticketStatusBreakdown?.closed ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Reviews"
+            title={t("Reviews")}
             value={stats?.counts?.reviews ?? 0}
-            description="Product reviews"
+            description={t("Product reviews")}
             icon={Star}
             variant="orange"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Pending",
+                label: t("Pending"),
                 value: stats?.reviewStatusBreakdown?.pending ?? 0,
               },
               {
-                label: "Approved",
+                label: t("Approved"),
                 value: stats?.reviewStatusBreakdown?.approved ?? 0,
               },
               {
-                label: "Rejected",
+                label: t("Rejected"),
                 value: stats?.reviewStatusBreakdown?.rejected ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Average Order Value"
+            title={t("Average Order Value")}
             value={formatCurrency(
               stats?.orderAnalytics?.averageOrderValue ?? 0,
             )}
-            description="Per order (store-wide)"
+            description={t("Per order (store-wide)")}
             icon={DollarSign}
             variant="sky"
             valueLoading={dataLoading}
             badgeValuesLoading={dataLoading}
             badges={[
               {
-                label: "Paid revenue",
+                label: t("Paid revenue"),
                 value: formatCurrency(
                   stats?.invoiceAnalytics?.paidRevenue ?? 0,
                 ),
               },
               {
-                label: "Due",
+                label: t("Due"),
                 value: formatCurrency(
                   stats?.invoiceAnalytics?.outstandingAmount ?? 0,
                 ),
@@ -501,9 +508,11 @@ export default function AdminAnalyticsContent({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             <ChartCard
               variant="sky"
-              title="Orders & revenue over time"
+              title={t("Orders & revenue over time")}
               icon={BarChart3}
-              description="Last 12 months. Revenue = order totals (excl. cancelled)."
+              description={t(
+                "Last 12 months. Revenue = order totals (excl. cancelled).",
+              )}
             >
               <DeferredChartSection
                 loading={dataLoading}
@@ -551,8 +560,8 @@ export default function AdminAnalyticsContent({
                           ? formatClientCurrency(Number(value ?? 0))
                           : (value ?? 0),
                         name === "revenue"
-                          ? "Order revenue (excl. cancelled)"
-                          : "Orders",
+                          ? t("Order revenue (excl. cancelled)")
+                          : t("Orders"),
                       ]}
                       labelFormatter={(label) => label}
                     />
@@ -587,9 +596,9 @@ export default function AdminAnalyticsContent({
             </ChartCard>
             <ChartCard
               variant="violet"
-              title="New products & invoices"
+              title={t("New products & invoices")}
               icon={TrendingUp}
-              description="Last 12 months"
+              description={t("Last 12 months")}
             >
               <DeferredChartSection
                 loading={dataLoading}
@@ -628,14 +637,14 @@ export default function AdminAnalyticsContent({
                     <Bar
                       dataKey="products"
                       fill="hsl(var(--chart-1))"
-                      name="Products"
+                      name={t("Products")}
                       radius={[4, 4, 0, 0]}
                       label={createChartBarLabelRenderer(formatChartCountLabel)}
                     />
                     <Bar
                       dataKey="invoices"
                       fill="hsl(var(--chart-2))"
-                      name="Invoices"
+                      name={t("Invoices")}
                       radius={[4, 4, 0, 0]}
                       label={createChartBarLabelRenderer(formatChartCountLabel)}
                     />
@@ -651,27 +660,27 @@ export default function AdminAnalyticsContent({
           <div className="flex flex-col gap-6">
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-sky-600" />
-              Order Analytics
+              {t("Order Analytics")}
             </h2>
 
             {/* Summary cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <StatisticsCard
-                title="Average Order Value"
+                title={t("Average Order Value")}
                 value={formatCurrency(stats.orderAnalytics.averageOrderValue)}
-                description="Per order (incl. cancelled)"
+                description={t("Per order (incl. cancelled)")}
                 icon={DollarSign}
                 variant="emerald"
                 badges={[
-                  { label: "Orders", value: stats.counts?.orders },
+                  { label: t("Orders"), value: stats.counts?.orders },
                   {
-                    label: "Excl. cancelled",
+                    label: t("Excl. cancelled"),
                     value:
                       stats.counts?.orders -
                       (stats.orderAnalytics.statusDistribution.cancelled ?? 0),
                   },
                   {
-                    label: "Avg (excl.)",
+                    label: t("Avg (excl.)"),
                     value:
                       stats.counts?.orders -
                         (stats.orderAnalytics.statusDistribution.cancelled ??
@@ -689,47 +698,47 @@ export default function AdminAnalyticsContent({
                 ]}
               />
               <StatisticsCard
-                title="Total Order Revenue"
+                title={t("Total Order Revenue")}
                 value={formatCurrency(
                   stats.orderAnalytics.totalRevenueExcludingCancelled ??
                     stats.orderAnalytics.totalRevenue,
                 )}
-                description="Profits (excl. cancelled)"
+                description={t("Profits (excl. cancelled)")}
                 icon={DollarSign}
                 variant="sky"
                 badges={[
                   {
-                    label: "Paid",
+                    label: t("Paid"),
                     value: formatCurrency(
                       stats.orderAnalytics.paidOrderAmount ?? 0,
                     ),
                   },
                   {
-                    label: "Partial",
+                    label: t("Partial"),
                     value: formatCurrency(
                       stats.orderAnalytics.partialOrderAmount ?? 0,
                     ),
                   },
                   {
-                    label: "Due",
+                    label: t("Due"),
                     value: formatCurrency(
                       stats.invoiceAnalytics?.outstandingAmount ?? 0,
                     ),
                   },
                   {
-                    label: "Refund",
+                    label: t("Refund"),
                     value: formatCurrency(
                       stats.orderAnalytics.refundedAmount ?? 0,
                     ),
                   },
                   {
-                    label: "Pending",
+                    label: t("Pending"),
                     value: formatCurrency(
                       stats.orderAnalytics.pendingOrderAmount ?? 0,
                     ),
                   },
                   {
-                    label: "Cancelled",
+                    label: t("Cancelled"),
                     value: formatCurrency(
                       stats.orderAnalytics.cancelledOrderAmount ?? 0,
                     ),
@@ -737,37 +746,37 @@ export default function AdminAnalyticsContent({
                 ]}
               />
               <StatisticsCard
-                title="Completed Orders"
+                title={t("Completed Orders")}
                 value={stats.orderAnalytics.statusDistribution.delivered}
-                description="Delivered"
+                description={t("Delivered")}
                 icon={ShoppingCart}
                 variant="blue"
                 badges={[
                   {
-                    label: "Pending",
+                    label: t("Pending"),
                     value: stats.orderAnalytics.statusDistribution.pending,
                   },
                   {
-                    label: "Confirmed",
+                    label: t("Confirmed"),
                     value: stats.orderAnalytics.statusDistribution.confirmed,
                   },
                   {
-                    label: "Shipping",
+                    label: t("Shipping"),
                     value:
                       (stats.orderAnalytics.statusDistribution.processing ??
                         0) +
                       (stats.orderAnalytics.statusDistribution.shipped ?? 0),
                   },
                   {
-                    label: "Delivered",
+                    label: t("Delivered"),
                     value: stats.orderAnalytics.statusDistribution.delivered,
                   },
                   {
-                    label: "Refunded",
+                    label: t("Refunded"),
                     value: stats.orderAnalytics.refundedCount ?? 0,
                   },
                   {
-                    label: "Cancelled",
+                    label: t("Cancelled"),
                     value: stats.orderAnalytics.statusDistribution.cancelled,
                   },
                 ]}
@@ -778,46 +787,46 @@ export default function AdminAnalyticsContent({
               {/* Order Status Distribution */}
               <ChartCard
                 variant="sky"
-                title="Order Status Distribution"
+                title={t("Order Status Distribution")}
                 icon={BarChart3}
-                description="Store-wide"
+                description={t("Store-wide")}
               >
                 <DeferredChartSection loading={dataLoading} hasData={!!stats}>
                   <ResponsiveChartContainer>
                     <BarChart
                       data={[
                         {
-                          status: "Pending",
+                          status: t("Pending"),
                           count:
                             stats.orderAnalytics.statusDistribution.pending,
                           fill: "hsl(45, 93%, 47%)",
                         },
                         {
-                          status: "Confirmed",
+                          status: t("Confirmed"),
                           count:
                             stats.orderAnalytics.statusDistribution.confirmed,
                           fill: "hsl(142, 76%, 36%)",
                         },
                         {
-                          status: "Processing",
+                          status: t("Processing"),
                           count:
                             stats.orderAnalytics.statusDistribution.processing,
                           fill: "hsl(217, 91%, 60%)",
                         },
                         {
-                          status: "Shipped",
+                          status: t("Shipped"),
                           count:
                             stats.orderAnalytics.statusDistribution.shipped,
                           fill: "hsl(199, 89%, 48%)",
                         },
                         {
-                          status: "Delivered",
+                          status: t("Delivered"),
                           count:
                             stats.orderAnalytics.statusDistribution.delivered,
                           fill: "hsl(142, 71%, 45%)",
                         },
                         {
-                          status: "Cancelled",
+                          status: t("Cancelled"),
                           count:
                             stats.orderAnalytics.statusDistribution.cancelled,
                           fill: "hsl(0, 84%, 60%)",
@@ -854,7 +863,7 @@ export default function AdminAnalyticsContent({
                           border: "1px solid hsl(var(--border))",
                           borderRadius: "8px",
                         }}
-                        formatter={(value) => [value, "Orders"]}
+                        formatter={(value) => [value, t("Orders")]}
                       />
                       <Bar
                         dataKey="count"
@@ -871,13 +880,15 @@ export default function AdminAnalyticsContent({
               {/* Top Products by Orders — Orders = order lines; Revenue = sum of line subtotals (qty × price) */}
               <ChartCard
                 variant="teal"
-                title="Top 5 Products by Orders"
+                title={t("Top 5 Products by Orders")}
                 icon={Package}
-                description="Store-wide. Revenue = sum of order line subtotals."
+                description={t(
+                  "Store-wide. Revenue = sum of order line subtotals.",
+                )}
               >
                 {stats.orderAnalytics.topProducts.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    No order data yet
+                    {t("No order data yet")}
                   </p>
                 ) : (
                   <div className="overflow-x-auto">
@@ -885,19 +896,19 @@ export default function AdminAnalyticsContent({
                       <thead>
                         <tr className="border-b text-left">
                           <th className="py-2 pr-4 text-gray-700 dark:text-white font-medium">
-                            Product
+                            {t("Product")}
                           </th>
                           <th
                             className="py-2 pr-4 text-right text-gray-700 dark:text-white font-medium"
-                            title="Number of order lines"
+                            title={t("Number of order lines")}
                           >
-                            Lines
+                            {t("Lines")}
                           </th>
                           <th className="py-2 pr-4 text-right text-gray-700 dark:text-white font-medium">
-                            Qty
+                            {t("Qty")}
                           </th>
                           <th className="py-2 text-right text-gray-700 dark:text-white font-medium">
-                            Revenue
+                            {t("Revenue")}
                           </th>
                         </tr>
                       </thead>
@@ -945,37 +956,37 @@ export default function AdminAnalyticsContent({
           <div className="flex flex-col gap-6">
             <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white flex items-center gap-2">
               <FileText className="h-5 w-5 text-amber-600" />
-              Invoice Analytics
+              {t("Invoice Analytics")}
             </h2>
 
             {/* Summary cards — 4 cards: 2 per row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 items-stretch">
               <StatisticsCard
-                title="Avg Invoice Value"
+                title={t("Avg Invoice Value")}
                 value={formatCurrency(
                   stats.invoiceAnalytics
                     .averageInvoiceValueExcludingCancelled ??
                     stats.invoiceAnalytics.averageInvoiceValue,
                 )}
-                description="Per invoice (excl. cancelled)"
+                description={t("Per invoice (excl. cancelled)")}
                 icon={DollarSign}
                 variant="amber"
                 badges={[
-                  { label: "Invoices", value: stats.counts?.invoices },
+                  { label: t("Invoices"), value: stats.counts?.invoices },
                   {
-                    label: "Excl. cancelled",
+                    label: t("Excl. cancelled"),
                     value:
                       stats.counts?.invoices -
                       (stats.invoiceAnalytics.statusDistribution.cancelled ??
                         0),
                   },
                   {
-                    label: "Cancelled",
+                    label: t("Cancelled"),
                     value:
                       stats.invoiceAnalytics.statusDistribution.cancelled ?? 0,
                   },
                   {
-                    label: "Total (excl.)",
+                    label: t("Total (excl.)"),
                     value: formatCurrency(
                       stats.invoiceAnalytics.totalExcludingCancelled ?? 0,
                     ),
@@ -983,83 +994,83 @@ export default function AdminAnalyticsContent({
                 ]}
               />
               <StatisticsCard
-                title="Paid Revenue"
+                title={t("Paid Revenue")}
                 value={formatCurrency(stats.invoiceAnalytics.paidRevenue)}
-                description="Collected"
+                description={t("Collected")}
                 icon={DollarSign}
                 variant="emerald"
                 badges={[
                   {
-                    label: "Paid",
+                    label: t("Paid"),
                     value: stats.invoiceAnalytics.statusDistribution.paid ?? 0,
                   },
                   {
-                    label: "Partial",
+                    label: t("Partial"),
                     value: stats.invoiceAnalytics.partialCount ?? 0,
                   },
                   {
-                    label: "Pending",
+                    label: t("Pending"),
                     value:
                       stats.invoiceAnalytics.pendingCount ??
                       (stats.invoiceAnalytics.statusDistribution.draft ?? 0) +
                         (stats.invoiceAnalytics.statusDistribution.sent ?? 0),
                   },
                   {
-                    label: "Cancelled",
+                    label: t("Cancelled"),
                     value:
                       stats.invoiceAnalytics.statusDistribution.cancelled ?? 0,
                   },
                 ]}
               />
               <StatisticsCard
-                title="Due"
+                title={t("Due")}
                 value={formatCurrency(stats.invoiceAnalytics.outstandingAmount)}
-                description="Awaiting payment"
+                description={t("Awaiting payment")}
                 icon={FileText}
                 variant="sky"
                 badges={[
                   {
-                    label: "Draft",
+                    label: t("Draft"),
                     value: stats.invoiceAnalytics.statusDistribution.draft ?? 0,
                   },
                   {
-                    label: "Sent",
+                    label: t("Sent"),
                     value: stats.invoiceAnalytics.statusDistribution.sent ?? 0,
                   },
                   {
-                    label: "Overdue",
+                    label: t("Overdue"),
                     value:
                       stats.invoiceAnalytics.statusDistribution.overdue ?? 0,
                   },
                   {
-                    label: "Cancelled",
+                    label: t("Cancelled"),
                     value:
                       stats.invoiceAnalytics.statusDistribution.cancelled ?? 0,
                   },
                 ]}
               />
               <StatisticsCard
-                title="Overdue"
+                title={t("Overdue")}
                 value={formatCurrency(stats.invoiceAnalytics.overdueAmount)}
-                description="Past due date"
+                description={t("Past due date")}
                 icon={FileText}
                 variant="rose"
                 badges={[
                   {
-                    label: "Overdue",
+                    label: t("Overdue"),
                     value:
                       stats.invoiceAnalytics.statusDistribution.overdue ?? 0,
                   },
                   {
-                    label: "Amount",
+                    label: t("Amount"),
                     value: formatCurrency(stats.invoiceAnalytics.overdueAmount),
                   },
                   {
-                    label: "Paid",
+                    label: t("Paid"),
                     value: stats.invoiceAnalytics.statusDistribution.paid ?? 0,
                   },
                   {
-                    label: "Cancelled",
+                    label: t("Cancelled"),
                     value:
                       stats.invoiceAnalytics.statusDistribution.cancelled ?? 0,
                   },
@@ -1070,37 +1081,37 @@ export default function AdminAnalyticsContent({
             {/* Invoice Status Distribution */}
             <ChartCard
               variant="amber"
-              title="Invoice Status Distribution"
+              title={t("Invoice Status Distribution")}
               icon={FileText}
-              description="Store-wide"
+              description={t("Store-wide")}
             >
               <DeferredChartSection loading={dataLoading} hasData={!!stats}>
                 <ResponsiveChartContainer>
                   <BarChart
                     data={[
                       {
-                        status: "Draft",
+                        status: t("Draft"),
                         count: stats.invoiceAnalytics.statusDistribution.draft,
                         fill: "hsl(220, 9%, 46%)",
                       },
                       {
-                        status: "Sent",
+                        status: t("Sent"),
                         count: stats.invoiceAnalytics.statusDistribution.sent,
                         fill: "hsl(217, 91%, 60%)",
                       },
                       {
-                        status: "Paid",
+                        status: t("Paid"),
                         count: stats.invoiceAnalytics.statusDistribution.paid,
                         fill: "hsl(142, 71%, 45%)",
                       },
                       {
-                        status: "Overdue",
+                        status: t("Overdue"),
                         count:
                           stats.invoiceAnalytics.statusDistribution.overdue,
                         fill: "hsl(0, 84%, 60%)",
                       },
                       {
-                        status: "Cancelled",
+                        status: t("Cancelled"),
                         count:
                           stats.invoiceAnalytics.statusDistribution.cancelled,
                         fill: "hsl(0, 0%, 45%)",
@@ -1137,7 +1148,7 @@ export default function AdminAnalyticsContent({
                         border: "1px solid hsl(var(--border))",
                         borderRadius: "8px",
                       }}
-                      formatter={(value) => [value, "Invoices"]}
+                      formatter={(value) => [value, t("Invoices")]}
                     />
                     <Bar
                       dataKey="count"
@@ -1176,47 +1187,47 @@ export default function AdminAnalyticsContent({
               { key: "store", label: "Store" },
               { key: "others", label: "Others" },
             ].map(({ key, label }) => ({
-              label,
+              label: t(label),
               value: key === "others" ? othersCount : (typeMap.get(key) ?? 0),
             }));
             return (
               <div className="flex flex-col gap-6">
                 <h2 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white flex items-center gap-2">
                   <Warehouse className="h-5 w-5 text-amber-500" />
-                  Warehouse Analytics
+                  {t("Warehouse Analytics")}
                 </h2>
 
                 {/* Summary cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <StatisticsCard
-                    title="Total Warehouses"
+                    title={t("Total Warehouses")}
                     value={stats.warehouseAnalytics.totalWarehouses}
-                    description="All locations"
+                    description={t("All locations")}
                     icon={Warehouse}
                     variant="teal"
                     badges={[
                       {
-                        label: "Active",
+                        label: t("Active"),
                         value: stats.warehouseAnalytics.activeWarehouses,
                       },
                       {
-                        label: "Inactive",
+                        label: t("Inactive"),
                         value: stats.warehouseAnalytics.inactiveWarehouses,
                       },
                     ]}
                   />
                   <StatisticsCard
-                    title="Active Warehouses"
+                    title={t("Active Warehouses")}
                     value={stats.warehouseAnalytics.activeWarehouses}
-                    description="Operational"
+                    description={t("Operational")}
                     icon={Warehouse}
                     variant="emerald"
                     badges={warehouseTypeBadges}
                   />
                   <StatisticsCard
-                    title="Inactive Warehouses"
+                    title={t("Inactive Warehouses")}
                     value={stats.warehouseAnalytics.inactiveWarehouses}
-                    description="Not in use"
+                    description={t("Not in use")}
                     icon={Warehouse}
                     variant="rose"
                     badges={warehouseTypeBadges}
@@ -1227,9 +1238,9 @@ export default function AdminAnalyticsContent({
                 {stats.warehouseAnalytics.typeDistribution.length > 0 && (
                   <ChartCard
                     variant="teal"
-                    title="Warehouses by Type"
+                    title={t("Warehouses by Type")}
                     icon={Warehouse}
-                    description="Store-wide"
+                    description={t("Store-wide")}
                   >
                     <DeferredChartSection
                       loading={dataLoading}
@@ -1277,7 +1288,7 @@ export default function AdminAnalyticsContent({
                               border: "1px solid hsl(var(--border))",
                               borderRadius: "8px",
                             }}
-                            formatter={(value) => [value, "Warehouses"]}
+                            formatter={(value) => [value, t("Warehouses")]}
                           />
                           <Bar
                             dataKey="count"
@@ -1300,13 +1311,13 @@ export default function AdminAnalyticsContent({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 items-stretch">
             <ChartCard
               variant="sky"
-              title="Recent Orders"
+              title={t("Recent Orders")}
               icon={ShoppingCart}
-              description="Latest 5"
+              description={t("Latest 5")}
             >
               <div className="flex flex-col flex-1 min-h-[140px] gap-2">
                 {stats.recent.orders.length === 0 ? (
-                  <p className={CARD_EMPTY_MESSAGE_CLASS}>No orders yet</p>
+                  <p className={CARD_EMPTY_MESSAGE_CLASS}>{t("No orders yet")}</p>
                 ) : (
                   <ul className={CARD_LIST_DIVIDE_CLASS}>
                     {stats.recent.orders.slice(0, 5).map((o) => {
@@ -1441,7 +1452,7 @@ export default function AdminAnalyticsContent({
                   >
                     <Link href="/admin/orders">
                       <ArrowRight className="h-4 w-4 shrink-0" />
-                      View All Orders
+                      {t("View All Orders")}
                     </Link>
                   </Button>
                 </div>
@@ -1449,13 +1460,13 @@ export default function AdminAnalyticsContent({
             </ChartCard>
             <ChartCard
               variant="rose"
-              title="Recent Tickets"
+              title={t("Recent Tickets")}
               icon={MessageSquare}
-              description="Latest 5"
+              description={t("Latest 5")}
             >
               <div className="flex flex-col flex-1 min-h-[140px] gap-2">
                 {stats.recent.tickets.length === 0 ? (
-                  <p className={CARD_EMPTY_MESSAGE_CLASS}>No tickets yet</p>
+                  <p className={CARD_EMPTY_MESSAGE_CLASS}>{t("No tickets yet")}</p>
                 ) : (
                   <ul className={CARD_LIST_DIVIDE_CLASS}>
                     {stats.recent.tickets.slice(0, 5).map((t) => (
@@ -1505,7 +1516,7 @@ export default function AdminAnalyticsContent({
                   >
                     <Link href="/admin/support-tickets">
                       <ArrowRight className="h-4 w-4 shrink-0" />
-                      View All Tickets
+                      {t("View All Tickets")}
                     </Link>
                   </Button>
                 </div>
@@ -1513,13 +1524,13 @@ export default function AdminAnalyticsContent({
             </ChartCard>
             <ChartCard
               variant="orange"
-              title="Recent Reviews"
+              title={t("Recent Reviews")}
               icon={Star}
-              description="Latest 5"
+              description={t("Latest 5")}
             >
               <div className="flex flex-col flex-1 min-h-[140px] gap-2">
                 {stats.recent.reviews.length === 0 ? (
-                  <p className={CARD_EMPTY_MESSAGE_CLASS}>No reviews yet</p>
+                  <p className={CARD_EMPTY_MESSAGE_CLASS}>{t("No reviews yet")}</p>
                 ) : (
                   <ul className={CARD_LIST_DIVIDE_CLASS}>
                     {stats.recent.reviews.slice(0, 5).map((r) => (
@@ -1608,7 +1619,7 @@ export default function AdminAnalyticsContent({
                   >
                     <Link href="/admin/product-reviews">
                       <ArrowRight className="h-4 w-4 shrink-0" />
-                      View All Reviews
+                      {t("View All Reviews")}
                     </Link>
                   </Button>
                 </div>
@@ -1616,13 +1627,13 @@ export default function AdminAnalyticsContent({
             </ChartCard>
             <ChartCard
               variant="blue"
-              title="Recent Imports"
+              title={t("Recent Imports")}
               icon={BarChart3}
-              description="Latest 5"
+              description={t("Latest 5")}
             >
               <div className="flex flex-col flex-1 min-h-[140px] gap-2">
                 {stats.recent.imports.length === 0 ? (
-                  <p className={CARD_EMPTY_MESSAGE_CLASS}>No imports yet</p>
+                  <p className={CARD_EMPTY_MESSAGE_CLASS}>{t("No imports yet")}</p>
                 ) : (
                   <ul className={CARD_LIST_DIVIDE_CLASS}>
                     {stats.recent.imports.slice(0, 5).map((im) => (
@@ -1652,7 +1663,10 @@ export default function AdminAnalyticsContent({
                             />
                             <span aria-hidden>·</span>
                             <span>
-                              {im.successRows} ok, {im.failedRows} failed
+                              {t("{ok} ok, {failed} failed", {
+                                ok: im.successRows,
+                                failed: im.failedRows,
+                              })}
                             </span>
                           </div>
                         </div>
@@ -1675,7 +1689,7 @@ export default function AdminAnalyticsContent({
                   >
                     <Link href="/admin/activity-history">
                       <ArrowRight className="h-4 w-4 shrink-0" />
-                      View All Imports
+                      {t("View All Imports")}
                     </Link>
                   </Button>
                 </div>
@@ -1687,9 +1701,11 @@ export default function AdminAnalyticsContent({
         {/* AI insights */}
         <ChartCard
           variant="violet"
-          title="AI-powered insights"
+          title={t("AI-powered insights")}
           icon={Sparkles}
-          description="Generate recommendations based on overview, growth, and activity."
+          description={t(
+            "Generate recommendations based on overview, growth, and activity.",
+          )}
         >
           <div className="flex flex-col gap-4">
             <Button
@@ -1708,19 +1724,20 @@ export default function AdminAnalyticsContent({
                     className="h-4 w-4 shrink-0 animate-spin"
                     aria-hidden
                   />
-                  Generating insights…
+                  {t("Generating insights…")}
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 shrink-0" aria-hidden />
-                  Generate insights
+                  {t("Generate insights")}
                 </>
               )}
             </Button>
             {aiUnavailable && (
               <p className="text-sm text-muted-foreground">
-                AI insights require OPENROUTER_API_KEY and/or GROQ_API_KEY. Set
-                in .env to enable.
+                {t(
+                  "AI insights require OPENROUTER_API_KEY and/or GROQ_API_KEY. Set in .env to enable.",
+                )}
               </p>
             )}
             {aiText && (
@@ -1730,8 +1747,9 @@ export default function AdminAnalyticsContent({
             )}
             {!aiUnavailable && !aiText && !aiLoading && (
               <p className="text-sm text-muted-foreground">
-                Click &quot;Generate insights&quot; to get AI recommendations
-                from your dashboard data.
+                {t(
+                  'Click "Generate insights" to get AI recommendations from your dashboard data.',
+                )}
               </p>
             )}
           </div>
@@ -1740,9 +1758,9 @@ export default function AdminAnalyticsContent({
         {/* Demand Forecasting — sibling of AI insights; parent gap-6 owns section spacing */}
         <ChartCard
           variant="emerald"
-          title="Demand Forecasting & Predictions"
+          title={t("Demand Forecasting & Predictions")}
           icon={TrendingUp}
-          description="Store-wide"
+          description={t("Store-wide")}
         >
           <ForecastingSection initialForecasting={initialForecasting} />
         </ChartCard>

@@ -54,6 +54,7 @@ import {
   type AdminEmbedColumn,
 } from "@/components/admin/AdminEmbedDataTable";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type AdminSupplierPortalContentProps = {
   initialStats?: SupplierPortalStats | null;
@@ -62,6 +63,7 @@ export type AdminSupplierPortalContentProps = {
 export default function AdminSupplierPortalContent({
   initialStats,
 }: AdminSupplierPortalContentProps = {}) {
+  const t = useT();
   const portalQuery = useSupplierPortal(initialStats ?? undefined);
   const stats = portalQuery.data ?? initialStats ?? null;
   const dataLoading = isDataSlotUnsettled(portalQuery, initialStats);
@@ -75,7 +77,7 @@ export default function AdminSupplierPortalContent({
     () => [
       {
         id: "name",
-        header: "Name",
+        header: t("Name"),
         render: (s) => (
           <AvatarInlineLink
             label={s.name}
@@ -89,7 +91,7 @@ export default function AdminSupplierPortalContent({
       },
       {
         id: "email",
-        header: "Email",
+        header: t("Email"),
         headerClassName: "hidden sm:table-cell",
         cellClassName:
           "hidden sm:table-cell text-gray-600 dark:text-gray-300 truncate max-w-[200px]",
@@ -97,27 +99,27 @@ export default function AdminSupplierPortalContent({
       },
       {
         id: "products",
-        header: "Products",
+        header: t("Products"),
         headerClassName: "text-right",
         cellClassName: "text-right text-gray-700 dark:text-white",
         render: (s) => s.productCount,
       },
       {
         id: "orders",
-        header: "Orders",
+        header: t("Orders"),
         headerClassName: "text-right",
         cellClassName: "text-right text-gray-700 dark:text-white",
         render: (s) => s.orderCount,
       },
       {
         id: "inventory",
-        header: "Inventory Value",
+        header: t("Inventory Value"),
         headerClassName: "text-right",
         cellClassName: "text-right text-gray-700 dark:text-white",
         render: (s) => formatStableCurrency(s.totalValue),
       },
     ],
-    [],
+    [t],
   );
 
   return (
@@ -129,47 +131,49 @@ export default function AdminSupplierPortalContent({
           tone="teal"
           title={
             <span className="inline-flex flex-wrap items-center gap-2">
-              Supplier Portal
+              {t("Supplier Portal")}
               <SectionCountBadge>
                 {stats?.counts?.suppliers ?? 0}
               </SectionCountBadge>
             </span>
           }
-          description="Overview of supplier entities, their products, orders, and activity."
+          description={t(
+            "Overview of supplier entities, their products, orders, and activity.",
+          )}
           className={DETAIL_PAGE_HEADER_SPACING_CLASS}
         />
 
         {/* Summary cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 items-stretch">
           <AnalyticsCard
-            title="Suppliers"
+            title={t("Suppliers")}
             value={stats?.counts?.suppliers ?? 0}
             icon={Truck}
-            description="Supplier entities"
+            description={t("Supplier entities")}
             variant="violet"
             valueLoading={dataLoading}
           />
           <AnalyticsCard
-            title="Products"
+            title={t("Products")}
             value={stats?.counts?.products ?? 0}
             icon={Package}
-            description="From all suppliers"
+            description={t("From all suppliers")}
             variant="sky"
             valueLoading={dataLoading}
           />
           <AnalyticsCard
-            title="Orders"
+            title={t("Orders")}
             value={stats?.counts?.orders ?? 0}
             icon={ShoppingCart}
-            description="Containing supplier products"
+            description={t("Containing supplier products")}
             variant="emerald"
             valueLoading={dataLoading}
           />
           <AnalyticsCard
-            title="Inventory Value"
+            title={t("Inventory Value")}
             value={formatStableCurrency(stats?.counts?.totalValue ?? 0)}
             icon={DollarSign}
-            description="Total product value"
+            description={t("Total product value")}
             variant="amber"
             valueLoading={dataLoading}
           />
@@ -180,8 +184,8 @@ export default function AdminSupplierPortalContent({
           {/* Recent products — REQ-0177 densify + SectionCardHeader */}
           <GlassCard padding="body" variant="sky">
             <SectionCardHeader
-              title="Recent Supplier Products"
-              description="Last 10 products from suppliers"
+              title={t("Recent Supplier Products")}
+              description={t("Last 10 products from suppliers")}
               icon={Package}
               tone="sky"
               className="mb-4"
@@ -197,7 +201,7 @@ export default function AdminSupplierPortalContent({
               </ul>
             ) : (stats?.recentProducts?.length ?? 0) === 0 ? (
               <p className={CARD_EMPTY_MESSAGE_CLASS}>
-                No supplier products yet.
+                {t("No supplier products yet.")}
               </p>
             ) : (
               <ul className={CARD_LIST_DIVIDE_CLASS}>
@@ -254,7 +258,7 @@ export default function AdminSupplierPortalContent({
                                   className="h-3 w-3 shrink-0 text-gray-500 dark:text-gray-400"
                                   aria-hidden
                                 />
-                                <span>{reserved} reserved</span>
+                                <span>{t("{count} reserved", { count: reserved })}</span>
                               </span>
                             </>
                           ) : null}
@@ -315,7 +319,7 @@ export default function AdminSupplierPortalContent({
               >
                 <Link href="/admin/products">
                   <ArrowRight className="h-4 w-4 shrink-0" />
-                  View All Products
+                  {t("View All Products")}
                 </Link>
               </Button>
             </div>
@@ -324,8 +328,8 @@ export default function AdminSupplierPortalContent({
           {/* Recent orders — REQ-0177 product meta + date-first */}
           <GlassCard padding="body" variant="emerald">
             <SectionCardHeader
-              title="Recent Supplier Orders"
-              description="Last 10 orders containing supplier products"
+              title={t("Recent Supplier Orders")}
+              description={t("Last 10 orders containing supplier products")}
               icon={ShoppingCart}
               tone="emerald"
               className="mb-4"
@@ -341,7 +345,7 @@ export default function AdminSupplierPortalContent({
               </ul>
             ) : (stats?.recentOrders?.length ?? 0) === 0 ? (
               <p className={CARD_EMPTY_MESSAGE_CLASS}>
-                No supplier orders yet.
+                {t("No supplier orders yet.")}
               </p>
             ) : (
               <ul className={CARD_LIST_DIVIDE_CLASS}>
@@ -479,7 +483,7 @@ export default function AdminSupplierPortalContent({
               >
                 <Link href="/admin/orders">
                   <ArrowRight className="h-4 w-4 shrink-0" />
-                  View All Orders
+                  {t("View All Orders")}
                 </Link>
               </Button>
             </div>
@@ -489,8 +493,10 @@ export default function AdminSupplierPortalContent({
         {/* Suppliers table — glassmorphic card */}
         <GlassCard padding="body" variant="violet">
           <SectionCardHeader
-            title="Suppliers"
-            description="Supplier entities and their product/order summary"
+            title={t("Suppliers")}
+            description={t(
+              "Supplier entities and their product/order summary",
+            )}
             icon={Truck}
             tone="violet"
             className="mb-4"
@@ -499,7 +505,9 @@ export default function AdminSupplierPortalContent({
             columns={supplierColumns}
             data={stats?.suppliers ?? []}
             loading={dataLoading}
-            emptyMessage="No suppliers yet. Add suppliers from the Suppliers page."
+            emptyMessage={t(
+              "No suppliers yet. Add suppliers from the Suppliers page.",
+            )}
             emptyIcon={Truck}
             getRowKey={(s) => s.id}
           />
@@ -517,7 +525,7 @@ export default function AdminSupplierPortalContent({
             >
               <Link href="/suppliers">
                 <ArrowRight className="h-4 w-4 shrink-0" />
-                Manage Suppliers
+                {t("Manage Suppliers")}
               </Link>
             </Button>
           )}

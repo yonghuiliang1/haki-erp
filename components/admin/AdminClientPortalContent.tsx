@@ -52,6 +52,7 @@ import {
   type AdminEmbedColumn,
 } from "@/components/admin/AdminEmbedDataTable";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type AdminClientPortalContentProps = {
   initialStats?: ClientPortalStats | null;
@@ -60,6 +61,7 @@ export type AdminClientPortalContentProps = {
 export default function AdminClientPortalContent({
   initialStats,
 }: AdminClientPortalContentProps = {}) {
+  const t = useT();
   const portalQuery = useClientPortal(initialStats ?? undefined);
   const stats = portalQuery.data ?? initialStats ?? null;
   const dataLoading = isDataSlotUnsettled(portalQuery, initialStats);
@@ -73,7 +75,7 @@ export default function AdminClientPortalContent({
     () => [
       {
         id: "name",
-        header: "Name",
+        header: t("Name"),
         render: (c) => (
           <AvatarInlineLink
             label={c.name}
@@ -87,7 +89,7 @@ export default function AdminClientPortalContent({
       },
       {
         id: "email",
-        header: "Email",
+        header: t("Email"),
         headerClassName: "hidden sm:table-cell",
         cellClassName:
           "hidden sm:table-cell text-gray-600 dark:text-gray-300 truncate max-w-[160px]",
@@ -95,27 +97,27 @@ export default function AdminClientPortalContent({
       },
       {
         id: "orders",
-        header: "Orders",
+        header: t("Orders"),
         headerClassName: "text-right",
         cellClassName: "text-right text-gray-700 dark:text-white",
         render: (c) => c.orderCount,
       },
       {
         id: "invoices",
-        header: "Invoices",
+        header: t("Invoices"),
         headerClassName: "text-right",
         cellClassName: "text-right text-gray-700 dark:text-white",
         render: (c) => c.invoiceCount,
       },
       {
         id: "spent",
-        header: "Total Spent",
+        header: t("Total Spent"),
         headerClassName: "text-right",
         cellClassName: "text-right text-gray-700 dark:text-white",
         render: (c) => formatStableCurrency(c.totalSpent),
       },
     ],
-    [],
+    [t],
   );
 
   return (
@@ -127,48 +129,50 @@ export default function AdminClientPortalContent({
           tone="violet"
           title={
             <span className="inline-flex flex-wrap items-center gap-2">
-              Client Portal
+              {t("Client Portal")}
               <SectionCountBadge>
                 {stats?.counts?.clients ?? 0}
               </SectionCountBadge>
             </span>
           }
-          description="Overview of client users, their orders, invoices, and activity."
+          description={t(
+            "Overview of client users, their orders, invoices, and activity.",
+          )}
           className={DETAIL_PAGE_HEADER_SPACING_CLASS}
         />
 
         {/* Summary cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 items-stretch">
           <AnalyticsCard
-            title="Clients"
+            title={t("Clients")}
             value={stats?.counts?.clients ?? 0}
             icon={Users}
-            description="Users with role client"
+            description={t("Users with role client")}
             variant="violet"
             valueLoading={dataLoading}
           />
           <AnalyticsCard
-            title="Orders"
+            title={t("Orders")}
             value={stats?.counts?.orders ?? 0}
             icon={ShoppingCart}
-            description="Client orders"
+            description={t("Client orders")}
             variant="sky"
             valueLoading={dataLoading}
           />
           <AnalyticsCard
-            title="Invoices"
+            title={t("Invoices")}
             value={stats?.counts?.invoices ?? 0}
             icon={FileText}
-            description="Client invoices"
+            description={t("Client invoices")}
             variant="emerald"
             valueLoading={dataLoading}
           />
           <AnalyticsCard
-            title="Revenue"
+            title={t("Revenue")}
             // REQ-0159 — order totals only (avoid double-count with invoice totals)
             value={formatStableCurrency(stats?.revenue?.orders ?? 0)}
             icon={DollarSign}
-            description="Order totals"
+            description={t("Order totals")}
             variant="amber"
             valueLoading={dataLoading}
           />
@@ -178,8 +182,8 @@ export default function AdminClientPortalContent({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4">
           <GlassCard padding="body" variant="sky">
             <SectionCardHeader
-              title="Recent Client Orders"
-              description="Last 10 orders placed by client users"
+              title={t("Recent Client Orders")}
+              description={t("Last 10 orders placed by client users")}
               icon={ShoppingCart}
               tone="sky"
               className="mb-4"
@@ -194,7 +198,7 @@ export default function AdminClientPortalContent({
                 ))}
               </ul>
             ) : (stats?.recentOrders?.length ?? 0) === 0 ? (
-              <p className={CARD_EMPTY_MESSAGE_CLASS}>No client orders yet.</p>
+              <p className={CARD_EMPTY_MESSAGE_CLASS}>{t("No client orders yet.")}</p>
             ) : (
               <ul className={CARD_LIST_DIVIDE_CLASS}>
                 {(stats?.recentOrders ?? []).map((o) => {
@@ -322,7 +326,7 @@ export default function AdminClientPortalContent({
               >
                 <Link href="/admin/orders">
                   <ArrowRight className="h-4 w-4 shrink-0" />
-                  View All Orders
+                  {t("View All Orders")}
                 </Link>
               </Button>
             </div>
@@ -330,8 +334,8 @@ export default function AdminClientPortalContent({
 
           <GlassCard padding="body" variant="emerald">
             <SectionCardHeader
-              title="Recent Client Invoices"
-              description="Last 10 invoices for client users"
+              title={t("Recent Client Invoices")}
+              description={t("Last 10 invoices for client users")}
               icon={FileText}
               tone="emerald"
               className="mb-4"
@@ -347,7 +351,7 @@ export default function AdminClientPortalContent({
               </ul>
             ) : (stats?.recentInvoices?.length ?? 0) === 0 ? (
               <p className={CARD_EMPTY_MESSAGE_CLASS}>
-                No client invoices yet.
+                {t("No client invoices yet.")}
               </p>
             ) : (
               <ul className={CARD_LIST_DIVIDE_CLASS}>
@@ -454,7 +458,7 @@ export default function AdminClientPortalContent({
               >
                 <Link href="/admin/invoices">
                   <ArrowRight className="h-4 w-4 shrink-0" />
-                  View All Invoices
+                  {t("View All Invoices")}
                 </Link>
               </Button>
             </div>
@@ -464,8 +468,10 @@ export default function AdminClientPortalContent({
         {/* Clients list */}
         <GlassCard padding="body" variant="violet">
           <SectionCardHeader
-            title="Clients"
-            description='Users with role "client" and their activity summary'
+            title={t("Clients")}
+            description={t(
+              'Users with role "client" and their activity summary',
+            )}
             icon={Users}
             tone="violet"
             className="mb-4"
@@ -474,7 +480,9 @@ export default function AdminClientPortalContent({
             columns={clientColumns}
             data={stats?.clients ?? []}
             loading={dataLoading}
-            emptyMessage='No client users yet. Assign "client" role to users from User Management.'
+            emptyMessage={t(
+              'No client users yet. Assign "client" role to users from User Management.',
+            )}
             emptyIcon={Users}
             getRowKey={(c) => c.id}
           />
@@ -492,7 +500,7 @@ export default function AdminClientPortalContent({
             >
               <Link href="/admin/user-management">
                 <ArrowRight className="h-4 w-4 shrink-0" />
-                Manage Users
+                {t("Manage Users")}
               </Link>
             </Button>
           )}

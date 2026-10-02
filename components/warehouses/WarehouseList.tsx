@@ -24,6 +24,7 @@ import { Warehouse } from "@/types";
 import type { WarehouseForPage } from "@/lib/server/warehouses-data";
 import type { DashboardStats } from "@/types";
 import type { WarehouseStockSummary } from "@/types/stock-allocation";
+import { useT } from "@/lib/i18n/locale-context";
 
 const WarehouseTable = dynamic(
   () =>
@@ -47,6 +48,7 @@ export default function WarehouseList({
   initialStats,
   initialWarehouseSummary,
 }: WarehouseListProps = {}) {
+  const t = useT();
   const isMountedRef = useRef(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -88,12 +90,12 @@ export default function WarehouseList({
       0,
     );
     return [
-      { label: "Main", value: typeMap.get("main") ?? 0 },
-      { label: "Secondary", value: typeMap.get("secondary") ?? 0 },
-      { label: "Storage", value: typeMap.get("storage") ?? 0 },
-      { label: "Hub", value: typeMap.get("hub") ?? 0 },
-      { label: "Store", value: typeMap.get("store") ?? 0 },
-      { label: "Others", value: othersCount },
+      { label: t("Main"), value: typeMap.get("main") ?? 0 },
+      { label: t("Secondary"), value: typeMap.get("secondary") ?? 0 },
+      { label: t("Storage"), value: typeMap.get("storage") ?? 0 },
+      { label: t("Hub"), value: typeMap.get("hub") ?? 0 },
+      { label: t("Store"), value: typeMap.get("store") ?? 0 },
+      { label: t("Others"), value: othersCount },
     ];
   }, [dashboard?.warehouseAnalytics?.typeDistribution]);
 
@@ -110,12 +112,12 @@ export default function WarehouseList({
       0,
     );
     return [
-      { label: "Main", value: typeMap.get("main") ?? 0 },
-      { label: "Secondary", value: typeMap.get("secondary") ?? 0 },
-      { label: "Storage", value: typeMap.get("storage") ?? 0 },
-      { label: "Hub", value: typeMap.get("hub") ?? 0 },
-      { label: "Store", value: typeMap.get("store") ?? 0 },
-      { label: "Others", value: othersCount },
+      { label: t("Main"), value: typeMap.get("main") ?? 0 },
+      { label: t("Secondary"), value: typeMap.get("secondary") ?? 0 },
+      { label: t("Storage"), value: typeMap.get("storage") ?? 0 },
+      { label: t("Hub"), value: typeMap.get("hub") ?? 0 },
+      { label: t("Store"), value: typeMap.get("store") ?? 0 },
+      { label: t("Others"), value: othersCount },
     ];
   }, [warehousesPageStats?.warehouseAnalytics?.typeDistribution]);
 
@@ -184,58 +186,58 @@ export default function WarehouseList({
         as="h2"
         icon={WarehouseIcon}
         tone="violet"
-        title="Warehouse Management"
-        description="Manage warehouse locations, allocate stock, and transfer inventory between warehouses."
+        title={t("Warehouse Management")}
+        description={t("Manage warehouse locations, allocate stock, and transfer inventory between warehouses.")}
       />
 
       {/* Store-wide state cards — only on /warehouses page (user), same style as homepage/products */}
       {isUserWarehousesPage && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch pb-6">
           <StatisticsCard
-            title="Total Products"
+            title={t("Total Products")}
             value={warehousesPageStats?.counts.products ?? 0}
-            description="Products availability"
+            description={t("Products availability")}
             icon={Package}
             variant="rose"
             valueLoading={userCardsDataLoading}
             badgeValuesLoading={userCardsDataLoading}
             badges={[
               {
-                label: "Available",
+                label: t("Available"),
                 value:
                   warehousesPageStats?.productStatusBreakdown?.available ?? 0,
               },
               {
-                label: "Stock low",
+                label: t("Stock low"),
                 value:
                   warehousesPageStats?.productStatusBreakdown?.stockLow ?? 0,
               },
               {
-                label: "Stock out",
+                label: t("Stock out"),
                 value:
                   warehousesPageStats?.productStatusBreakdown?.stockOut ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Total Warehouses"
+            title={t("Total Warehouses")}
             value={
               warehousesPageStats?.warehouseAnalytics?.totalWarehouses ?? 0
             }
-            description="All locations"
+            description={t("All locations")}
             icon={WarehouseIcon}
             variant="teal"
             valueLoading={userCardsDataLoading}
             badgeValuesLoading={userCardsDataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value:
                   warehousesPageStats?.warehouseAnalytics?.activeWarehouses ??
                   0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value:
                   warehousesPageStats?.warehouseAnalytics?.inactiveWarehouses ??
                   0,
@@ -243,11 +245,11 @@ export default function WarehouseList({
             ]}
           />
           <StatisticsCard
-            title="Active Warehouses"
+            title={t("Active Warehouses")}
             value={
               warehousesPageStats?.warehouseAnalytics?.activeWarehouses ?? 0
             }
-            description="Operational"
+            description={t("Operational")}
             icon={WarehouseIcon}
             variant="emerald"
             valueLoading={userCardsDataLoading}
@@ -255,11 +257,11 @@ export default function WarehouseList({
             badges={warehousesPageTypeBadges}
           />
           <StatisticsCard
-            title="Inactive Warehouses"
+            title={t("Inactive Warehouses")}
             value={
               warehousesPageStats?.warehouseAnalytics?.inactiveWarehouses ?? 0
             }
-            description="Not in use"
+            description={t("Not in use")}
             icon={WarehouseIcon}
             variant="rose"
             valueLoading={userCardsDataLoading}
@@ -273,28 +275,28 @@ export default function WarehouseList({
       {isAdmin && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pb-6 items-stretch">
           <StatisticsCard
-            title="Total Warehouses"
+            title={t("Total Warehouses")}
             value={dashboard?.warehouseAnalytics?.totalWarehouses ?? 0}
-            description="All locations"
+            description={t("All locations")}
             icon={WarehouseIcon}
             variant="teal"
             valueLoading={adminCardsDataLoading}
             badgeValuesLoading={adminCardsDataLoading}
             badges={[
               {
-                label: "Active",
+                label: t("Active"),
                 value: dashboard?.warehouseAnalytics?.activeWarehouses ?? 0,
               },
               {
-                label: "Inactive",
+                label: t("Inactive"),
                 value: dashboard?.warehouseAnalytics?.inactiveWarehouses ?? 0,
               },
             ]}
           />
           <StatisticsCard
-            title="Active Warehouses"
+            title={t("Active Warehouses")}
             value={dashboard?.warehouseAnalytics?.activeWarehouses ?? 0}
-            description="Operational"
+            description={t("Operational")}
             icon={WarehouseIcon}
             variant="emerald"
             valueLoading={adminCardsDataLoading}
@@ -302,9 +304,9 @@ export default function WarehouseList({
             badges={warehouseTypeBadges}
           />
           <StatisticsCard
-            title="Inactive Warehouses"
+            title={t("Inactive Warehouses")}
             value={dashboard?.warehouseAnalytics?.inactiveWarehouses ?? 0}
-            description="Not in use"
+            description={t("Not in use")}
             icon={WarehouseIcon}
             variant="rose"
             valueLoading={adminCardsDataLoading}

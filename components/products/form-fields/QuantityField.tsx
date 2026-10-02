@@ -7,16 +7,18 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { MdError } from "react-icons/md";
 import { useFormContext } from "react-hook-form";
+import { useT } from "@/lib/i18n/locale-context";
 
 export default function Quantity() {
   const {
     register,
     formState: { errors },
   } = useFormContext();
+  const t = useT();
   return (
     <div className=" flex flex-col gap-2 pt-[6px]">
       <DialogFormLabel htmlFor="quantity" icon={Layers} required>
-        Quantity
+        {t("Quantity")}
       </DialogFormLabel>
       <Input
         {...register("quantity", {
