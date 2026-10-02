@@ -134,8 +134,8 @@ const layout: Record<string, string> = {
   "Status Updated": "状态已更新",
   "System status has been refreshed.": "系统状态已刷新。",
   "API & Project Status": "API 与项目状态",
-  "Real-time monitoring of Stockly's API endpoints and system health":
-    "实时监控 Stockly 的 API 端点和系统健康状态",
+  "Real-time monitoring of HAKI ERP's API endpoints and system health":
+    "实时监控 HAKI ERP 的 API 端点和系统健康状态",
   "Refreshing...": "刷新中...",
   Project: "项目",
   Environment: "环境",

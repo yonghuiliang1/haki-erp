@@ -1,6 +1,6 @@
 # Security Policy
 
-This repository is a **personal open-source showcase** (Stockly — warehouse / inventory demo). It is not a commercial product with a paid bug-bounty program.
+This repository is a **personal open-source showcase** (HAKI ERP — export trade management demo). It is not a commercial product with a paid bug-bounty program.
 
 ## Supported versions
 

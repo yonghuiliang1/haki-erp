@@ -204,7 +204,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
         | undefined;
 
       const status: SystemStatus = {
-        project: "Stockly Inventory Management",
+        project: "HAKI ERP",
         environment: healthData.environment,
         currentTime: new Date(healthData.timestamp).toLocaleString(),
         uptime: healthData.uptime,
@@ -299,7 +299,7 @@ export default function ApiStatusPage({ userRole }: ApiStatusPageProps) {
             tone="emerald"
             title={t("API & Project Status")}
             description={t(
-              "Real-time monitoring of Stockly's API endpoints and system health",
+              "Real-time monitoring of HAKI ERP's API endpoints and system health",
             )}
             trailing={
               <Button

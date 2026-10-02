@@ -6,6 +6,9 @@ import { buildNextProductionHeaderRules } from "./lib/vercel/production-headers"
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // 容器化部署（Docker）时产出精简的独立运行包；本地与 Vercel 构建不受影响。
+  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
+
   images: {
     remotePatterns: [
       {

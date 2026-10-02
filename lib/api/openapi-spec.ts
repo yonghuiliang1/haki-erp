@@ -16,8 +16,8 @@ export function getOpenApiSpec(options: OpenApiSpecOptions): Record<string, unkn
   return {
     openapi: "3.0.3",
     info: {
-      title: "Stockly Inventory API",
-      description: "API for the Stockly inventory management system. All endpoints require authentication via session cookie.",
+      title: "HAKI ERP API",
+      description: "API for the HAKI ERP export trade management system. All endpoints require authentication via session cookie.",
       version: "1.0.0",
     },
     servers: [{ url: baseUrl }],

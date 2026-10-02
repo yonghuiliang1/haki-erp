@@ -60,3 +60,7 @@ PROJECT_PLAN.md
 
 # Sentry Errors
 SENTRY_ERRORS.md
+
+# 本地自签证书（由容器首次启动生成，不入库）
+deploy/nginx/certs/*
+!deploy/nginx/certs/.gitkeep

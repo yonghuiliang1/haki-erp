@@ -54,11 +54,11 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const isZh = (await resolveLocale()) === "zh";
   const title = isZh
-    ? "Stockly — 仓库与库存管理系统"
-    : "Stockly — Warehouse & Stock Inventory Management System";
+    ? "HAKI ERP — 出口贸易数字化管理系统"
+    : "HAKI ERP — Export Trade Management System";
   const description = isZh
-    ? "Stockly 是一个基于 Next.js 的全栈仓库与库存管理系统：管理产品、分类、供应商、订单、发票与仓库，支持管理员/客户/供应商多角色权限、经营分析看板、二维码与 JWT 认证。"
-    : "Stockly is a full-stack warehouse and stock inventory management system built with Next.js. Manage products, categories, suppliers, orders, invoices, and warehouses. Role-based access for admin, client, and supplier. Analytics dashboard, QR codes, export, and secure JWT authentication. By Arnob Mahmud.";
+    ? "HAKI ERP 是面向出口贸易企业的一体化管理系统：覆盖订单审批、分仓库存、采购收货、发票财务与业绩统计，支持企业内部五个岗位与外部供应商/客户协同。"
+    : "HAKI ERP is an integrated management system for export trading companies: order approval, warehouse inventory, purchasing, invoicing and sales performance, with internal staff roles and external supplier/client portals.";
 
   return {
     title: {
@@ -66,32 +66,23 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${title}`,
     },
     description,
-    authors: [
-      {
-        name: "Arnob Mahmud",
-        url: "https://www.arnobmahmud.com",
-      },
-    ],
-    creator: "Arnob Mahmud",
-    publisher: "Arnob Mahmud",
-    applicationName: "Stockly",
+    authors: [],
+    creator: "HAKI ERP",
+    publisher: "HAKI ERP",
+    applicationName: "HAKI ERP",
     keywords: [
-      "stock inventory",
+      "export trade",
+      "foreign trade ERP",
+      "order approval",
       "inventory management",
-      "warehouse management",
-      "stock management system",
+      "purchase management",
+      "sales performance",
       "Next.js",
       "React",
       "Prisma",
-      "product catalog",
-      "orders",
-      "invoices",
-      "suppliers",
-      "categories",
-      "JWT authentication",
-      "responsive web app",
+      "PostgreSQL",
       "business dashboard",
-      "Arnob Mahmud",
+      "HAKI ERP",
     ],
     icons: {
       icon: "/favicon.ico",
@@ -99,21 +90,21 @@ export async function generateMetadata(): Promise<Metadata> {
       other: [{ rel: "icon", url: "/favicon.ico" }],
     },
     metadataBase: new URL(
-      process.env.NEXT_PUBLIC_APP_URL ?? "https://stockly-inventory.vercel.app",
+      process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
     ),
     openGraph: {
       type: "website",
       locale: isZh ? "zh_CN" : "en_US",
       title,
       description,
-      url: "https://stockly-inventory.vercel.app",
-      siteName: "Stockly",
+      url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      siteName: "HAKI ERP",
       images: [
         {
           url: "/favicon.ico",
           width: 32,
           height: 32,
-          alt: "Stockly — Stock Inventory Management",
+          alt: "HAKI ERP — Export Trade Management",
         },
       ],
     },
