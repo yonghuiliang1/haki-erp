@@ -3,6 +3,7 @@
 import React, { type ReactNode } from "react";
 import { useMounted } from "@/hooks/use-mounted";
 import { DataSlotPulse } from "@/components/shared";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type DeferredChartSectionProps = {
   /** Data slot still loading (SSR or TanStack fetch) */
@@ -21,12 +22,11 @@ export type DeferredChartSectionProps = {
 export function DeferredChartSection({
   loading = false,
   hasData,
-  emptyMessage = (
-    <p className="text-muted-foreground text-center py-8">No data yet</p>
-  ),
+  emptyMessage,
   pulseClassName = "min-h-[240px]",
   children,
 }: DeferredChartSectionProps) {
+  const t = useT();
   const mounted = useMounted();
 
   if (loading || !mounted) {
@@ -34,7 +34,10 @@ export function DeferredChartSection({
   }
 
   if (!hasData) {
-    return <>{emptyMessage}</>;
+    if (emptyMessage) return <>{emptyMessage}</>;
+    return (
+      <p className="text-muted-foreground text-center py-8">{t("No data yet")}</p>
+    );
   }
 
   return <>{children}</>;

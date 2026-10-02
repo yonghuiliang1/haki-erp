@@ -18,6 +18,7 @@ import {
   type SemanticDateKind,
 } from "@/lib/ui/semantic-date-styles";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n/locale-context";
 
 type DateInput = Date | string | number;
 
@@ -35,18 +36,19 @@ export function ClientRelativeTime({
   prefix = "",
   semantic,
 }: ClientRelativeTimeProps) {
+  const { locale } = useI18n();
   const d = useMemo(() => toDate(date), [date]);
-  const stable = useMemo(() => formatStableDate(d), [d]);
+  const stable = useMemo(() => formatStableDate(d, locale), [d, locale]);
   const [label, setLabel] = useState(stable);
   const mounted = useMounted();
 
   useEffect(() => {
     if (!mounted) return;
-    const tick = () => setLabel(formatStableRelative(d));
+    const tick = () => setLabel(formatStableRelative(d, locale));
     tick();
     const id = window.setInterval(tick, 60_000);
     return () => window.clearInterval(id);
-  }, [mounted, d]);
+  }, [mounted, d, locale]);
 
   return (
     <span
@@ -68,7 +70,8 @@ export type ClientDateTimeProps = {
 
 /** Absolute date+time — same output on server and client (no hydration mismatch). */
 export function ClientDateTime({ date, className, semantic }: ClientDateTimeProps) {
-  const text = useMemo(() => formatStableDateTime(date), [date]);
+  const { locale } = useI18n();
+  const text = useMemo(() => formatStableDateTime(date, locale), [date, locale]);
   return (
     <span className={cn(semanticDateClass(semantic), className)}>{text}</span>
   );
@@ -88,7 +91,8 @@ export function ClientDate({
   prefix = "",
   semantic,
 }: ClientDateProps) {
-  const text = useMemo(() => formatStableDate(date), [date]);
+  const { locale } = useI18n();
+  const text = useMemo(() => formatStableDate(date, locale), [date, locale]);
   return (
     <span className={cn(semanticDateClass(semantic), className)}>
       {prefix}

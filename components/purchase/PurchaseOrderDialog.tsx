@@ -35,6 +35,7 @@ import {
 } from "@/components/shared";
 import { cn } from "@/lib/utils";
 import { formatStableCurrency } from "@/lib/format";
+import { useT } from "@/lib/i18n/locale-context";
 import { ClipboardList, Plus, Trash2, X } from "lucide-react";
 import {
   useCreatePurchaseOrder,
@@ -70,6 +71,7 @@ export default function PurchaseOrderDialog({
   open,
   onOpenChange,
 }: PurchaseOrderDialogProps) {
+  const t = useT();
   const { data: suppliers = [] } = useSuppliers();
   const { data: products = [] } = useProducts();
   const { data: warehouses = [] } = useWarehouses();
@@ -111,7 +113,7 @@ export default function PurchaseOrderDialog({
 
   const handleSubmit = () => {
     if (!supplierId) {
-      setFormError("Choose a supplier for this purchase order.");
+      setFormError(t("Choose a supplier for this purchase order."));
       return;
     }
     const items = lines
@@ -130,7 +132,7 @@ export default function PurchaseOrderDialog({
 
     if (items.length === 0) {
       setFormError(
-        "Add at least one line with a product, quantity, and unit cost.",
+        t("Add at least one line with a product, quantity, and unit cost."),
       );
       return;
     }
@@ -168,15 +170,17 @@ export default function PurchaseOrderDialog({
         <DialogHeaderBrand
           icon={ClipboardList}
           tone="teal"
-          title="New Purchase Order"
-          description="Order stock from a supplier; inventory updates when the order is received."
+          title={t("New Purchase Order")}
+          description={t(
+            "Order stock from a supplier; inventory updates when the order is received.",
+          )}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {/* Supplier */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-white/80">
-              Supplier
+              {t("Supplier")}
             </label>
             <DeferredSelectGate
               enabled={open}
@@ -189,7 +193,7 @@ export default function PurchaseOrderDialog({
                   aria-hidden
                 >
                   {suppliers.find((s) => s.id === supplierId)?.name ??
-                    "Select Supplier"}
+                    t("Select Supplier")}
                 </div>
               }
             >
@@ -202,7 +206,7 @@ export default function PurchaseOrderDialog({
                   <SelectTrigger
                     className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}
                   >
-                    <SelectValue placeholder="Select Supplier" />
+                    <SelectValue placeholder={t("Select Supplier")} />
                   </SelectTrigger>
                   <SelectContent
                     className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -228,7 +232,7 @@ export default function PurchaseOrderDialog({
           {/* Receiving warehouse (optional) */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-white/80">
-              Receiving Warehouse
+              {t("Receiving Warehouse")}
             </label>
             <DeferredSelectGate
               enabled={open}
@@ -241,7 +245,7 @@ export default function PurchaseOrderDialog({
                   aria-hidden
                 >
                   {warehouses.find((w) => w.id === warehouseId)?.name ??
-                    "Optional"}
+                    t("Optional")}
                 </div>
               }
             >
@@ -254,7 +258,7 @@ export default function PurchaseOrderDialog({
                   <SelectTrigger
                     className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}
                   >
-                    <SelectValue placeholder="Optional" />
+                    <SelectValue placeholder={t("Optional")} />
                   </SelectTrigger>
                   <SelectContent
                     className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -280,7 +284,7 @@ export default function PurchaseOrderDialog({
           {/* Currency */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-white/80">
-              Currency
+              {t("Currency")}
             </label>
             <DeferredSelectGate
               enabled={open}
@@ -305,7 +309,7 @@ export default function PurchaseOrderDialog({
                   <SelectTrigger
                     className={cn("h-11 w-full", DIALOG_FORM_FIELD_VIOLET)}
                   >
-                    <SelectValue placeholder="Currency" />
+                    <SelectValue placeholder={t("Currency")} />
                   </SelectTrigger>
                   <SelectContent
                     className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -330,7 +334,7 @@ export default function PurchaseOrderDialog({
 
           <DialogDateField
             id="purchase-expected-at"
-            label="Expected Arrival"
+            label={t("Expected Arrival")}
             optional
             labelIcon={null}
             value={expectedAt}
@@ -343,7 +347,7 @@ export default function PurchaseOrderDialog({
         <div className="mt-4 space-y-3">
           <div className="flex items-center justify-between">
             <DialogFormLabel icon={ClipboardList}>
-              Order Lines
+              {t("Order Lines")}
             </DialogFormLabel>
             <Button
               type="button"
@@ -352,7 +356,7 @@ export default function PurchaseOrderDialog({
               className="h-9 rounded-full border border-cyan-400/30 bg-gradient-to-r from-cyan-500/30 via-cyan-500/15 to-cyan-500/5 text-gray-700 dark:text-white"
             >
               <Plus className="h-4 w-4 mr-1" />
-              Add Line
+              {t("Add Line")}
             </Button>
           </div>
 
@@ -362,7 +366,7 @@ export default function PurchaseOrderDialog({
               className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_110px_130px_40px] gap-2 items-end p-2 rounded-xl border border-cyan-400/20 bg-white/5"
             >
               <div className="flex flex-col gap-1 min-w-0">
-                <label className="text-xs text-white/70">Product</label>
+                <label className="text-xs text-white/70">{t("Product")}</label>
                 <DeferredSelectGate
                   enabled={open}
                   placeholder={
@@ -374,7 +378,7 @@ export default function PurchaseOrderDialog({
                       aria-hidden
                     >
                       {products.find((p) => p.id === line.productId)?.name ??
-                        "Select Product"}
+                        t("Select Product")}
                     </div>
                   }
                 >
@@ -389,7 +393,7 @@ export default function PurchaseOrderDialog({
                       <SelectTrigger
                         className={cn("h-10 w-full", DIALOG_FORM_FIELD_VIOLET)}
                       >
-                        <SelectValue placeholder="Select Product" />
+                        <SelectValue placeholder={t("Select Product")} />
                       </SelectTrigger>
                       <SelectContent
                         className={cn(DIALOG_SELECT_CONTENT_CLASS, "z-[100]")}
@@ -412,7 +416,7 @@ export default function PurchaseOrderDialog({
                 </DeferredSelectGate>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-white/70">Quantity</label>
+                <label className="text-xs text-white/70">{t("Quantity")}</label>
                 <Input
                   type="number"
                   min={1}
@@ -425,7 +429,7 @@ export default function PurchaseOrderDialog({
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-white/70">Unit Cost</label>
+                <label className="text-xs text-white/70">{t("Unit Cost")}</label>
                 <Input
                   type="number"
                   min={0}
@@ -448,7 +452,7 @@ export default function PurchaseOrderDialog({
                   )
                 }
                 className="h-10 w-10 p-0 rounded-lg border border-rose-400/30 bg-rose-500/10 text-rose-500 dark:text-rose-300"
-                aria-label="Remove line"
+                aria-label={t("Remove line")}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -456,7 +460,7 @@ export default function PurchaseOrderDialog({
           ))}
 
           <div className="flex justify-between items-center p-3 rounded-xl border border-cyan-400/20 bg-white/5 text-sm text-white/80">
-            <span>Order Total</span>
+            <span>{t("Order Total")}</span>
             <span className="font-medium text-white">
               {formatStableCurrency(total)}
             </span>
@@ -466,13 +470,13 @@ export default function PurchaseOrderDialog({
         {/* Notes */}
         <div className="mt-4 space-y-2">
           <DialogFormLabel htmlFor="purchase-notes" icon={ClipboardList} optional>
-            Notes
+            {t("Notes")}
           </DialogFormLabel>
           <Input
             id="purchase-notes"
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="Payment terms, packing notes…"
+            placeholder={t("Payment terms, packing notes…")}
             className={cn("h-11", DIALOG_FORM_FIELD_VIOLET)}
           />
         </div>
@@ -489,15 +493,15 @@ export default function PurchaseOrderDialog({
               className={cn("w-full sm:w-auto px-11 gap-2", GLASS_GHOST_BUTTON)}
             >
               <X className="h-4 w-4 shrink-0" aria-hidden />
-              Cancel
+              {t("Cancel")}
             </Button>
           </DialogClose>
           <DialogSubmitButton
             type="button"
             onClick={handleSubmit}
             isPending={createMutation.isPending}
-            pendingLabel="Creating…"
-            label="Create Purchase Order"
+            pendingLabel={t("Creating…")}
+            label={t("Create Purchase Order")}
             icon={ClipboardList}
             hue="cyan"
             disabled={createMutation.isPending}

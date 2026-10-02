@@ -305,7 +305,13 @@ export async function POST(request: NextRequest) {
     createOrderNotification(
       "order_confirmation",
       order.orderNumber,
-      `Your order ${order.orderNumber} has been successfully created. Total: $${order.total.toFixed(2)}`,
+      {
+        key: "Your order {orderNumber} has been successfully created. Total: ${total}",
+        vars: {
+          orderNumber: order.orderNumber,
+          total: order.total.toFixed(2),
+        },
+      },
       notifyUserId,
       order.id,
     ).catch((error) => {

@@ -23,7 +23,7 @@ import {
   type GlassBadgeHue,
 } from "@/lib/ui/glass-badge-styles";
 import { TYPO_CARD_TITLE, TYPO_SUBTITLE } from "@/lib/ui/typography-scale";
-import { useT } from "@/lib/i18n/locale-context";
+import { useI18n, useT } from "@/lib/i18n/locale-context";
 
 interface Order {
   status: string;
@@ -128,6 +128,7 @@ export default function OrderTrackingInfo({
   className,
 }: OrderTrackingInfoProps) {
   const t = useT();
+  const { locale } = useI18n();
   const isCancelledOrRefunded =
     order.status === "cancelled" || order.paymentStatus === "refunded";
 
@@ -189,11 +190,11 @@ export default function OrderTrackingInfo({
         >
           {order.status === "delivered" && order.deliveredAt
             ? t("Delivered on {date}", {
-                date: formatStableDate(order.deliveredAt),
+                date: formatStableDate(order.deliveredAt, locale),
               })
             : order.shippedAt
               ? t("Shipped on {date}", {
-                  date: formatStableDate(order.shippedAt),
+                  date: formatStableDate(order.shippedAt, locale),
                 })
               : t("Your package is on its way")}
         </p>

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DataSlotPulse } from "@/components/shared/DataSlotPulse";
 import { TYPO_STAT_VALUE, TYPO_SUBTITLE } from "@/lib/ui/typography-scale";
+import { useT } from "@/lib/i18n/locale-context";
 
 /**
  * Color variant types for statistics cards
@@ -172,6 +173,7 @@ export function StatisticsCard({
   badgeValuesLoading = false,
   compact = false,
 }: StatisticsCardProps) {
+  const t = useT();
   const config = variantConfig[variant];
   const displayValue = valueLoading ? (
     <DataSlotPulse variant="metric" />
@@ -225,7 +227,7 @@ export function StatisticsCard({
                 variant={badge.variant || "outline"}
                 className="text-xs border-gray-300/50 bg-gray-100/80 text-gray-700 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:border-white/10 dark:bg-white/5 dark:text-white/80"
               >
-                <span className="font-normal">{badge.label}:</span>{" "}
+                <span className="font-normal">{t(badge.label)}:</span>{" "}
                 <span className="ml-1">
                   {badgeValuesLoading ? (
                     <DataSlotPulse variant="badge" />

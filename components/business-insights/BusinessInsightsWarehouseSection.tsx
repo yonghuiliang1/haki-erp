@@ -279,7 +279,7 @@ export function BusinessInsightsWarehouseSection({
                             </Link>
                             {typeLabel && typeLabel !== "—" ? (
                               <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {typeLabel}
+                                {t(typeLabel)}
                               </span>
                             ) : null}
                           </div>

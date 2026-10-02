@@ -85,6 +85,11 @@ const commerce: Record<string, string> = {
   "New Purchase Order": "新建采购单",
   "Create Purchase Order": "创建采购单",
   "Order Lines": "采购明细",
+  "Select Supplier": "选择供应商",
+  "Remove line": "删除明细行",
+  "Order stock from a supplier; inventory updates when the order is received.":
+    "向供应商采购库存，收货后自动更新库存。",
+  "Payment terms, packing notes…": "付款条款、包装备注…",
   "Supplier not chosen": "未选择供应商",
   "Choose a supplier for this purchase order.": "请为该采购单选择供应商。",
   "Add at least one line with a product, quantity, and unit cost.":

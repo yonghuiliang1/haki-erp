@@ -19,6 +19,7 @@ import {
   type CatalogStatusFilter,
 } from "@/lib/ui/catalog-filter-tokens";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-context";
 
 export type CatalogActiveInactiveSelectProps = {
   entity: CatalogEntity;
@@ -34,6 +35,7 @@ function SelectTriggerLabel({
   entity: CatalogEntity;
   value: CatalogStatusFilter;
 }) {
+  const t = useT();
   const meta = CATALOG_ENTITY_META[entity];
   const Icon = meta.icon;
 
@@ -41,7 +43,7 @@ function SelectTriggerLabel({
     return (
       <div className="flex min-w-0 flex-1 items-center gap-2 truncate">
         <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-        <span className="truncate">{meta.allLabel}</span>
+        <span className="truncate">{t(meta.allLabel)}</span>
       </div>
     );
   }
@@ -60,6 +62,7 @@ export function CatalogActiveInactiveSelect({
   onValueChange,
   className,
 }: CatalogActiveInactiveSelectProps) {
+  const t = useT();
   const meta = CATALOG_ENTITY_META[entity];
   const Icon = meta.icon;
 
@@ -87,7 +90,7 @@ export function CatalogActiveInactiveSelect({
             <SelectItem value="all" className={meta.selectItemClass}>
               <span className="flex items-center gap-2">
                 <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-                {meta.allLabel}
+                {t(meta.allLabel)}
               </span>
             </SelectItem>
             <SelectItem value="active" className={meta.selectItemClass}>

@@ -34,6 +34,7 @@ import {
 } from "@/hooks/queries";
 import { apiClient } from "@/lib/api";
 import { useT } from "@/lib/i18n/locale-context";
+import { formatSemanticLabel } from "@/lib/ui/semantic-badges";
 import { isDataSlotUnsettled } from "@/lib/react-query";
 import { cn } from "@/lib/utils";
 import { formatStableCurrency } from "@/lib/format";
@@ -55,6 +56,7 @@ const STATUS_BADGE_CLASS: Record<PurchaseOrderStatus, string> = {
 };
 
 function PurchaseStatusBadge({ status }: { status: PurchaseOrderStatus }) {
+  const t = useT();
   return (
     <span
       className={cn(
@@ -63,7 +65,7 @@ function PurchaseStatusBadge({ status }: { status: PurchaseOrderStatus }) {
           "border-gray-400/30 bg-gray-500/10 text-gray-600 dark:text-gray-300",
       )}
     >
-      {status}
+      {t(formatSemanticLabel(status))}
     </span>
   );
 }

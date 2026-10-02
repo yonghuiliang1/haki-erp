@@ -20,7 +20,10 @@ import { prisma } from "@/prisma/client";
 import { updateOrderSchema } from "@/lib/validations";
 import { withRateLimit, defaultRateLimits } from "@/lib/api/rate-limit";
 import { sendOrderStatusUpdate } from "@/lib/email/notifications";
-import { createOrderNotification } from "@/lib/notifications/in-app";
+import {
+  createOrderNotification,
+  type NotificationMessage,
+} from "@/lib/notifications/in-app";
 import { checkLowStockForProducts } from "@/lib/notifications/stock-alerts";
 import { createAuditLog } from "@/prisma/audit-log";
 import { getOrderDetailForPage } from "@/lib/server/order-detail-data";
@@ -247,7 +250,14 @@ export async function PUT(
       createOrderNotification(
         "order_status_update",
         order.orderNumber,
-        `Order ${order.orderNumber} status updated from ${existingOrder.status} to ${updateData.status}`,
+        {
+          key: "Order {orderNumber} status updated from {from} to {to}",
+          vars: {
+            orderNumber: order.orderNumber,
+            from: existingOrder.status,
+            to: updateData.status ?? "",
+          },
+        },
         userId,
         order.id,
       ).catch((error) => {
@@ -265,27 +275,32 @@ export async function PUT(
       !statusChanged &&
       (trackingChanged || notesChanged || otherFieldsChanged)
     ) {
-      const changeMessages: string[] = [];
+      const changeFragments: NotificationMessage["fragments"] = [];
       if (trackingChanged) {
-        changeMessages.push("tracking information updated");
+        changeFragments.push("tracking information updated");
       }
       if (notesChanged) {
-        changeMessages.push("notes updated");
+        changeFragments.push("notes updated");
       }
       if (
         updateData.paymentStatus &&
         updateData.paymentStatus !== existingOrder.paymentStatus
       ) {
-        changeMessages.push(
-          `payment status changed to ${updateData.paymentStatus}`,
-        );
+        changeFragments.push({
+          key: "payment status changed to {status}",
+          vars: { status: updateData.paymentStatus },
+        });
       }
 
-      if (changeMessages.length > 0) {
+      if (changeFragments.length > 0) {
         createOrderNotification(
           "order_status_update",
           order.orderNumber,
-          `Order ${order.orderNumber} edited: ${changeMessages.join(", ")}`,
+          {
+            key: "Order {orderNumber} edited: ",
+            vars: { orderNumber: order.orderNumber },
+            fragments: changeFragments,
+          },
           userId,
           order.id,
         ).catch((error) => {
@@ -302,14 +317,19 @@ export async function PUT(
     if (isNowShipped || (updateData.status === "shipped" && trackingAdded)) {
       const trackingInfo =
         updateData.trackingNumber || existingOrder.trackingNumber;
-      const message = trackingInfo
-        ? `Order ${order.orderNumber} has been shipped. Tracking: ${trackingInfo}`
-        : `Order ${order.orderNumber} has been shipped.`;
 
       createOrderNotification(
         "shipping_notification",
         order.orderNumber,
-        message,
+        trackingInfo
+          ? {
+              key: "Order {orderNumber} has been shipped. Tracking: {tracking}",
+              vars: { orderNumber: order.orderNumber, tracking: trackingInfo },
+            }
+          : {
+              key: "Order {orderNumber} has been shipped.",
+              vars: { orderNumber: order.orderNumber },
+            },
         userId,
         order.id,
       ).catch((error) => {
@@ -500,7 +520,10 @@ export async function DELETE(
     createOrderNotification(
       "order_status_update",
       order.orderNumber,
-      `Order ${order.orderNumber} has been cancelled`,
+      {
+        key: "Order {orderNumber} has been cancelled",
+        vars: { orderNumber: order.orderNumber },
+      },
       userId,
       order.id,
     ).catch((error) => {

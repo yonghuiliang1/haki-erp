@@ -40,6 +40,22 @@ const insights: Record<string, string> = {
   "The performance entry moved to its new month.": "该业绩条目已调整到新的月份。",
   "Reason (kept on the entry)": "调整原因（会保留在该条目上）",
 
+  // Demand forecasting card
+  "Demand Forecasting & Insights": "需求预测与洞察",
+  "Reorder Suggestions": "补货建议",
+  Suggested: "建议",
+  "{confidence}% confidence": "置信度 {confidence}%",
+  "Category Demand Forecast": "分类需求预测",
+  "Seasonal Demand Trends": "季节性需求趋势",
+  "Generate Report": "生成报表",
+  "No reorder suggestions — stock levels look healthy": "暂无补货建议，库存水平正常",
+  "No reorder suggestions at this time": "暂无补货建议",
+  "Low stock level": "库存偏低",
+  "Critical stock level": "库存告急",
+  "Approaching low stock": "库存接近下限",
+  "Report generation feature coming soon!": "报表生成功能即将上线",
+  "Detailed view feature coming soon!": "详细视图功能即将上线",
+
   // AI assistant
   "AI Assistant": "AI 客服",
   "ERP support questions answered from the knowledge base, with the language model when configured.":

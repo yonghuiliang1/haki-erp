@@ -4,7 +4,8 @@
  */
 
 import { format, formatDistanceToNow } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { enUS, zhCN } from "date-fns/locale";
+import type { Locale } from "@/lib/i18n/config";
 
 export function toDate(value: Date | string | number): Date {
   return value instanceof Date ? value : new Date(value);
@@ -23,19 +24,40 @@ export function toDateOrNull(
   return toDate(value);
 }
 
-/** Fixed pattern for SSR and hydration (en-US). */
-export function formatStableDate(value: Date | string | number): string {
-  return format(toDate(value), "MMM d, yyyy", { locale: enUS });
+/**
+ * Fixed pattern for SSR and hydration (en-US).
+ * Pass a locale to switch the pattern — Chinese reads 2026年10月1日.
+ */
+export function formatStableDate(
+  value: Date | string | number,
+  locale: Locale = "en",
+): string {
+  const d = toDate(value);
+  return locale === "zh"
+    ? format(d, "yyyy年M月d日")
+    : format(d, "MMM d, yyyy", { locale: enUS });
 }
 
-/** Fixed date + time for detail pages (en-US). */
-export function formatStableDateTime(value: Date | string | number): string {
-  return format(toDate(value), "MMM d, yyyy h:mm a", { locale: enUS });
+/** Fixed date + time for detail pages (en-US; Chinese reads 2026年10月1日 14:05). */
+export function formatStableDateTime(
+  value: Date | string | number,
+  locale: Locale = "en",
+): string {
+  const d = toDate(value);
+  return locale === "zh"
+    ? format(d, "yyyy年M月d日 HH:mm")
+    : format(d, "MMM d, yyyy h:mm a", { locale: enUS });
 }
 
 /** Relative time — use only after mount (see ClientRelativeTime). */
-export function formatStableRelative(value: Date | string | number): string {
-  return formatDistanceToNow(toDate(value), { addSuffix: true });
+export function formatStableRelative(
+  value: Date | string | number,
+  locale: Locale = "en",
+): string {
+  const d = toDate(value);
+  return locale === "zh"
+    ? formatDistanceToNow(d, { addSuffix: true, locale: zhCN })
+    : formatDistanceToNow(d, { addSuffix: true });
 }
 
 const STABLE_NUMBER = new Intl.NumberFormat("en-US");
@@ -64,12 +86,26 @@ const STABLE_COMPACT_UTC = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
+const STABLE_COMPACT_UTC_ZH = new Intl.DateTimeFormat("zh-CN", {
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "UTC",
+});
+
 /**
  * Compact date+time in UTC — identical on Vercel (UTC) and any client TZ (REQ-0019).
  * Use for admin recent-activity lists to prevent React #418 text hydration errors.
  */
 export function formatStableCompactDateTime(
   value: Date | string | number,
+  locale: Locale = "en",
 ): string {
-  return STABLE_COMPACT_UTC.format(toDate(value));
+  const d = toDate(value);
+  if (locale === "zh") {
+    return STABLE_COMPACT_UTC_ZH.format(d);
+  }
+  return STABLE_COMPACT_UTC.format(d);
 }

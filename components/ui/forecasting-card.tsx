@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { getDisplayCommittedQuantity } from "@/lib/products/enrich-product-committed-quantity";
+import { useT } from "@/lib/i18n/locale-context";
 
 /** Resolve product.category to a display name (string | {name} | null). */
 function resolveCategoryName(product: Product): string | null {
@@ -79,6 +80,7 @@ interface ForecastData {
 }
 
 export function ForecastingCard({ products, className }: ForecastingCardProps) {
+  const t = useT();
   const { toast } = useToast();
 
   const forecastData = useMemo((): ForecastData => {
@@ -268,15 +270,15 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
 
   const handleGenerateReport = () => {
     toast({
-      title: "Generate Report",
-      description: "Report generation feature coming soon!",
+      title: t("Generate Report"),
+      description: t("Report generation feature coming soon!"),
     });
   };
 
   const handleViewDetails = () => {
     toast({
-      title: "View Details",
-      description: "Detailed view feature coming soon!",
+      title: t("View Details"),
+      description: t("Detailed view feature coming soon!"),
     });
   };
 
@@ -310,7 +312,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
       <div className="flex items-center justify-between px-4 sm:px-5 pt-4 sm:pt-5 pb-3">
         <h3 className="text-sm sm:text-base font-medium text-gray-700 dark:text-white flex items-center gap-2">
           <Target className="h-4 w-4 sm:h-5 sm:w-5" />
-          Demand Forecasting & Insights
+          {t("Demand Forecasting & Insights")}
         </h3>
       </div>
 
@@ -322,7 +324,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
               {forecastData.totalProducts}
             </div>
             <div className="text-sm text-gray-600 dark:text-white/80">
-              Total Products
+              {t("Total Products")}
             </div>
           </div>
           <div className="text-center p-2 rounded-xl border border-amber-400/20 bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent">
@@ -330,7 +332,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
               {forecastData.lowStockProducts}
             </div>
             <div className="text-sm text-gray-600 dark:text-white/80">
-              Low Stock
+              {t("Low Stock")}
             </div>
           </div>
           <div className="text-center p-2 rounded-xl border border-rose-400/20 bg-gradient-to-br from-rose-500/15 via-rose-500/5 to-transparent">
@@ -338,7 +340,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
               {forecastData.outOfStockProducts}
             </div>
             <div className="text-sm text-gray-600 dark:text-white/80">
-              Out of Stock
+              {t("Out of Stock")}
             </div>
           </div>
         </div>
@@ -347,7 +349,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
         <div>
           <h4 className="font-medium mb-3 flex items-center gap-2 text-gray-700 dark:text-white">
             <AlertTriangle className="h-4 w-4" />
-            Reorder Suggestions
+            {t("Reorder Suggestions")}
           </h4>
           <div className="space-y-2">
             {forecastData.reorderSuggestions.length > 0 ? (
@@ -373,21 +375,21 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
                     />
                     <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                       <span>
-                        Current:{" "}
+                        {t("Current")}:{" "}
                         <span className={availableStockClass(suggestion.urgency)}>
                           {suggestion.available}
                         </span>
                       </span>
                       <span aria-hidden className="text-gray-400 dark:text-gray-500">·</span>
                       <span>
-                        Suggested:{" "}
+                        {t("Suggested")}:{" "}
                         <span className="text-emerald-600 dark:text-emerald-400">
                           {suggestion.suggestedQuantity}
                         </span>
                       </span>
                       <span aria-hidden className="text-gray-400 dark:text-gray-500">·</span>
                       <span className="text-gray-500 dark:text-gray-300 italic">
-                        {suggestion.reason}
+                        {t(suggestion.reason)}
                       </span>
                     </div>
                   </div>
@@ -400,8 +402,8 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
                 {forecastData.lowStockProducts +
                   forecastData.outOfStockProducts ===
                 0
-                  ? "No reorder suggestions — stock levels look healthy"
-                  : "No reorder suggestions at this time"}
+                  ? t("No reorder suggestions — stock levels look healthy")
+                  : t("No reorder suggestions at this time")}
               </div>
             )}
           </div>
@@ -411,7 +413,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
         <div>
           <h4 className="font-medium mb-3 flex items-center gap-2 text-gray-700 dark:text-white">
             <Tag className="h-4 w-4" />
-            Category Demand Forecast
+            {t("Category Demand Forecast")}
           </h4>
           <div className="space-y-2">
             {forecastData.demandForecast.map((forecast, index) => (
@@ -436,18 +438,20 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
                     </span>
                   )}
                   <span className="text-xs text-gray-500 dark:text-gray-300 shrink-0">
-                    {forecast.confidence.toFixed(0)}% confidence
+                    {t("{confidence}% confidence", {
+                      confidence: forecast.confidence.toFixed(0),
+                    })}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span>
-                    Current:{" "}
+                    {t("Current")}:{" "}
                     <span className="text-sky-600 dark:text-sky-400 font-medium">
                       {forecast.currentStock}
                     </span>
                   </span>
                   <span>
-                    Predicted:{" "}
+                    {t("Predicted")}:{" "}
                     <span className={forecast.predictedDemand >= forecast.currentStock ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-amber-600 dark:text-amber-400 font-medium"}>
                       {forecast.predictedDemand}
                     </span>
@@ -463,7 +467,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
         <div>
           <h4 className="font-medium mb-3 flex items-center gap-2 text-gray-700 dark:text-white">
             <Clock className="h-4 w-4" />
-            Seasonal Demand Trends
+            {t("Seasonal Demand Trends")}
           </h4>
           <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
             {forecastData.seasonalTrends.map((trend, index) => (
@@ -475,7 +479,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
                 )}
               >
                 <div className="text-xs font-medium text-gray-700 dark:text-white/80">
-                  {trend.month}
+                  {t(trend.month)}
                 </div>
                 <div className="text-sm sm:text-base font-medium text-gray-700 dark:text-white">
                   {trend.demand}
@@ -496,7 +500,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
             onClick={handleGenerateReport}
           >
             <Package className="mr-2 h-4 w-4" />
-            Generate Report
+            {t("Generate Report")}
           </Button>
           <Button
             variant="outline"
@@ -504,7 +508,7 @@ export function ForecastingCard({ products, className }: ForecastingCardProps) {
             onClick={handleViewDetails}
           >
             <TrendingUp className="mr-2 h-4 w-4" />
-            View Details
+            {t("View Details")}
           </Button>
         </div>
       </div>

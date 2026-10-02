@@ -179,7 +179,13 @@ export async function POST(
     createOrderNotification(
       "order_status_update",
       order.orderNumber,
-      `Order ${order.orderNumber} was ${isApprove ? "approved" : "rejected"}`,
+      {
+        key: "Order {orderNumber} was {result}",
+        vars: {
+          orderNumber: order.orderNumber,
+          result: isApprove ? "approved" : "rejected",
+        },
+      },
       session.id,
       order.id,
     ).catch((error) => {

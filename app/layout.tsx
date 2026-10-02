@@ -9,6 +9,7 @@ import { LocaleProvider } from "@/lib/i18n/locale-context";
 import { localeHtmlLang } from "@/lib/i18n/config";
 import { resolveLocale } from "@/lib/i18n/server";
 import localFont from "next/font/local";
+import type { Metadata } from "next";
 import React from "react";
 import { AuthProvider } from "@/contexts";
 import { ShellSsrProvider } from "@/contexts/shell-ssr-context";
@@ -49,78 +50,85 @@ const poppins = localFont({
 /** Force dynamic rendering for all routes so useSearchParams etc. work without Suspense and pages render instantly. */
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: {
-    default: "Stockly — Warehouse & Stock Inventory Management System",
-    template: "%s | Stockly — Warehouse & Stock Inventory Management System",
-  },
-  description:
-    "Stockly is a full-stack warehouse and stock inventory management system built with Next.js. Manage products, categories, suppliers, orders, invoices, and warehouses. Role-based access for admin, client, and supplier. Analytics dashboard, QR codes, export, and secure JWT authentication. By Arnob Mahmud.",
-  authors: [
-    {
-      name: "Arnob Mahmud",
-      url: "https://www.arnobmahmud.com",
-      email: "contact@arnobmahmud.com",
+/** Tab title / share cards follow the UI language (Chinese by default). */
+export async function generateMetadata(): Promise<Metadata> {
+  const isZh = (await resolveLocale()) === "zh";
+  const title = isZh
+    ? "Stockly — 仓库与库存管理系统"
+    : "Stockly — Warehouse & Stock Inventory Management System";
+  const description = isZh
+    ? "Stockly 是一个基于 Next.js 的全栈仓库与库存管理系统：管理产品、分类、供应商、订单、发票与仓库，支持管理员/客户/供应商多角色权限、经营分析看板、二维码与 JWT 认证。"
+    : "Stockly is a full-stack warehouse and stock inventory management system built with Next.js. Manage products, categories, suppliers, orders, invoices, and warehouses. Role-based access for admin, client, and supplier. Analytics dashboard, QR codes, export, and secure JWT authentication. By Arnob Mahmud.";
+
+  return {
+    title: {
+      default: title,
+      template: `%s | ${title}`,
     },
-  ],
-  creator: "Arnob Mahmud",
-  publisher: "Arnob Mahmud",
-  applicationName: "Stockly",
-  keywords: [
-    "stock inventory",
-    "inventory management",
-    "warehouse management",
-    "stock management system",
-    "Next.js",
-    "React",
-    "Prisma",
-    "product catalog",
-    "orders",
-    "invoices",
-    "suppliers",
-    "categories",
-    "JWT authentication",
-    "responsive web app",
-    "business dashboard",
-    "Arnob Mahmud",
-  ],
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
-    other: [{ rel: "icon", url: "/favicon.ico" }],
-  },
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://stockly-inventory.vercel.app",
-  ),
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    title: "Stockly — Warehouse & Stock Inventory Management System",
-    description:
-      "Efficiently manage products, orders, invoices, and warehouses with Stockly. Secure, responsive, role-based inventory system. By Arnob Mahmud.",
-    url: "https://stockly-inventory.vercel.app",
-    siteName: "Stockly",
-    images: [
+    description,
+    authors: [
       {
-        url: "/favicon.ico",
-        width: 32,
-        height: 32,
-        alt: "Stockly — Stock Inventory Management",
+        name: "Arnob Mahmud",
+        url: "https://www.arnobmahmud.com",
       },
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Stockly — Warehouse & Stock Inventory Management System",
-    description:
-      "Efficiently manage products, orders, invoices, and warehouses. Secure, responsive inventory system. By Arnob Mahmud.",
-    images: ["/favicon.ico"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+    creator: "Arnob Mahmud",
+    publisher: "Arnob Mahmud",
+    applicationName: "Stockly",
+    keywords: [
+      "stock inventory",
+      "inventory management",
+      "warehouse management",
+      "stock management system",
+      "Next.js",
+      "React",
+      "Prisma",
+      "product catalog",
+      "orders",
+      "invoices",
+      "suppliers",
+      "categories",
+      "JWT authentication",
+      "responsive web app",
+      "business dashboard",
+      "Arnob Mahmud",
+    ],
+    icons: {
+      icon: "/favicon.ico",
+      apple: "/favicon.ico",
+      other: [{ rel: "icon", url: "/favicon.ico" }],
+    },
+    metadataBase: new URL(
+      process.env.NEXT_PUBLIC_APP_URL ?? "https://stockly-inventory.vercel.app",
+    ),
+    openGraph: {
+      type: "website",
+      locale: isZh ? "zh_CN" : "en_US",
+      title,
+      description,
+      url: "https://stockly-inventory.vercel.app",
+      siteName: "Stockly",
+      images: [
+        {
+          url: "/favicon.ico",
+          width: 32,
+          height: 32,
+          alt: "Stockly — Stock Inventory Management",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/favicon.ico"],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 /** Optional: set NEXT_PUBLIC_DISABLE_BROWSER_TRANSLATE=true on Vercel prod only (blocks Chrome Translate). */
 const disableBrowserTranslate =

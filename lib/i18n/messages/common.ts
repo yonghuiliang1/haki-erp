@@ -145,6 +145,10 @@ const common: Record<string, string> = {
   Summary: "汇总",
   Overview: "概览",
   "No data available": "暂无数据",
+  "No data yet": "暂无数据",
+  "The page you are looking for does not exist or has been moved.":
+    "你访问的页面不存在，或者已经被移动。",
+  "Back to home": "返回首页",
   "No results found": "未找到结果",
   "No records found": "暂无记录",
   "Nothing here yet": "这里还没有内容",
@@ -230,6 +234,45 @@ const common: Record<string, string> = {
   // --- Notifications -------------------------------------------------------
   total: "总计",
   unread: "未读",
+  "Order Confirmed": "订单已确认",
+  "Order Status Updated": "订单状态已更新",
+  "Order Shipped": "订单已发货",
+  "Order Notification": "订单通知",
+  "New order from a client": "客户新订单",
+  "New product review": "新商品评价",
+  "New support ticket": "新工单",
+  "Support ticket updated": "工单已更新",
+  "Import Complete": "导入完成",
+  // Sentence templates for stored notification bodies
+  "Order {orderNumber} status updated from {from} to {to}":
+    "订单 {orderNumber} 状态已从 {from} 变更为 {to}",
+  "Order {orderNumber} edited: ": "订单 {orderNumber} 已修改：",
+  "Order {orderNumber} has been cancelled": "订单 {orderNumber} 已取消",
+  "Order {orderNumber} was {result}": "订单 {orderNumber} {result}",
+  "Your order {orderNumber} has been successfully created. Total: ${total}":
+    "你的订单 {orderNumber} 已创建成功。合计：${total}",
+  "Shipment for order {orderNumber} has been updated": "订单 {orderNumber} 的物流信息已更新",
+  "Order {orderNumber} has been shipped. Tracking: {tracking}":
+    "订单 {orderNumber} 已发货。物流单号：{tracking}",
+  "Order {orderNumber} has been shipped.": "订单 {orderNumber} 已发货。",
+  "tracking information updated": "物流信息已更新",
+  "notes updated": "备注已更新",
+  "payment status changed to {status}": "支付状态变更为 {status}",
+  ", ": "、",
+  "{product} is running low. Current quantity: {quantity} (threshold: {threshold})":
+    "{product} 库存偏低。当前数量：{quantity}（阈值：{threshold}）",
+  " (SKU: {sku})": "（SKU：{sku}）",
+  "{product} is out of stock. Please restock immediately.":
+    "{product} 已缺货，请尽快补货。",
+  "{buyer} placed order {orderNumber} containing your products.":
+    "{buyer} 下单了包含你产品的订单 {orderNumber}。",
+  '{reviewer} left a review for "{product}".': "{reviewer} 评价了商品「{product}」。",
+  "Invoice {invoiceNumber} has been sent to you.":
+    "发票 {invoiceNumber} 已发送给你。",
+  "{updater} updated ticket: {subject}": "{updater} 更新了工单：{subject}",
+  "Import complete": "导入完成",
+  approved: "已通过",
+  rejected: "已驳回",
   "Mark all read": "全部标为已读",
   "Loading notifications...": "加载通知中...",
   "Failed to load notifications": "加载通知失败",
@@ -323,6 +366,23 @@ const common: Record<string, string> = {
   "No priority found.": "未找到优先级。",
   "Order type": "订单类型",
   "Invoice type": "发票类型",
+
+  // --- Month abbreviations (forecast seasonal trend chips) -----------------
+  Jan: "1 月",
+  Feb: "2 月",
+  Mar: "3 月",
+  Apr: "4 月",
+  May: "5 月",
+  Jun: "6 月",
+  Jul: "7 月",
+  Aug: "8 月",
+  Sep: "9 月",
+  Oct: "10 月",
+  Nov: "11 月",
+  Dec: "12 月",
+  "All Categories": "全部分类",
+  "All Suppliers": "全部供应商",
+  "All Warehouses": "全部仓库",
 
   // --- Product row actions -------------------------------------------------
   "Purchase this product to write a review": "购买该产品后才能发表评价",
