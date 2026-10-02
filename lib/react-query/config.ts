@@ -88,6 +88,37 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.suppliers.details(), id] as const,
   },
 
+  // Purchase order queries
+  purchaseOrders: {
+    all: ["purchaseOrders"] as const,
+    lists: () => [...queryKeys.purchaseOrders.all, "list"] as const,
+    list: (filters?: Record<string, unknown>) =>
+      [...queryKeys.purchaseOrders.lists(), filters] as const,
+    details: () => [...queryKeys.purchaseOrders.all, "detail"] as const,
+    detail: (id: string) =>
+      [...queryKeys.purchaseOrders.details(), id] as const,
+  },
+
+  // Finance report queries
+  finance: {
+    all: ["finance"] as const,
+    report: () => [...queryKeys.finance.all, "report"] as const,
+  },
+
+  // Sales performance queries
+  salesPerformance: {
+    all: ["salesPerformance"] as const,
+    lists: () => [...queryKeys.salesPerformance.all, "list"] as const,
+  },
+
+  // Export customer queries
+  customers: {
+    all: ["customers"] as const,
+    lists: () => [...queryKeys.customers.all, "list"] as const,
+    list: (filters?: Record<string, unknown>) =>
+      [...queryKeys.customers.lists(), filters] as const,
+  },
+
   // User queries
   user: {
     all: ["user"] as const,

@@ -81,12 +81,27 @@ export {
 export {
   createOrderSchema,
   updateOrderSchema,
+  orderApprovalSchema,
   shippingAddressSchema,
   billingAddressSchema,
   orderItemSchema,
   type CreateOrderFormData,
+  type OrderApprovalFormData,
   type UpdateOrderFormData,
 } from "./order";
+
+// Purchase order validations
+export {
+  createPurchaseOrderSchema,
+  purchaseOrderItemSchema,
+  type CreatePurchaseOrderFormData,
+} from "./purchase-order";
+
+// Sales performance validations
+export {
+  updateSalesPerformanceSchema,
+  type UpdateSalesPerformanceFormData,
+} from "./sales-performance";
 
 // Invoice validations
 export {

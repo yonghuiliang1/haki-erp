@@ -74,6 +74,14 @@ export type OrderFormData = {
   };
   useSameAddress?: boolean;
   notes?: string;
+  /** Export trade fields (shared with OrderTradeFields) */
+  customerId?: string;
+  currency?: "USD" | "EUR" | "CNY";
+  exchangeRate?: number;
+  tradeTerms?: string;
+  customsNo?: string;
+  portOfLoading?: string;
+  portOfDischarge?: string;
 };
 
 /**

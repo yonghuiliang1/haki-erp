@@ -1,6 +1,7 @@
 /**
  * REQ-0211 — Shared gate for Auto Generate / Ship Order UI + API.
- * Confirmed|processing OR money collected (partial|paid). Not pending unpaid / cancelled.
+ * Approved (or legacy confirmed|processing) OR money collected (partial|paid).
+ * Not draft/pending/rejected unpaid / cancelled.
  */
 
 export type OrderShipEligibilitySource = {
@@ -17,6 +18,7 @@ export function canGenerateShippingLabel(
   if (order.status === "shipped" || order.status === "delivered") return false;
   if (order.trackingNumber) return false;
   return (
+    order.status === "approved" ||
     order.status === "confirmed" ||
     order.status === "processing" ||
     order.paymentStatus === "partial" ||
@@ -35,5 +37,5 @@ export function shippingLabelBlockedReason(
   if (order.trackingNumber || order.status === "shipped") {
     return null;
   }
-  return "Confirm the order or collect payment before generating a shipping label.";
+  return "Approve the order or collect payment before generating a shipping label.";
 }

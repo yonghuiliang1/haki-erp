@@ -38,6 +38,39 @@ export const orderItemSchema = z.object({
 });
 
 /**
+ * Optional trimmed string — blank input becomes undefined instead of "".
+ */
+const optionalTradeText = (max: number) =>
+  z.preprocess(
+    (value) => {
+      if (typeof value !== "string") return undefined;
+      const trimmed = value.trim();
+      return trimmed === "" ? undefined : trimmed;
+    },
+    z.string().max(max).optional(),
+  );
+
+/** Optional positive number — blank input becomes undefined. */
+const optionalExchangeRate = z.preprocess(
+  (value) => {
+    if (value === "" || value === null || value === undefined) return undefined;
+    return Number(value);
+  },
+  z.number().positive("Exchange rate must be greater than 0").optional(),
+);
+
+/** Export trade fields shared by create + update schemas. */
+const tradeFieldsShape = {
+  customerId: optionalTradeText(40),
+  currency: z.enum(["USD", "EUR", "CNY"]).optional(),
+  exchangeRate: optionalExchangeRate,
+  tradeTerms: optionalTradeText(20),
+  customsNo: optionalTradeText(60),
+  portOfLoading: optionalTradeText(80),
+  portOfDischarge: optionalTradeText(80),
+} as const;
+
+/**
  * Helper function to transform empty address objects to undefined
  */
 const transformEmptyAddress = (address: unknown): unknown => {
@@ -63,6 +96,8 @@ export const createOrderSchema = z.object({
   billingAddress: z.preprocess(transformEmptyAddress, billingAddressSchema.optional()),
   // REQ-0236 — tax/shipping/discount computed server-side; not accepted from client
   notes: z.string().optional(),
+  // Export trade fields
+  ...tradeFieldsShape,
 });
 
 /**
@@ -71,7 +106,10 @@ export const createOrderSchema = z.object({
 export const updateOrderSchema = z.object({
   status: z
     .enum([
+      "draft",
       "pending",
+      "approved",
+      "rejected",
       "confirmed",
       "processing",
       "shipped",
@@ -117,12 +155,24 @@ export const updateOrderSchema = z.object({
     .or(z.string().date())
     .or(z.literal("")),
   notes: z.string().optional(),
+  // Export trade fields
+  ...tradeFieldsShape,
 });
 
 /**
  * Create order form data type
  */
 export type CreateOrderFormData = z.infer<typeof createOrderSchema>;
+
+/**
+ * Approve / reject an order (trade approval flow)
+ */
+export const orderApprovalSchema = z.object({
+  action: z.enum(["approve", "reject"]),
+  comment: z.string().max(1000).optional(),
+});
+
+export type OrderApprovalFormData = z.infer<typeof orderApprovalSchema>;
 
 /**
  * Update order form data type

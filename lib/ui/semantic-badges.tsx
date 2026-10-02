@@ -71,7 +71,10 @@ function normalizeKey(value: string): string {
 }
 
 const ORDER_STATUS: Record<string, BadgeTone> = {
+  draft: { className: GLASS_BADGE_CLASS.slate, icon: FileText },
   pending: { className: GLASS_BADGE_CLASS.orange, icon: Clock },
+  approved: { className: GLASS_BADGE_CLASS.emerald, icon: CheckCircle },
+  rejected: { className: GLASS_BADGE_CLASS.red, icon: XCircle },
   confirmed: { className: GLASS_BADGE_CLASS.sky, icon: CheckCircle },
   processing: { className: GLASS_BADGE_CLASS.yellow, icon: Loader2 },
   shipped: { className: GLASS_BADGE_CLASS.purple, icon: Truck },
@@ -81,7 +84,10 @@ const ORDER_STATUS: Record<string, BadgeTone> = {
 
 /** REQ-0187 — solid/opaque contrast for dark dialog glass (invoice picker/panel) */
 const ORDER_STATUS_HUE: Record<string, GlassBadgeHue> = {
+  draft: "slate",
   pending: "orange",
+  approved: "emerald",
+  rejected: "red",
   confirmed: "sky",
   processing: "yellow",
   shipped: "purple",

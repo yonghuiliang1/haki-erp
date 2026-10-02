@@ -14,9 +14,17 @@ type OrderRaw = {
   orderNumber: string;
   userId: string;
   clientId: string | null;
+  customerId?: string | null;
   status: string;
   paymentStatus: string;
   subtotal: number;
+  /** Export trade fields */
+  currency?: string | null;
+  exchangeRate?: number | null;
+  tradeTerms?: string | null;
+  customsNo?: string | null;
+  portOfLoading?: string | null;
+  portOfDischarge?: string | null;
   tax: number | null;
   shipping: number | null;
   discount: number | null;
@@ -41,6 +49,8 @@ type OrderRaw = {
 };
 
 export type OrderDetailEnrichment = {
+  /** Export customer snapshot (name, country, contact) */
+  customer?: Order["customer"];
   placedByName: string | null;
   placedByEmail: string | null;
   placedByUserId?: string | null;
@@ -66,6 +76,8 @@ export type OrderDetailEnrichment = {
   /** REQ-0096 — audit user snapshots from createdBy / updatedBy */
   creator?: Order["creator"];
   updater?: Order["updater"];
+  /** Approval trail, newest first */
+  approvals?: Order["approvals"];
 };
 
 /** Map Prisma order + enrichment to API/SSR Order shape. */
@@ -78,9 +90,17 @@ export function transformOrderDetail(
     orderNumber: order.orderNumber,
     userId: order.userId,
     clientId: order.clientId,
+    customerId: order.customerId ?? null,
+    customer: enrichment.customer ?? null,
     status: order.status as Order["status"],
     paymentStatus: order.paymentStatus as Order["paymentStatus"],
     subtotal: order.subtotal,
+    currency: order.currency ?? null,
+    exchangeRate: order.exchangeRate ?? null,
+    tradeTerms: order.tradeTerms ?? null,
+    customsNo: order.customsNo ?? null,
+    portOfLoading: order.portOfLoading ?? null,
+    portOfDischarge: order.portOfDischarge ?? null,
     tax: order.tax,
     shipping: order.shipping,
     discount: order.discount,
@@ -113,6 +133,7 @@ export function transformOrderDetail(
         : null,
     creator: enrichment.creator ?? null,
     updater: enrichment.updater ?? null,
+    approvals: enrichment.approvals ?? [],
     items: mapOrderItemsFromRaw(order.items, {
       subtotal: order.subtotal,
       total: order.total,

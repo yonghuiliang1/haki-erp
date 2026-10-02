@@ -64,6 +64,7 @@ import {
 import {
   GlassCard,
   DetailInfoRow,
+  OrderApprovalHistoryCard,
   OrderDetailHeader,
   OrderDetailActionBar,
   OrderItemsCard,
@@ -71,6 +72,7 @@ import {
   OrderShippingAddressCard,
   OrderStatusBadges,
   OrderSummaryCard,
+  OrderTradeInfoCard,
   variantConfig,
 } from "@/components/orders/detail";
 import { APP_SHELL_DETAIL_CLASS } from "@/lib/ui/shell-layout-styles";
@@ -475,6 +477,7 @@ export default function AdminOrderDetailContent({
                 )}
               </div>
             </GlassCard>
+            <OrderTradeInfoCard order={order} dataLoading={dataLoading} />
           </div>
 
           <div className="flex flex-col gap-2 sm:gap-4 min-w-0">
@@ -484,6 +487,7 @@ export default function AdminOrderDetailContent({
               isAdminRole
             />
             <OrderShippingAddressCard order={order} dataLoading={dataLoading} />
+            <OrderApprovalHistoryCard order={order} dataLoading={dataLoading} />
             {/* REQ-0208 / REQ-0211 — Shipping & Tracking; Auto Generate gated */}
             {!dataLoading &&
               order &&

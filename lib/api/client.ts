@@ -21,6 +21,14 @@ import type {
   Product,
   Category,
   Supplier,
+  ExportCustomer,
+  PurchaseOrder,
+  CreatePurchaseOrderInput,
+  FinanceReport,
+  SalesPerformanceData,
+  SalesPerformanceEntry,
+  UpdateSalesPerformanceInput,
+  AssistantChatResponse,
   CreateProductInput,
   UpdateProductInput,
   CreateCategoryInput,
@@ -463,6 +471,143 @@ class ApiClient {
     delete: async (id: string): Promise<ApiResponse<void>> => {
       const response = await this.client.delete<void>(
         `${API_ENDPOINTS.suppliers.base}?id=${id}`,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+  };
+
+  /**
+   * Export customers API methods
+   */
+  customers = {
+    /**
+     * Get all active export customers (order form picker)
+     */
+    getAll: async (): Promise<ApiResponse<ExportCustomer[]>> => {
+      const response = await this.client.get<ExportCustomer[]>(
+        API_ENDPOINTS.customers.base,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+  };
+
+  /**
+   * Purchase orders API methods
+   */
+  purchaseOrders = {
+    /** List purchase orders (with supplier names) */
+    getAll: async (): Promise<ApiResponse<PurchaseOrder[]>> => {
+      const response = await this.client.get<PurchaseOrder[]>(
+        API_ENDPOINTS.purchaseOrders.base,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /** Create a purchase order (starts as pending) */
+    create: async (
+      data: CreatePurchaseOrderInput,
+    ): Promise<ApiResponse<PurchaseOrder>> => {
+      const response = await this.client.post<PurchaseOrder>(
+        API_ENDPOINTS.purchaseOrders.base,
+        data,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /** Receive a purchase order — stock flows into inventory */
+    receive: async (id: string): Promise<ApiResponse<PurchaseOrder>> => {
+      const response = await this.client.post<PurchaseOrder>(
+        `${API_ENDPOINTS.purchaseOrders.base}/${id}/receive`,
+        {},
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /** CSV download URL for one purchase order (for <a download>) */
+    exportCsvUrl: (id: string): string =>
+      `${API_ENDPOINTS.purchaseOrders.base}/${id}/export`,
+  };
+
+  /**
+   * Finance report API methods
+   */
+  finance = {
+    getReport: async (): Promise<ApiResponse<FinanceReport>> => {
+      const response = await this.client.get<FinanceReport>(
+        API_ENDPOINTS.finance.report,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+  };
+
+  /**
+   * Sales performance API methods
+   */
+  salesPerformance = {
+    getAll: async (): Promise<ApiResponse<SalesPerformanceData>> => {
+      const response = await this.client.get<SalesPerformanceData>(
+        API_ENDPOINTS.salesPerformance.base,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /** Adjust the attribution month of one entry */
+    update: async (
+      id: string,
+      data: UpdateSalesPerformanceInput,
+    ): Promise<ApiResponse<SalesPerformanceEntry>> => {
+      const response = await this.client.patch<SalesPerformanceEntry>(
+        `${API_ENDPOINTS.salesPerformance.base}/${id}`,
+        data,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+  };
+
+  /**
+   * AI support assistant API methods
+   */
+  ai = {
+    /** Ask the support assistant (knowledge base grounded, model when configured) */
+    chat: async (data: {
+      message: string;
+      sessionId?: string;
+    }): Promise<ApiResponse<AssistantChatResponse>> => {
+      const response = await this.client.post<AssistantChatResponse>(
+        API_ENDPOINTS.ai.chat,
+        data,
       );
       return {
         data: response.data,
@@ -1384,6 +1529,24 @@ class ApiClient {
     delete: async (id: string): Promise<ApiResponse<Order>> => {
       const response = await this.client.delete<Order>(
         `${API_ENDPOINTS.orders.base}/${id}`,
+      );
+      return {
+        data: response.data,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    },
+
+    /**
+     * Approve or reject a pending order (trade approval flow)
+     */
+    approve: async (
+      id: string,
+      data: { action: "approve" | "reject"; comment?: string },
+    ): Promise<ApiResponse<{ id: string; status: string }>> => {
+      const response = await this.client.post<{ id: string; status: string }>(
+        `${API_ENDPOINTS.orders.base}/${id}/approve`,
+        data,
       );
       return {
         data: response.data,

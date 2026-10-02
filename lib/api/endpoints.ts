@@ -31,6 +31,31 @@ export const API_ENDPOINTS = {
     base: "/suppliers",
   },
 
+  // Export customer master data endpoints
+  customers: {
+    base: "/customers",
+  },
+
+  // Purchase order endpoints
+  purchaseOrders: {
+    base: "/purchase-orders",
+  },
+
+  // Finance reporting endpoints
+  finance: {
+    report: "/finance/report",
+  },
+
+  // Sales performance endpoints
+  salesPerformance: {
+    base: "/sales-performance",
+  },
+
+  // AI support assistant endpoints
+  ai: {
+    chat: "/ai/chat",
+  },
+
   // User endpoints
   user: {
     emailPreferences: "/user/email-preferences",

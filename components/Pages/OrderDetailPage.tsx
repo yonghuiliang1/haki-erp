@@ -59,6 +59,7 @@ import {
   formatAddress,
   DetailInfoRow,
   GlassCard,
+  OrderApprovalHistoryCard,
   OrderDetailHeader,
   OrderDetailActionBar,
   OrderItemsCard,
@@ -66,6 +67,7 @@ import {
   OrderShippingAddressCard,
   OrderStatusBadges,
   OrderSummaryCard,
+  OrderTradeInfoCard,
 } from "@/components/orders/detail";
 import {
   getOrderCancelConfirmDescription,
@@ -296,6 +298,7 @@ export default function OrderDetailPage({
 
           {/* REQ-0147 — Info | Parties + addresses stack (content-height, no empty stretch) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4 items-start">
+            <div className="flex flex-col gap-2 sm:gap-4 min-w-0">
             <GlassCard variant="orange">
               <SectionCardHeader
                 title="Order Information"
@@ -562,6 +565,8 @@ export default function OrderDetailPage({
                 )}
               </div>
             </GlassCard>
+            <OrderTradeInfoCard order={order} dataLoading={dataLoading} />
+            </div>
 
             <div className="flex flex-col gap-2 sm:gap-4 min-w-0">
               <OrderPartiesCard
@@ -570,6 +575,10 @@ export default function OrderDetailPage({
                 isAdminRole={isAdminRole}
               />
               <OrderShippingAddressCard
+                order={order}
+                dataLoading={dataLoading}
+              />
+              <OrderApprovalHistoryCard
                 order={order}
                 dataLoading={dataLoading}
               />

@@ -48,6 +48,7 @@ import {
   type OrderFormData,
 } from "@/components/orders/OrderDialogCreateLineItem";
 import { OrderAddressFields } from "@/components/orders/OrderAddressFields";
+import { OrderTradeFields } from "@/components/orders/OrderTradeFields";
 import { ensureStockAllocationsAndValidate } from "@/lib/orders/order-line-stock-validation";
 import {
   DeferredSelectGate,
@@ -81,6 +82,7 @@ import { logger } from "@/lib/logger";
 import {
   CircleDollarSign,
   DollarSign,
+  Globe2,
   MapPin,
   Package,
   Percent,
@@ -454,6 +456,14 @@ export default function OrderDialog({
           ? (data.billingAddress as BillingAddress)
           : undefined,
         notes: data.notes || undefined,
+        // Export trade fields captured with the order
+        customerId: data.customerId || undefined,
+        currency: data.currency || undefined,
+        exchangeRate: data.exchangeRate || undefined,
+        tradeTerms: data.tradeTerms || undefined,
+        customsNo: data.customsNo || undefined,
+        portOfLoading: data.portOfLoading || undefined,
+        portOfDischarge: data.portOfDischarge || undefined,
       };
 
       // Create order using TanStack Query mutation
@@ -535,6 +545,15 @@ export default function OrderDialog({
             ? new Date(editingOrder.cancelledAt).toISOString().split("T")[0]
             : "",
           notes: editingOrder.notes || "",
+          // Export trade fields
+          customerId: editingOrder.customerId || undefined,
+          currency:
+            (editingOrder.currency as "USD" | "EUR" | "CNY" | null) || undefined,
+          exchangeRate: editingOrder.exchangeRate ?? undefined,
+          tradeTerms: editingOrder.tradeTerms || undefined,
+          customsNo: editingOrder.customsNo || undefined,
+          portOfLoading: editingOrder.portOfLoading || undefined,
+          portOfDischarge: editingOrder.portOfDischarge || undefined,
         }
       : {
           status: "pending",
@@ -546,6 +565,13 @@ export default function OrderDialog({
           deliveredAt: "",
           cancelledAt: "",
           notes: "",
+          customerId: undefined,
+          currency: undefined,
+          exchangeRate: undefined,
+          tradeTerms: undefined,
+          customsNo: undefined,
+          portOfLoading: undefined,
+          portOfDischarge: undefined,
         },
   });
 
@@ -576,6 +602,15 @@ export default function OrderDialog({
             ? new Date(editingOrder.cancelledAt).toISOString().split("T")[0]
             : "",
           notes: editingOrder.notes || "",
+          // Export trade fields
+          customerId: editingOrder.customerId || undefined,
+          currency:
+            (editingOrder.currency as "USD" | "EUR" | "CNY" | null) || undefined,
+          exchangeRate: editingOrder.exchangeRate ?? undefined,
+          tradeTerms: editingOrder.tradeTerms || undefined,
+          customsNo: editingOrder.customsNo || undefined,
+          portOfLoading: editingOrder.portOfLoading || undefined,
+          portOfDischarge: editingOrder.portOfDischarge || undefined,
         });
       } else if (externalEditingOrder === null) {
         editReset({
@@ -588,6 +623,13 @@ export default function OrderDialog({
           deliveredAt: "",
           cancelledAt: "",
           notes: "",
+          customerId: undefined,
+          currency: undefined,
+          exchangeRate: undefined,
+          tradeTerms: undefined,
+          customsNo: undefined,
+          portOfLoading: undefined,
+          portOfDischarge: undefined,
         });
       }
     },
@@ -613,6 +655,14 @@ export default function OrderDialog({
         deliveredAt: data.deliveredAt ? new Date(data.deliveredAt) : undefined,
         cancelledAt: data.cancelledAt ? new Date(data.cancelledAt) : undefined,
         notes: data.notes || undefined,
+        // Export trade fields (undefined leaves the stored value untouched)
+        customerId: data.customerId,
+        currency: data.currency,
+        exchangeRate: data.exchangeRate,
+        tradeTerms: data.tradeTerms,
+        customsNo: data.customsNo,
+        portOfLoading: data.portOfLoading,
+        portOfDischarge: data.portOfDischarge,
       };
 
       // Update order using TanStack Query mutation
@@ -921,6 +971,14 @@ export default function OrderDialog({
                   />
                 ) : null}
 
+                {/* Export Trade — shared field block (see OrderTradeFields) */}
+                <div className="sm:col-span-2 space-y-2">
+                  <DialogFormLabel icon={Globe2} optional>
+                    Export Trade
+                  </DialogFormLabel>
+                  <OrderTradeFields dialogOpen={open} />
+                </div>
+
                 {/* Notes */}
                 <div className="sm:col-span-2 space-y-2">
                   <DialogFormLabel htmlFor="notes" icon={StickyNote} optional>
@@ -1107,6 +1165,14 @@ export default function OrderDialog({
                       <OrderAddressFields prefix="billingAddress" />
                     </div>
                   )}
+                </div>
+
+                {/* Export Trade Section — shared field block (see OrderTradeFields) */}
+                <div className="space-y-4">
+                  <DialogFormLabel icon={Globe2} optional>
+                    Export Trade
+                  </DialogFormLabel>
+                  <OrderTradeFields dialogOpen={open} />
                 </div>
 
                 {/* Order Totals Section — tax 7%, shipping $4.99, discount by subtotal tier (computed, no dropdowns) */}

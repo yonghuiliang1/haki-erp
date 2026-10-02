@@ -21,6 +21,7 @@ import { updateOrderSchema } from "@/lib/validations";
 import { withRateLimit, defaultRateLimits } from "@/lib/api/rate-limit";
 import { sendOrderStatusUpdate } from "@/lib/email/notifications";
 import { createOrderNotification } from "@/lib/notifications/in-app";
+import { checkLowStockForProducts } from "@/lib/notifications/stock-alerts";
 import { createAuditLog } from "@/prisma/audit-log";
 import { getOrderDetailForPage } from "@/lib/server/order-detail-data";
 
@@ -161,6 +162,21 @@ export async function PUT(
     if (updateData.cancelledAt && updateData.cancelledAt !== "")
       updatePayload.cancelledAt = new Date(updateData.cancelledAt);
     if (updateData.notes !== undefined) updatePayload.notes = updateData.notes;
+    // Export trade fields — explicit null clears the stored value
+    if (updateData.customerId !== undefined)
+      updatePayload.customerId = updateData.customerId || null;
+    if (updateData.currency !== undefined)
+      updatePayload.currency = updateData.currency || null;
+    if (updateData.exchangeRate !== undefined)
+      updatePayload.exchangeRate = updateData.exchangeRate ?? null;
+    if (updateData.tradeTerms !== undefined)
+      updatePayload.tradeTerms = updateData.tradeTerms || null;
+    if (updateData.customsNo !== undefined)
+      updatePayload.customsNo = updateData.customsNo || null;
+    if (updateData.portOfLoading !== undefined)
+      updatePayload.portOfLoading = updateData.portOfLoading || null;
+    if (updateData.portOfDischarge !== undefined)
+      updatePayload.portOfDischarge = updateData.portOfDischarge || null;
 
     // Update order — for admin, use the order's own userId so the
     // Prisma updateOrder filter matches.
@@ -193,6 +209,18 @@ export async function PUT(
     // Track changes for notifications
     const statusChanged =
       updateData.status && updateData.status !== existingOrder.status;
+
+    // Shipping deducts catalog stock — re-check the touched products for alerts.
+    if (
+      statusChanged &&
+      (updateData.status === "shipped" || updateData.status === "delivered")
+    ) {
+      checkLowStockForProducts(
+        (order.items ?? []).map((item) => item.productId),
+      ).catch((error) => {
+        logger.error("Low-stock check after shipping failed:", error);
+      });
+    }
     const isNowShipped = statusChanged && updateData.status === "shipped";
     const trackingAdded =
       (updateData.trackingNumber || updateData.trackingUrl) &&
@@ -353,6 +381,14 @@ export async function PUT(
       clientId: orderWithItems.clientId,
       status: orderWithItems.status,
       paymentStatus: orderWithItems.paymentStatus,
+      // Export trade fields (kept in the response so cache patches stay complete)
+      customerId: orderWithItems.customerId ?? null,
+      currency: orderWithItems.currency ?? null,
+      exchangeRate: orderWithItems.exchangeRate ?? null,
+      tradeTerms: orderWithItems.tradeTerms ?? null,
+      customsNo: orderWithItems.customsNo ?? null,
+      portOfLoading: orderWithItems.portOfLoading ?? null,
+      portOfDischarge: orderWithItems.portOfDischarge ?? null,
       subtotal: orderWithItems.subtotal,
       tax: orderWithItems.tax,
       shipping: orderWithItems.shipping,

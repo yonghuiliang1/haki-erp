@@ -45,6 +45,32 @@ export type {
   DEFAULT_EMAIL_PREFERENCES,
 } from "./auth";
 
+// Export customer types
+export type { ExportCustomer, CustomerInput } from "./customer";
+
+// Purchase order types
+export type {
+  PurchaseOrder,
+  PurchaseOrderItem,
+  PurchaseOrderStatus,
+  CreatePurchaseOrderInput,
+} from "./purchase-order";
+
+// AI support assistant types
+export type { AssistantChatResponse, AssistantChatSource } from "./ai";
+
+// Finance report + sales performance types
+export type {
+  FinanceReport,
+  FinanceMonthlyRow,
+  FinanceTopCustomer,
+  FinanceTopProduct,
+  SalesPerformanceEntry,
+  SalesPerformanceSummaryRow,
+  SalesPerformanceData,
+  UpdateSalesPerformanceInput,
+} from "./finance";
+
 // Order types
 export type {
   Order,
@@ -56,6 +82,7 @@ export type {
   CreateOrderInput,
   UpdateOrderInput,
   OrderFilters,
+  OrderApprovalRecord,
 } from "./order";
 
 // Notification types

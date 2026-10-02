@@ -35,7 +35,10 @@ type OrderStatusOption = {
 };
 
 const orderStatuses: OrderStatusOption[] = [
+  { value: "draft", label: "Draft" },
   { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
   { value: "confirmed", label: "Confirmed" },
   { value: "processing", label: "Processing" },
   { value: "shipped", label: "Shipped" },

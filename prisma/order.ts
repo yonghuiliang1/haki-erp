@@ -85,12 +85,6 @@ export async function createOrder(
   const orderItemsData = [];
 
   // Fetch products and calculate line items
-  const productsToReserve: {
-    id: string;
-    qty: number;
-    warehouseId: string | null;
-  }[] = [];
-
   for (const item of data.items) {
     const product = await prisma.product.findUnique({
       where: { id: item.productId },
@@ -165,12 +159,6 @@ export async function createOrder(
       warehouseId,
       warehouseName,
     });
-
-    productsToReserve.push({
-      id: item.productId,
-      qty: item.quantity,
-      warehouseId,
-    });
   }
 
   // REQ-0236 — server-authoritative fees (ignore any client tax/shipping/discount)
@@ -187,8 +175,17 @@ export async function createOrder(
       orderNumber,
       userId: party.storeOwnerUserId,
       clientId: party.clientId,
-      status: "pending",
+      customerId: data.customerId ?? null,
+      // Trade flow starts as a draft; stock is reserved only after approval.
+      status: "draft",
       paymentStatus: "unpaid",
+      // Export trade fields captured with the order
+      currency: data.currency ?? null,
+      exchangeRate: data.exchangeRate ?? null,
+      tradeTerms: data.tradeTerms ?? null,
+      customsNo: data.customsNo ?? null,
+      portOfLoading: data.portOfLoading ?? null,
+      portOfDischarge: data.portOfDischarge ?? null,
       subtotal,
       tax: tax > 0 ? tax : null,
       shipping: shipping > 0 ? shipping : null,
@@ -215,14 +212,8 @@ export async function createOrder(
     },
   });
 
-  // REQ-0103 — disjoint reserve: allocation OR product, never both
-  await reservePendingOrderLines(
-    productsToReserve.map((p) => ({
-      productId: p.id,
-      quantity: p.qty,
-      warehouseId: p.warehouseId,
-    })),
-  );
+  // No reservation at draft time. Approval reserves stock on exactly one
+  // path per line (allocation when a warehouse was picked, product otherwise).
 
   // Invalidate product + allocation cache so UI shows updated reserved stock
   await Promise.all([
@@ -598,6 +589,15 @@ export async function updateOrder(
     deliveredAt?: Date;
     cancelledAt?: Date;
     notes?: string;
+    approvedById?: string;
+    approvedAt?: Date;
+    customerId?: string | null;
+    currency?: string | null;
+    exchangeRate?: number | null;
+    tradeTerms?: string | null;
+    customsNo?: string | null;
+    portOfLoading?: string | null;
+    portOfDischarge?: string | null;
     updatedAt: Date;
     updatedBy: string;
   } = {
@@ -625,6 +625,22 @@ export async function updateOrder(
   if (data.deliveredAt) updateData.deliveredAt = data.deliveredAt;
   if (data.cancelledAt) updateData.cancelledAt = data.cancelledAt;
   if (data.notes !== undefined) updateData.notes = data.notes;
+  if (data.approvedById) updateData.approvedById = data.approvedById;
+  if (data.approvedAt) updateData.approvedAt = data.approvedAt;
+  // Export trade fields — explicit null clears the stored value
+  if (data.customerId !== undefined)
+    updateData.customerId = data.customerId || null;
+  if (data.currency !== undefined) updateData.currency = data.currency || null;
+  if (data.exchangeRate !== undefined)
+    updateData.exchangeRate = data.exchangeRate ?? null;
+  if (data.tradeTerms !== undefined)
+    updateData.tradeTerms = data.tradeTerms || null;
+  if (data.customsNo !== undefined)
+    updateData.customsNo = data.customsNo || null;
+  if (data.portOfLoading !== undefined)
+    updateData.portOfLoading = data.portOfLoading || null;
+  if (data.portOfDischarge !== undefined)
+    updateData.portOfDischarge = data.portOfDischarge || null;
 
   // Get order items to check if we need to update stock
   const orderWithItems = await prisma.order.findFirst({
@@ -641,34 +657,31 @@ export async function updateOrder(
   // Track if stock needs to be adjusted based on status changes
   const previousStatus = existingOrder.status;
   const newStatus = updateData.status || previousStatus;
-  const previousPaymentStatus = existingOrder.paymentStatus;
-  const newPaymentStatus = updateData.paymentStatus || previousPaymentStatus;
 
-  // Determine status categories
-  const wasPending = previousStatus === "pending";
-  const wasConfirmedOrPaid =
-    previousStatus === "confirmed" ||
-    previousStatus === "processing" ||
-    previousStatus === "shipped" ||
-    previousStatus === "delivered" ||
-    previousPaymentStatus === "paid";
-  const isConfirmedOrPaid =
-    newStatus === "confirmed" ||
-    newStatus === "processing" ||
-    newStatus === "shipped" ||
-    newStatus === "delivered" ||
-    newPaymentStatus === "paid";
+  // Trade-flow stock lifecycle:
+  //   draft | pending | rejected → holds no stock
+  //   approved                   → reservation held (product or allocation)
+  //   shipped | delivered        → catalog quantity already deducted
+  // Legacy checkout rows keep their old meaning — confirmed/processing were
+  // deducted by the payment callback, so they count as fulfilled here.
+  const FULFILLED_STATUSES = [
+    "confirmed",
+    "processing",
+    "shipped",
+    "delivered",
+  ];
+  const wasFulfilled = FULFILLED_STATUSES.includes(previousStatus);
+  const isFulfilled = FULFILLED_STATUSES.includes(newStatus);
+  const wasReservedOnly = previousStatus === "approved";
+  const isReservedOnly = newStatus === "approved";
 
   // If order is being cancelled
   const isBeingCancelled =
     newStatus === "cancelled" && previousStatus !== "cancelled";
 
-  // If order status/payment changes to confirmed/paid (only if not already confirmed/paid)
-  const isBecomingConfirmedOrPaid = isConfirmedOrPaid && !wasConfirmedOrPaid;
-
-  // If order was cancelled and is now being reactivated to confirmed/paid
+  // If order left the cancelled state
   const isBeingReactivated =
-    previousStatus === "cancelled" && isConfirmedOrPaid;
+    previousStatus === "cancelled" && newStatus !== "cancelled";
 
   // Update order
   const updatedOrder = await prisma.order.update({
@@ -700,58 +713,15 @@ export async function updateOrder(
     quantity: item.quantity,
   }));
 
-  if (isBeingCancelled) {
-    if (wasConfirmedOrPaid) {
-      // Order was confirmed/paid, now cancelled: restore actual stock
-      for (const item of orderWithItems.items) {
-        await prisma.product.update({
-          where: { id: item.productId },
-          data: {
-            quantity: { increment: item.quantity },
-          },
-        });
-      }
-      try {
-        await syncRestoreConfirmedOrderAllocations(allocationItems);
-      } catch (error) {
-        logger.warn("Failed to restore allocation stock on order cancel", {
-          orderId,
-          error,
-        });
-      }
-    } else if (wasPending) {
-      try {
-        await releasePendingOrderLines(allocationItems);
-      } catch (error) {
-        logger.warn("Failed to release reservation on order cancel", {
-          orderId,
-          error,
-        });
-      }
-    }
-  } else if (isBecomingConfirmedOrPaid && wasPending) {
-    try {
-      await fulfillPendingOrderLines(allocationItems);
-    } catch (error) {
-      logger.warn("Failed to fulfill stock for order", {
-        orderId,
-        error,
-      });
-    }
-  } else if (isBeingReactivated) {
-    // Cancelled order being reactivated to confirmed/paid: deduct quantity only
-    // (No reservation exists for cancelled orders)
+  /** Deduct catalog quantity for lines that never held a reservation. */
+  const deductCatalogQuantity = async () => {
     for (const item of orderWithItems.items) {
       await prisma.product.update({
         where: { id: item.productId },
-        data: {
-          quantity: { decrement: item.quantity },
-        },
+        data: { quantity: { decrement: item.quantity } },
       });
     }
-
     try {
-      await syncFulfillReactivatedOrderAllocations(allocationItems);
       await decrementStockAllocations(
         orderWithItems.items
           .filter((item) => !item.warehouseId)
@@ -761,7 +731,92 @@ export async function updateOrder(
           })),
       );
     } catch (error) {
-      logger.warn("Failed to fulfill allocation stock on order reactivation", {
+      logger.warn("Failed to deduct catalog stock for order", {
+        orderId,
+        error,
+      });
+    }
+  };
+
+  /** Put deducted stock back into the catalog. */
+  const restoreCatalogQuantity = async () => {
+    for (const item of orderWithItems.items) {
+      await prisma.product.update({
+        where: { id: item.productId },
+        data: { quantity: { increment: item.quantity } },
+      });
+    }
+    try {
+      await syncRestoreConfirmedOrderAllocations(allocationItems);
+    } catch (error) {
+      logger.warn("Failed to restore allocation stock on order cancel", {
+        orderId,
+        error,
+      });
+    }
+  };
+
+  if (isBeingCancelled) {
+    if (wasFulfilled) {
+      await restoreCatalogQuantity();
+    } else if (wasReservedOnly) {
+      try {
+        await releasePendingOrderLines(allocationItems);
+      } catch (error) {
+        logger.warn("Failed to release reservation on order cancel", {
+          orderId,
+          error,
+        });
+      }
+    }
+    // draft / pending / rejected hold no stock — nothing to undo.
+  } else if (isBeingReactivated) {
+    // Nothing was held while cancelled, so the target status decides.
+    if (isFulfilled) {
+      await deductCatalogQuantity();
+      try {
+        await syncFulfillReactivatedOrderAllocations(allocationItems);
+      } catch (error) {
+        logger.warn(
+          "Failed to fulfill allocation stock on order reactivation",
+          { orderId, error },
+        );
+      }
+    } else if (isReservedOnly) {
+      try {
+        await reservePendingOrderLines(allocationItems);
+      } catch (error) {
+        logger.warn("Failed to reserve stock on order reactivation", {
+          orderId,
+          error,
+        });
+      }
+    }
+  } else if (isFulfilled && !wasFulfilled) {
+    if (wasReservedOnly) {
+      // approved → shipped: turn the reservation into a deduction.
+      try {
+        await fulfillPendingOrderLines(allocationItems);
+      } catch (error) {
+        logger.warn("Failed to fulfill stock for order", { orderId, error });
+      }
+    } else {
+      // Shipped without approval — deduct outright.
+      await deductCatalogQuantity();
+    }
+  } else if (isReservedOnly && !wasReservedOnly) {
+    // draft/pending/rejected → approved: lock the stock.
+    try {
+      await reservePendingOrderLines(allocationItems);
+    } catch (error) {
+      logger.warn("Failed to reserve stock for order", { orderId, error });
+    }
+  } else if (wasReservedOnly && !isReservedOnly && !isFulfilled) {
+    // Approval withdrawn (order sent back for review) — drop the reservation.
+    try {
+      await releasePendingOrderLines(allocationItems);
+    } catch (error) {
+      logger.warn("Failed to release reservation for order", {
         orderId,
         error,
       });
@@ -770,10 +825,10 @@ export async function updateOrder(
 
   // Invalidate product + allocation cache to reflect stock changes
   if (
-    (isBeingCancelled && wasConfirmedOrPaid) ||
-    isBecomingConfirmedOrPaid ||
+    isBeingCancelled ||
     isBeingReactivated ||
-    (isBeingCancelled && wasPending)
+    isFulfilled !== wasFulfilled ||
+    isReservedOnly !== wasReservedOnly
   ) {
     await Promise.all([
       invalidateCache(cacheKeys.products.pattern),
@@ -881,15 +936,15 @@ export async function cancelOrder(orderId: string, userId: string) {
     });
   }
 
-  // REQ-0209 — First money (partial|paid) fulfills reserved stock + sets confirmed.
-  // Cancel/refund therefore restores catalog qty + warehouse allocations when confirmed/paid.
-  const wasPending = orderWithItems.status === "pending";
-  const wasConfirmedOrPaid =
+  // Cancelling undoes whatever the current status was holding:
+  // shipped/delivered (and legacy confirmed/processing) → restore deducted stock;
+  // approved → release the reservation; draft/pending/rejected → nothing held.
+  const wasFulfilled =
     orderWithItems.status === "confirmed" ||
     orderWithItems.status === "processing" ||
     orderWithItems.status === "shipped" ||
-    orderWithItems.status === "delivered" ||
-    orderWithItems.paymentStatus === "paid";
+    orderWithItems.status === "delivered";
+  const wasReservedOnly = orderWithItems.status === "approved";
 
   if (orderWithItems.status !== "cancelled") {
     const allocationItems = orderWithItems.items.map((item) => ({
@@ -898,8 +953,8 @@ export async function cancelOrder(orderId: string, userId: string) {
       quantity: item.quantity,
     }));
 
-    if (wasConfirmedOrPaid) {
-      // Fulfilled stock (incl. after first partial pay) → restore product + allocations
+    if (wasFulfilled) {
+      // Stock was deducted → put it back.
       for (const item of orderWithItems.items) {
         await prisma.product.update({
           where: { id: item.productId },
@@ -916,8 +971,8 @@ export async function cancelOrder(orderId: string, userId: string) {
           error,
         });
       }
-    } else if (wasPending) {
-      // Still reserved only (unpaid pending) → release reservation
+    } else if (wasReservedOnly) {
+      // Approved but not shipped → drop the reservation.
       try {
         await releasePendingOrderLines(allocationItems);
       } catch (error) {

@@ -4,6 +4,10 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Boxes,
+  ClipboardList,
+  LineChart,
+  Sparkles,
   LayoutDashboard,
   Package,
   Warehouse,
@@ -40,8 +44,12 @@ const ADMIN_NAV_ICONS: Record<string, LucideIcon> = {
   "/admin/invoices": FileText,
   "/admin/support-tickets": MessageSquare,
   "/admin/product-reviews": Star,
+  "/admin/finance": LineChart,
+  "/admin/assistant": Sparkles,
   "/admin/products": Package,
   "/admin/warehouses": Warehouse,
+  "/admin/inventory": Boxes,
+  "/admin/purchase-orders": ClipboardList,
   "/admin/supplier-portal": Truck,
   "/admin/client-portal": Store,
   "/admin/user-management": Users,

@@ -146,6 +146,7 @@ model Product {
   price            Float
   quantity         BigInt
   reservedQuantity BigInt      @default(0) // Stock reserved by pending orders (not yet confirmed)
+  lowStockThreshold Int? // Reorder point; a low-stock alert fires when quantity - reservedQuantity falls to or below it
   sku              String      @unique
   status           String
   supplierId       String
@@ -458,4 +459,77 @@ model Approval {
   @@index([orderId])
   @@index([approverId])
   @@index([createdAt])
+}
+
+// Purchase order placed with a supplier. Receiving it puts stock into a warehouse.
+model PurchaseOrder {
+  id          String    @id @default(cuid())
+  purchaseNo  String    @unique // Human-readable number, e.g. PR-2026-001
+  supplierId  String // Supplier this purchase is placed with
+  warehouseId String? // Receiving warehouse
+  status      String    @default("draft") // draft, pending, approved, received, cancelled
+  currency    String? // Settlement currency
+  total       Float     @default(0) // Sum of line subtotals
+  expectedAt  DateTime? // Expected arrival date
+  receivedAt  DateTime? // Actual receiving date
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? // Manually managed - null on create, set on update
+  createdBy   String
+  updatedBy   String?
+  items       PurchaseOrderItem[]
+
+  @@index([supplierId])
+  @@index([warehouseId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model PurchaseOrderItem {
+  id              String   @id @default(cuid())
+  purchaseOrderId String
+  productId       String
+  productName     String // Snapshot at purchase time
+  sku             String? // Snapshot at purchase time
+  quantity        Int
+  unitCost        Float // Purchase price per unit
+  subtotal        Float // quantity * unitCost
+  createdAt       DateTime @default(now())
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+}
+
+// AI assistant knowledge base. Retrieval matches the user's question against these articles
+// before falling back to the language model.
+model KnowledgeArticle {
+  id        String    @id @default(cuid())
+  question  String // Canonical question / topic this article answers
+  answer    String // Answer text handed to the assistant as grounding context
+  category  String    @default("general") // general, order, inventory, purchase, finance, shipping
+  keywords  String? // Comma-separated extra matching terms
+  status    Boolean   @default(true) // Active / inactive
+  hitCount  Int       @default(0) // How many times this article matched a question
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? // Manually managed - null on create, set on update
+  createdBy String
+  updatedBy String?
+
+  @@index([category])
+  @@index([status])
+}
+
+// AI assistant conversation log. Kept so answers can be traced back to their source.
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String // Conversation thread id
+  userId    String? // Null for anonymous visitors
+  role      String // user | assistant
+  content   String // Message body
+  source    String? // knowledge | model | fallback — where an assistant answer came from
+  createdAt DateTime @default(now())
+
+  @@index([sessionId, createdAt])
+  @@index([userId])
 }

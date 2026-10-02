@@ -53,7 +53,25 @@ export {
   useCreateOrder,
   useUpdateOrder,
   useDeleteOrder,
+  useApproveOrder,
 } from "./use-orders";
+
+// Export customer hooks
+export { useCustomers } from "./use-customers";
+
+// Purchase order hooks
+export {
+  usePurchaseOrders,
+  useCreatePurchaseOrder,
+  useReceivePurchaseOrder,
+} from "./use-purchase-orders";
+
+// Finance + sales performance hooks
+export { useFinanceReport } from "./use-finance";
+export {
+  useSalesPerformance,
+  useUpdateSalesPerformance,
+} from "./use-sales-performance";
 
 // Notification hooks
 export {

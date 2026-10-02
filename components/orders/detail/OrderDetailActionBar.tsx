@@ -35,6 +35,7 @@ import {
 import type { Order } from "@/types";
 import { resolveOrderPayAmount } from "@/lib/payments/resolve-order-pay-amount";
 import { canGenerateShippingLabel } from "@/lib/orders/order-ship-eligibility";
+import { OrderApprovalActions } from "./OrderApprovalActions";
 
 export type OrderDetailActionBarProps = {
   order?: Order;
@@ -65,7 +66,7 @@ export function OrderDetailActionBar({
   order,
   dataLoading,
   invoiceHrefBase,
-  mode: _mode,
+  mode,
   disableOrderActions,
   isSupplierRole = false,
   allowPay = true,
@@ -77,7 +78,8 @@ export function OrderDetailActionBar({
   onCancelClick,
   onRefundClick,
 }: OrderDetailActionBarProps) {
-  void _mode; // Call sites still pass store|admin for clarity; gates are paymentStatus-based (REQ-0209)
+  // mode still gates the approval controls (admin only); payment gates stay
+  // paymentStatus-based (REQ-0209).
   const actionsDisabled = dataLoading || !order || disableOrderActions;
   const isCancelled = order?.status === "cancelled";
   const isFullyPaid = order?.paymentStatus === "paid";
@@ -139,6 +141,14 @@ export function OrderDetailActionBar({
               : "Edit order details."}
         </TooltipContent>
       </Tooltip>
+
+      {order && (
+        <OrderApprovalActions
+          order={order}
+          canReview={mode === "admin"}
+          disabled={actionsDisabled}
+        />
+      )}
 
       {/* View when linked; Create when absent (REQ-0061) */}
       {!dataLoading && order && order.invoiceForOrder ? (

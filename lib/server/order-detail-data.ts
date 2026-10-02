@@ -94,6 +94,33 @@ async function enrichOrder(orderId: string, order: NonNullable<Awaited<ReturnTyp
     ? userMap.get(order.updatedBy)
     : undefined;
 
+  // Append-only decision trail; approver is whoever executed the action.
+  const approvalRows = await prisma.approval.findMany({
+    where: { orderId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      approver: { select: { id: true, name: true, email: true, image: true } },
+    },
+  });
+
+  // Export customer snapshot for the trade information card
+  const customer = order.customerId
+    ? await prisma.customer.findUnique({
+        where: { id: order.customerId },
+        select: {
+          id: true,
+          name: true,
+          country: true,
+          contact: true,
+          phone: true,
+          email: true,
+          address: true,
+          status: true,
+          notes: true,
+        },
+      })
+    : null;
+
   const orderProductOwners = productOwnerUsers.map((u) => ({
     userId: u.id,
     name: u.name ?? null,
@@ -102,6 +129,7 @@ async function enrichOrder(orderId: string, order: NonNullable<Awaited<ReturnTyp
   }));
 
   return {
+    customer: customer ?? null,
     placedByName: placedBy?.name ?? placedBy?.email ?? null,
     placedByEmail: placedBy?.email ?? null,
     placedByUserId: buyerUserId,
@@ -120,6 +148,18 @@ async function enrichOrder(orderId: string, order: NonNullable<Awaited<ReturnTyp
       : null,
     creator: toParty(creatorUser ?? null),
     updater: toParty(updaterUser ?? null),
+    approvals: approvalRows.map((row) => ({
+      id: row.id,
+      action: row.action,
+      comment: row.comment,
+      createdAt: row.createdAt.toISOString(),
+      approver: {
+        id: row.approver.id,
+        name: row.approver.name,
+        email: row.approver.email,
+        image: row.approver.image,
+      },
+    })),
   };
 }
 

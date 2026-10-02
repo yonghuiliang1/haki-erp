@@ -315,6 +315,65 @@ export function useUpdateOrder() {
 }
 
 /**
+ * Approve / reject a pending order mutation.
+ * Approval reserves stock server-side, so the whole order graph is refreshed.
+ */
+export function useApproveOrder() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      action,
+      comment,
+    }: {
+      id: string;
+      action: "approve" | "reject";
+      comment?: string;
+    }) => {
+      const response = await apiClient.orders.approve(id, { action, comment });
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      const patch = { id: data.id, status: data.status } as Partial<Order> & {
+        id: string;
+      };
+      patchDetailCacheMerge<Order>(
+        queryClient,
+        queryKeys.orders.detail(data.id),
+        (old) => (old ? ({ ...old, ...patch } as Order) : undefined),
+      );
+      patchListCaches(queryClient, queryKeys.orders.all, patch);
+      patchListCaches(queryClient, queryKeys.clientOrders.all, patch);
+      invalidateAfterOrderGraphChange(queryClient);
+      // The decision is also appended to the approval trail, which only the
+      // server knows in full — refetch detail so the history card stays exact.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(data.id),
+      });
+
+      toast({
+        title:
+          variables.action === "approve" ? "Order Approved" : "Order Rejected",
+        description:
+          variables.action === "approve"
+            ? "Stock has been reserved for this order."
+            : "The order was returned to sales.",
+      });
+    },
+    onError: (error: unknown) => {
+      toast({
+        title: "Review Failed",
+        description:
+          getErrorMessage(error) || "Failed to review the order. Please retry.",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+/**
  * Delete/Cancel order mutation
  * Mutation hook for cancelling an order
  */

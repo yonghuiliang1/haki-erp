@@ -134,7 +134,10 @@ const PRODUCTS: readonly ProductSpec[] = [
 // ---------------------------------------------------------------------------
 
 type OrderStatus =
+  | "draft"
   | "pending"
+  | "approved"
+  | "rejected"
   | "confirmed"
   | "processing"
   | "shipped"
@@ -160,15 +163,16 @@ function at<T>(list: readonly T[], index: number): T {
   return item;
 }
 
-/** Orders placed earlier are further along in the pipeline. */
+/** Orders placed earlier are further along in the approval pipeline. */
 function statusForIndex(i: number, total: number): OrderStatus {
   if (i === 7 || i === 23) return "cancelled";
   const progress = i / (total - 1);
-  if (progress < 0.55) return "delivered";
-  if (progress < 0.72) return "shipped";
-  if (progress < 0.85) return "processing";
-  if (progress < 0.94) return "confirmed";
-  return "pending";
+  if (progress < 0.5) return "delivered";
+  if (progress < 0.65) return "shipped";
+  if (progress < 0.78) return "approved";
+  if (progress < 0.88) return "pending";
+  if (progress < 0.94) return "rejected";
+  return "draft";
 }
 
 function addDays(date: Date, days: number): Date {
@@ -184,6 +188,10 @@ function addDays(date: Date, days: number): Date {
 async function wipeAll() {
   await prisma.approval.deleteMany();
   await prisma.performance.deleteMany();
+  await prisma.purchaseOrderItem.deleteMany();
+  await prisma.purchaseOrder.deleteMany();
+  await prisma.chatMessage.deleteMany();
+  await prisma.knowledgeArticle.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.invoice.deleteMany();
   await prisma.order.deleteMany();
@@ -337,6 +345,11 @@ async function seedMasterData(adminId: string, now: Date) {
     const categoryId = categoryByName.get(spec.category);
     if (!categoryId) throw new Error(`Seed: unknown category ${spec.category}`);
     const stock = 800 + mix(i, 5, 12) * 150;
+    // Reorder points: most products keep a healthy buffer above the threshold;
+    // every fifth product sits below its own threshold so the stock board
+    // exercises its low-stock alert path.
+    const lowStockThreshold =
+      i % 5 === 0 ? stock + 150 : 200 + mix(i, 7, 4) * 50;
     const row = await prisma.product.create({
       data: {
         name: spec.name,
@@ -344,6 +357,7 @@ async function seedMasterData(adminId: string, now: Date) {
         price: spec.price,
         quantity: BigInt(stock),
         reservedQuantity: BigInt(0),
+        lowStockThreshold,
         status: "active",
         categoryId,
         supplierId: at(supplierIds, spec.supplier),
@@ -456,7 +470,7 @@ async function seedOrders(args: {
     const shippedAt = shipped ? addDays(orderDate, 5 + mix(i, 8, 8)) : null;
     const deliveredAt =
       status === "delivered" && shippedAt ? addDays(shippedAt, 18 + mix(i, 9, 17)) : null;
-    const approved = ["confirmed", "processing", "shipped", "delivered"].includes(status);
+    const approved = ["approved", "shipped", "delivered"].includes(status);
 
     const order = await prisma.order.create({
       data: {
@@ -533,6 +547,14 @@ async function seedOrders(args: {
         action: "reject",
         comment: "Buyer cancelled before deposit; stock reservation released.",
         at: addDays(orderDate, 4),
+      });
+    }
+    if (status === "rejected") {
+      approvalRows.push({
+        orderId: order.id,
+        action: "reject",
+        comment: "Payment terms not agreed; returned to sales for revision.",
+        at: addDays(orderDate, 1 + (i % 2)),
       });
     }
   }
@@ -793,6 +815,172 @@ async function seedSupportAndOps(args: {
 }
 
 // ---------------------------------------------------------------------------
+// Knowledge base (AI assistant) + purchase orders
+// ---------------------------------------------------------------------------
+
+async function seedKnowledgeAndPurchasing(args: {
+  adminId: string;
+  supplierIds: string[];
+  productIds: string[];
+  warehouseIds: string[];
+  now: Date;
+}) {
+  const { adminId, supplierIds, productIds, warehouseIds, now } = args;
+
+  // --- Knowledge base: the questions the support assistant can ground on ---
+  const articles: Array<{
+    category: string;
+    question: string;
+    answer: string;
+    keywords: string;
+  }> = [
+    {
+      category: "order",
+      question: "How do I create a new export order?",
+      answer:
+        "Open Orders and choose Create Order. Pick the customer, add products with quantities, confirm the shipping address, and save. The order starts as a draft; set it to pending when it is ready for review.",
+      keywords: "create,new,sales order,draft",
+    },
+    {
+      category: "order",
+      question: "Why is my order still in draft?",
+      answer:
+        "Draft means the order has not been submitted for approval yet. Open the order and change its status to pending — an administrator then approves or rejects it.",
+      keywords: "draft,submit,stuck,status",
+    },
+    {
+      category: "order",
+      question: "Who can approve an order?",
+      answer:
+        "Only an administrator can approve or reject a pending order. The salesperson submits the order and the admin reviews it from the order detail page.",
+      keywords: "approve,approval,permission,admin,reject,review",
+    },
+    {
+      category: "inventory",
+      question: "What happens to stock when an order is approved?",
+      answer:
+        "Approval reserves the stock for every order line: warehouse-picked lines reserve inside the chosen warehouse, other lines reserve on the product. Available stock drops immediately, while on-hand quantity is only reduced when the order ships.",
+      keywords: "reserve,lock,stock,approval,available",
+    },
+    {
+      category: "inventory",
+      question: "How is available stock calculated?",
+      answer:
+        "Available = on-hand quantity minus reserved quantity. Reserved holds come from approved orders waiting to ship. The Stock Board shows all three numbers per product.",
+      keywords: "available,on-hand,reserved,stock board,calculation",
+    },
+    {
+      category: "inventory",
+      question: "What does the low stock alert mean?",
+      answer:
+        "Each product has a reorder point (low stock threshold). When available stock falls to or below it, the Stock Board flags the product as Low Stock and a notification goes out so purchasing can reorder in time.",
+      keywords: "low stock,alert,threshold,reorder,warning",
+    },
+    {
+      category: "purchase",
+      question: "How do I receive a purchase order?",
+      answer:
+        "Open Purchase Orders, create the order with its supplier and lines, then press Receive. Receiving adds each line to the catalog and, when a receiving warehouse is set, to that warehouse's stock; the order becomes received and cannot be received twice.",
+      keywords: "receive,purchase,stock in,inbound,goods,arrival",
+    },
+    {
+      category: "purchase",
+      question: "Can I export a purchase order?",
+      answer:
+        "Yes. Each purchase order row has a CSV button that downloads the line items with SKU, quantity, unit cost, and totals for sharing with the supplier or finance.",
+      keywords: "export,csv,download,purchase,明细",
+    },
+    {
+      category: "finance",
+      question: "How is monthly profit calculated?",
+      answer:
+        "The Finance page groups sales from approved orders and purchase cost from received purchase orders by month; profit is sales minus purchase cost. Customer and product rankings come from the same revenue set.",
+      keywords: "profit,finance,monthly,report,cost",
+    },
+    {
+      category: "finance",
+      question: "Why is a performance entry in the wrong month?",
+      answer:
+        "An order can ship in one month but belong to another (for example a January shipment attributed to December). Open Finance, find the entry, and use Move to set its attribution year and month with a reason. Admin and finance roles can do this.",
+      keywords: "performance,attribution,month,wrong,sales,commission,业绩,月份",
+    },
+    {
+      category: "shipping",
+      question: "How do I add tracking to an order?",
+      answer:
+        "On the order detail page either generate a shipping label when the order is approved and paid, or scroll to Shipping & Tracking and enter the tracking number and carrier manually. The status moves to shipped.",
+      keywords: "tracking,shipping,carrier,label,物流",
+    },
+    {
+      category: "general",
+      question: "Which currencies does the system support?",
+      answer:
+        "Orders and purchase orders record a settlement currency — USD, EUR, or CNY — together with the exchange rate against CNY at the time of the trade, so historical values stay reproducible.",
+      keywords: "currency,exchange,rate,usd,eur,cny,汇率",
+    },
+  ];
+
+  for (const article of articles) {
+    await prisma.knowledgeArticle.create({
+      data: {
+        question: article.question,
+        answer: article.answer,
+        category: article.category,
+        keywords: article.keywords,
+        status: true,
+        hitCount: 0,
+        createdBy: adminId,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+  }
+
+  // --- Purchase orders: two received (history) and one pending ---
+  const purchaseSpecs = [
+    { supplierIdx: 0, productIdx: 0, quantity: 400, unitCost: 12.4, status: "received", daysAgo: 40 },
+    { supplierIdx: 1, productIdx: 12, quantity: 260, unitCost: 28.6, status: "received", daysAgo: 25 },
+    { supplierIdx: 2, productIdx: 18, quantity: 180, unitCost: 41.2, status: "pending", daysAgo: 3 },
+  ];
+
+  for (const [i, spec] of purchaseSpecs.entries()) {
+    const createdAt = addDays(now, -spec.daysAgo);
+    const product = at(PRODUCTS, spec.productIdx);
+    const subtotal = Math.round(spec.quantity * spec.unitCost * 100) / 100;
+    await prisma.purchaseOrder.create({
+      data: {
+        purchaseNo: `PR-2026-${String(i + 1).padStart(3, "0")}`,
+        supplierId: at(supplierIds, spec.supplierIdx),
+        warehouseId: at(warehouseIds, 0),
+        status: spec.status,
+        currency: "USD",
+        total: subtotal,
+        expectedAt: addDays(createdAt, 14),
+        receivedAt: spec.status === "received" ? addDays(createdAt, 12) : null,
+        notes: spec.status === "pending" ? "Packing list to follow before shipment." : null,
+        createdBy: adminId,
+        createdAt,
+        updatedAt: spec.status === "received" ? addDays(createdAt, 12) : createdAt,
+        items: {
+          create: [
+            {
+              productId: at(productIds, spec.productIdx),
+              productName: product.name,
+              sku: product.sku,
+              quantity: spec.quantity,
+              unitCost: spec.unitCost,
+              subtotal,
+            },
+          ],
+        },
+      },
+    });
+  }
+
+  return { articleCount: articles.length, purchaseOrderCount: purchaseSpecs.length };
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -847,6 +1035,15 @@ async function main() {
     now,
   });
 
+  console.log("   Creating knowledge base and purchase orders...");
+  const kb = await seedKnowledgeAndPurchasing({
+    adminId,
+    supplierIds: master.supplierIds,
+    productIds: master.productIds,
+    warehouseIds: master.warehouseIds,
+    now,
+  });
+
   console.log("\n   Users:        20");
   console.log(`   Customers:    ${CUSTOMERS.length}`);
   console.log(`   Suppliers:    ${SUPPLIERS.length}`);
@@ -855,6 +1052,8 @@ async function main() {
   console.log(`   Invoices:     ${derived.invoiceIds.length}`);
   console.log(`   Approvals:    ${derived.approvalIds.length}`);
   console.log(`   Performance:  ${derived.perfIds.length}`);
+  console.log(`   Knowledge:    ${kb.articleCount}`);
+  console.log(`   Purchases:    ${kb.purchaseOrderCount}`);
   console.log(`\n   Demo login password: ${DEMO_PASSWORD}`);
   console.log("   Accounts: admin@ / sales@ / finance@ / warehouse@ / purchase@ / supplier@ / client@haki.com\n");
 }

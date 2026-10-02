@@ -48,6 +48,14 @@ export const ADMIN_MY_STORE_ITEMS: AdminNavItemConfig[] = [
     label: "Product Reviews",
     countKey: "productReviews",
   },
+  {
+    href: "/admin/finance",
+    label: "Finance",
+  },
+  {
+    href: "/admin/assistant",
+    label: "AI Assistant",
+  },
 ];
 
 export const ADMIN_MANAGEMENT_ITEMS: AdminNavItemConfig[] = [
@@ -60,6 +68,14 @@ export const ADMIN_MANAGEMENT_ITEMS: AdminNavItemConfig[] = [
     href: "/admin/warehouses",
     label: "Warehouses",
     countKey: "warehouses",
+  },
+  {
+    href: "/admin/inventory",
+    label: "Stock Board",
+  },
+  {
+    href: "/admin/purchase-orders",
+    label: "Purchase Orders",
   },
   {
     href: "/admin/supplier-portal",

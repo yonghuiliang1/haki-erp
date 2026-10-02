@@ -2,11 +2,20 @@
  * Order-related type definitions
  */
 
+import type { ExportCustomer } from "./customer";
+
 /**
  * Order status types
+ *
+ * Trade flow: draft → pending → approved / rejected → shipped → delivered.
+ * `confirmed` and `processing` are kept for legacy rows and the checkout
+ * callback; the trade flow no longer produces them.
  */
 export type OrderStatus =
+  | "draft"
   | "pending"
+  | "approved"
+  | "rejected"
   | "confirmed"
   | "processing"
   | "shipped"
@@ -73,6 +82,26 @@ export interface OrderItem {
 }
 
 /**
+ * One recorded approve/reject decision on an order.
+ * Written by the approval endpoint; the trail is append-only.
+ */
+export interface OrderApprovalRecord {
+  id: string;
+  /** approve | reject */
+  action: string;
+  comment?: string | null;
+  /** ISO string */
+  createdAt: string;
+  /** Approver snapshot for display */
+  approver?: {
+    id: string;
+    name?: string | null;
+    email: string;
+    image?: string | null;
+  } | null;
+}
+
+/**
  * Order interface
  * Matches Prisma Order model
  */
@@ -81,6 +110,10 @@ export interface Order {
   orderNumber: string;
   userId: string; // User who created the order (admin/warehouse user)
   clientId?: string | null; // Client who placed the order (optional)
+  /** Export customer master record this order belongs to */
+  customerId?: string | null;
+  /** Customer snapshot for display (name, country, contact) */
+  customer?: ExportCustomer | null;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   subtotal: number;
@@ -88,6 +121,16 @@ export interface Order {
   shipping?: number | null;
   discount?: number | null;
   total: number;
+  /** Export trade: settlement currency (USD, EUR, CNY) */
+  currency?: string | null;
+  /** Exchange rate against CNY at order time */
+  exchangeRate?: number | null;
+  /** International commercial terms (FOB, CIF, EXW) */
+  tradeTerms?: string | null;
+  /** Customs declaration number */
+  customsNo?: string | null;
+  portOfLoading?: string | null;
+  portOfDischarge?: string | null;
   shippingAddress?: ShippingAddress | null;
   billingAddress?: BillingAddress | null;
   notes?: string | null;
@@ -153,6 +196,8 @@ export interface Order {
     email: string;
     image?: string | null;
   } | null;
+  /** Approval trail, newest first; empty until the order is reviewed */
+  approvals?: OrderApprovalRecord[];
 }
 
 /**
@@ -161,6 +206,8 @@ export interface Order {
  */
 export interface CreateOrderInput {
   clientId?: string; // Optional client ID (for future client portal)
+  /** Export customer master record this order belongs to */
+  customerId?: string;
   items: Array<{
     productId: string;
     quantity: number;
@@ -171,6 +218,13 @@ export interface CreateOrderInput {
   billingAddress?: BillingAddress;
   /** REQ-0236 — fees computed server-side; not accepted on create */
   notes?: string;
+  /** Export trade fields (optional at create time) */
+  currency?: string;
+  exchangeRate?: number;
+  tradeTerms?: string;
+  customsNo?: string;
+  portOfLoading?: string;
+  portOfDischarge?: string;
 }
 
 /**
@@ -191,6 +245,17 @@ export interface UpdateOrderInput {
   deliveredAt?: Date;
   cancelledAt?: Date;
   notes?: string;
+  /** Approver identity + timestamp, written by the approval endpoint */
+  approvedById?: string;
+  approvedAt?: Date;
+  /** Export trade fields; null clears the stored value */
+  customerId?: string | null;
+  currency?: string | null;
+  exchangeRate?: number | null;
+  tradeTerms?: string | null;
+  customsNo?: string | null;
+  portOfLoading?: string | null;
+  portOfDischarge?: string | null;
 }
 
 /**
