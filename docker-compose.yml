@@ -41,12 +41,12 @@ services:
     expose:
       - "3000"
 
-  # 演示数据一次性任务：复用构建层（含 tsx 与源码），不常驻
+  # 演示数据一次性任务：轻量镜像（不编译 Next.js），只跑迁移与种子脚本
   seed:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
+      target: seed
     profiles: ["seed"]
     environment:
       DATABASE_URL: postgresql://haki:${POSTGRES_PASSWORD:-haki_dev_password}@db:5432/haki_erp?schema=public

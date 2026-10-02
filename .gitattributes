@@ -1,0 +1,3 @@
+# 部署脚本与 Dockerfile 统一 LF，避免 Windows 打包后容器内解析失败
+*.sh text eol=lf
+Dockerfile text eol=lf
