@@ -7,14 +7,13 @@ This repository is a **personal open-source showcase** (HAKI ERP — export trad
 | Version | Supported |
 | ------- | --------- |
 | Latest `main` | Yes |
-| Live demo ([stockly-inventory.vercel.app](https://stockly-inventory.vercel.app/)) | Best-effort |
 | Older forks / tags | No |
 
 ## Reporting a vulnerability
 
 **Do not** open a public GitHub issue for security vulnerabilities.
 
-Email a private report to: **[contact@arnobmahmud.com](mailto:contact@arnobmahmud.com)**
+Email a private report to: **[yonghuiliang1@users.noreply.github.com](mailto:yonghuiliang1@users.noreply.github.com)**
 
 Please include:
 
