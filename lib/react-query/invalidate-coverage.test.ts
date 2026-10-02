@@ -16,8 +16,12 @@ const ROOT = process.cwd();
 const HOOKS_DIR = join(ROOT, "hooks/queries");
 const API_DIR = join(ROOT, "app/api");
 
-/** Hooks that intentionally scope invalidation (notifications — not full-app blast) */
-const SCOPED_INVALIDATION_FILES = new Set(["use-notifications.ts"]);
+/** Hooks that intentionally scope invalidation instead of a full-app blast
+ * (notifications; sales-performance adjustments touch the finance page only). */
+const SCOPED_INVALIDATION_FILES = new Set([
+  "use-notifications.ts",
+  "use-sales-performance.ts",
+]);
 
 /** Components with inline fetch CRUD — exempt or must call invalidateAllRelatedQueries */
 const COMPONENT_FETCH_CRUD_ALLOWLIST = new Set([
@@ -55,6 +59,8 @@ const API_WRITE_ROUTE_INVALIDATION_SPEC: Record<string, readonly string[]> = {
   "app/api/suppliers/route.ts": ["scheduleInvalidateSupplierCaches"],
   "app/api/orders/route.ts": ["invalidateOnOrderChange"],
   "app/api/orders/[id]/route.ts": ["invalidateOnOrderChange"],
+  "app/api/orders/[id]/approve/route.ts": ["invalidateOnOrderChange"],
+  "app/api/purchase-orders/[id]/receive/route.ts": ["invalidateCache("],
   "app/api/invoices/route.ts": ["scheduleInvalidateInvoiceCaches"],
   "app/api/invoices/[id]/route.ts": ["scheduleInvalidateInvoiceCaches"],
   "app/api/invoices/[id]/send/route.ts": ["scheduleInvalidateInvoiceCaches"],
@@ -115,6 +121,12 @@ const API_WRITE_EXEMPT = new Set([
   "app/api/shipping/rates/route.ts",
   "app/api/notifications/route.ts",
   "app/api/email/queue/process/route.ts",
+  // Writes chat logs, purchase drafts, attribution months, or a UI preference —
+  // none of these touch cached catalog / order / invoice data.
+  "app/api/ai/chat/route.ts",
+  "app/api/purchase-orders/route.ts",
+  "app/api/sales-performance/[id]/route.ts",
+  "app/api/user/locale/route.ts",
 ]);
 
 const SERVER_INVALIDATE_PATTERNS = [
@@ -234,7 +246,8 @@ describe("mutation invalidation coverage (inline fetch CRUD components)", () => 
   );
 
   for (const absPath of componentFiles) {
-    const rel = relative(ROOT, absPath);
+    // Allowlist keys use forward slashes; normalise so the check also works on Windows.
+    const rel = relative(ROOT, absPath).replace(/\\/g, "/");
     const content = readFileSync(absPath, "utf8");
     if (!DIRECT_FETCH_WRITE.test(content)) continue;
 
@@ -360,7 +373,8 @@ describe("API write routes — spec/exempt completeness", () => {
   const routeFiles = walkFiles(API_DIR, (n) => n === "route.ts");
 
   for (const absPath of routeFiles) {
-    const rel = relative(ROOT, absPath);
+    // Spec keys use forward slashes; normalise so the check also works on Windows.
+    const rel = relative(ROOT, absPath).replace(/\\/g, "/");
     const content = readFileSync(absPath, "utf8");
     if (!hasWriteHandler(content)) continue;
 
@@ -374,7 +388,8 @@ describe("API write routes server cache invalidation", () => {
   const routeFiles = walkFiles(API_DIR, (n) => n === "route.ts");
 
   for (const absPath of routeFiles) {
-    const rel = relative(ROOT, absPath);
+    // Spec keys use forward slashes; normalise so the check also works on Windows.
+    const rel = relative(ROOT, absPath).replace(/\\/g, "/");
     const content = readFileSync(absPath, "utf8");
     if (!hasWriteHandler(content)) continue;
 

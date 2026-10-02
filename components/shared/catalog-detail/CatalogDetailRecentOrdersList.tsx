@@ -31,6 +31,8 @@ export type CatalogDetailRecentOrdersListProps = {
   productHref: (productId: string) => string;
   ownerProductsHref: (ownerId: string) => string;
   isAdminRole?: boolean;
+  /** Order numbers link out only when the viewer can open the order (admin). */
+  linkOrders?: boolean;
   buyerAdminHref?: (userId: string) => string;
   /** When set, category name is a sky link on the product meta line */
   categoryHref?: (categoryId: string) => string;
@@ -49,6 +51,7 @@ export function CatalogDetailRecentOrdersList({
   productHref,
   ownerProductsHref,
   isAdminRole = false,
+  linkOrders,
   buyerAdminHref = (userId) => `/admin/user-management/${userId}`,
   categoryHref,
   invoiceHref,
@@ -56,6 +59,7 @@ export function CatalogDetailRecentOrdersList({
   className,
 }: CatalogDetailRecentOrdersListProps) {
   const t = useT();
+  const canOpenOrders = linkOrders ?? isAdminRole;
   if (loading) {
     return (
       <div className={cn("mt-4 space-y-2", className)}>
@@ -152,13 +156,19 @@ export function CatalogDetailRecentOrdersList({
                 <div className="flex items-center gap-2 min-w-0 flex-wrap">
                   <ListIndexBadge index={index + 1} />
                   <CopyableText value={order.orderNumber} className="min-w-0">
-                    <Link
-                      href={orderHref(order.orderId)}
-                      prefetch
-                      className="font-normal text-sm text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 truncate"
-                    >
-                      {order.orderNumber}
-                    </Link>
+                    {canOpenOrders ? (
+                      <Link
+                        href={orderHref(order.orderId)}
+                        prefetch
+                        className="font-normal text-sm text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 truncate"
+                      >
+                        {order.orderNumber}
+                      </Link>
+                    ) : (
+                      <span className="font-normal text-sm text-gray-700 dark:text-white/85 truncate">
+                        {order.orderNumber}
+                      </span>
+                    )}
                   </CopyableText>
                   {/* REQ-0143 — invoice indicator beside order number */}
                   {invoiceNode}

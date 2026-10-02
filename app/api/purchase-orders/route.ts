@@ -22,6 +22,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Purchase data is internal: purchasing, receiving, and admins.
+    const allowed = ["admin", "purchase", "warehouse"];
+    if (!allowed.includes(session.role ?? "")) {
+      return NextResponse.json(
+        { error: "Only admin, purchase, or warehouse users can view purchase orders" },
+        { status: 403 },
+      );
+    }
+
     const orders = await getPurchaseOrders();
     return NextResponse.json(orders);
   } catch (error) {
@@ -98,15 +107,19 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(order, { status: 201 });
   } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to create purchase order";
+    // Missing supplier / warehouse / product is a caller input problem.
+    if (
+      message.startsWith("Supplier not found") ||
+      message.startsWith("Warehouse not found") ||
+      message.startsWith("Product not found")
+    ) {
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
     logger.error("Error creating purchase order:", error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create purchase order",
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

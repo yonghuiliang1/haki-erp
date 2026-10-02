@@ -15,6 +15,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Stock levels are internal data — external portals have their own views.
+    const allowed = ["admin", "sales", "finance", "warehouse", "purchase"];
+    if (!allowed.includes(session.role ?? "")) {
+      return NextResponse.json(
+        { error: "You are not allowed to view the stock board" },
+        { status: 403 },
+      );
+    }
+
     const board = await getInventoryBoard();
     return NextResponse.json(board);
   } catch (error) {

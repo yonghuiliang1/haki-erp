@@ -11,7 +11,10 @@ import {
   DIALOG_FORM_SUCCESS_TEXT,
 } from "@/components/shared/dialog-edge-scroll";
 import { useT } from "@/lib/i18n/locale-context";
-import type { TranslateFn } from "@/lib/i18n/translate";
+import { interpolate, type TranslateFn } from "@/lib/i18n/translate";
+
+/** Fallback translator for callers without an i18n context — still fills placeholders. */
+const defaultTranslate: TranslateFn = (text, vars) => interpolate(text, vars);
 
 export type StockQuantityMode = "allocate" | "transfer";
 
@@ -44,7 +47,7 @@ export function getStockQuantityValidation(
   maxAvailable: number,
   mode: StockQuantityMode,
   minReserved = 0,
-  t: TranslateFn = (text) => text,
+  t: TranslateFn = defaultTranslate,
 ): { valid: boolean; message: string | null } {
   const qty = parseQty(raw);
   if (qty === null) {

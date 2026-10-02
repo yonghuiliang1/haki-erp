@@ -49,7 +49,7 @@ export default async function OrdersRoute() {
   }
 
   const [initialOrdersResult, listStats] = await Promise.all([
-    getOrdersForUser(user.id),
+    getOrdersForUser(user.id, user.role),
     listStatsPromise,
   ]);
 

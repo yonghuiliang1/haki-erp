@@ -15,7 +15,7 @@ export default async function BusinessInsightsRoute() {
   const [initialProducts, initialOrders, initialWarehouseSummary] =
     await Promise.all([
       getProductsForUser(user.id),
-      getOrdersForUser(user.id),
+      getOrdersForUser(user.id, user.role),
       getWarehouseStockSummary(user.id),
     ]);
 

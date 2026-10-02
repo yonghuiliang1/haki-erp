@@ -6,7 +6,7 @@
 
 import { computeCatalogInsights } from "@/lib/server/catalog-insights";
 import { toParty } from "@/lib/server/catalog-party-snapshot";
-import { getSupplierById, getDemoSupplierUserId } from "@/prisma/supplier";
+import { getSupplierById, getSupplierAccountUserIds } from "@/prisma/supplier";
 import { getCache, setCache, cacheKeys } from "@/lib/cache";
 import { prisma } from "@/prisma/client";
 import { mergeProductListWhere } from "@/lib/products/product-query";
@@ -245,24 +245,24 @@ export async function getSupplierDetailForPage(
   logger.info(`❌ Cache miss for supplier: ${cacheKey} - fetching from database`);
 
   let supplier: Awaited<ReturnType<typeof getSupplierById>> | null;
-  const demoUserId = await getDemoSupplierUserId();
+  const supplierAccountIds = await getSupplierAccountUserIds();
   if (isAdmin || isClient) {
     supplier = await prisma.supplier.findUnique({ where: { id } });
   } else if (isSupplier && supplierEntity) {
     supplier = await prisma.supplier.findUnique({ where: { id } });
   } else {
     supplier = await getSupplierById(id, userId);
-    if (!supplier && demoUserId) {
-      const demoSupplier = await prisma.supplier.findFirst({
-        where: { id, userId: demoUserId },
+    if (!supplier && supplierAccountIds.length > 0) {
+      // Profiles owned by supplier accounts count as shared company data.
+      supplier = await prisma.supplier.findFirst({
+        where: { id, userId: { in: supplierAccountIds } },
       });
-      if (demoSupplier) supplier = demoSupplier;
     }
   }
 
   if (!supplier) return null;
 
-  const isDemoSupplier = demoUserId === supplier.userId;
+  const isDemoSupplier = supplierAccountIds.includes(supplier.userId);
 
   const products = await prisma.product.findMany({
     where: mergeProductListWhere({

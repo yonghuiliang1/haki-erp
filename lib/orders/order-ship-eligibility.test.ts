@@ -17,7 +17,7 @@ describe("canGenerateShippingLabel (REQ-0211)", () => {
         status: "pending",
         paymentStatus: "unpaid",
       }),
-    ).toMatch(/Confirm the order/);
+    ).toMatch(/Approve the order/);
   });
 
   it("allows confirmed unpaid and partial", () => {

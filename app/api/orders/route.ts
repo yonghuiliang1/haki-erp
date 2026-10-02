@@ -11,6 +11,8 @@ import {
   getOrdersByUser,
   getOrdersByClientId,
   getOrdersContainingSupplierProducts,
+  getOrdersForCompany,
+  COMPANY_WIDE_ORDER_ROLES,
 } from "@/prisma/order";
 import { getSupplierByUserId } from "@/prisma/supplier";
 import { getInvoiceLinkMap, buildOrderForPageRow } from "@/lib/server/orders-data";
@@ -55,17 +57,23 @@ export async function GET(request: NextRequest) {
     const userId = session.id;
     const isClient = session.role === "client";
     const isSupplier = session.role === "supplier";
+    // Admin / finance / warehouse / purchase work across every salesperson.
+    const isCompanyWide = (COMPANY_WIDE_ORDER_ROLES as readonly string[]).includes(
+      session.role ?? "",
+    );
     const supplier =
       isSupplier ? await getSupplierByUserId(userId) : null;
     if (isSupplier && !supplier) {
       return NextResponse.json([]);
     }
 
-    const cacheKey = isClient
-      ? cacheKeys.orders.list({ userId, byClient: true })
-      : isSupplier
-        ? cacheKeys.orders.list({ supplierId: supplier!.id })
-        : cacheKeys.orders.list({ userId });
+    const cacheKey = isCompanyWide
+      ? cacheKeys.orders.list({ scope: "company" })
+      : isClient
+        ? cacheKeys.orders.list({ userId, byClient: true })
+        : isSupplier
+          ? cacheKeys.orders.list({ supplierId: supplier!.id })
+          : cacheKeys.orders.list({ userId });
 
     // Check cache first
     const cacheReadStartedAt = Date.now();
@@ -75,11 +83,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch from database
-    const orders = isClient
-      ? await getOrdersByClientId(userId)
-      : isSupplier
-        ? await getOrdersContainingSupplierProducts(supplier!.id)
-        : await getOrdersByUser(userId);
+    const orders = isCompanyWide
+      ? await getOrdersForCompany()
+      : isClient
+        ? await getOrdersByClientId(userId)
+        : isSupplier
+          ? await getOrdersContainingSupplierProducts(supplier!.id)
+          : await getOrdersByUser(userId);
 
     // REQ-0159 — placedBy = buyer (clientId when set), not store owner
     const buyerIds = [
@@ -426,13 +436,16 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    const message =
+      error instanceof Error ? error.message : "Failed to create order";
+    // Stock shortage is a business conflict; unknown product is bad input.
+    if (message.startsWith("Insufficient stock")) {
+      return NextResponse.json({ error: message }, { status: 409 });
+    }
+    if (message.startsWith("Product not found")) {
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
     logger.error("Error creating order:", error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Failed to create order",
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

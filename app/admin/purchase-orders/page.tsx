@@ -10,6 +10,10 @@ export const dynamic = "force-dynamic";
 export default async function AdminPurchaseOrdersPage() {
   const user = await getSession();
   if (!user) redirect("/login");
+  // Purchasing and receiving roles only (same rule as the API).
+  if (!["admin", "purchase", "warehouse"].includes(user.role ?? "")) {
+    redirect("/admin");
+  }
 
   // Serialize dates to ISO strings — client components and list types expect strings.
   const orders = (await getPurchaseOrders()).map((order) => ({

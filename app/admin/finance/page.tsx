@@ -10,6 +10,8 @@ export const dynamic = "force-dynamic";
 export default async function AdminFinancePage() {
   const user = await getSession();
   if (!user) redirect("/login");
+  // Money views are for the roles that own the numbers (same rule as the API).
+  if (user.role !== "admin" && user.role !== "finance") redirect("/admin");
 
   const [initialReport, initialPerformance] = await Promise.all([
     getFinanceReport(),

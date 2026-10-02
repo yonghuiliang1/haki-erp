@@ -72,15 +72,21 @@ export async function POST(
 
     return NextResponse.json(order);
   } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to receive purchase order";
+    if (message === "Purchase order not found") {
+      return NextResponse.json({ error: message }, { status: 404 });
+    }
+    // Already received / cancelled — the order state conflicts with the call.
+    if (
+      message === "Purchase order has already been received" ||
+      message === "Cancelled purchase orders cannot be received"
+    ) {
+      return NextResponse.json({ error: message }, { status: 409 });
+    }
     logger.error("Error receiving purchase order:", error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to receive purchase order",
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

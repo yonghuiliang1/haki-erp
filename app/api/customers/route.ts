@@ -15,6 +15,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Customer master data (contacts, phones) is internal to the company.
+    const allowed = ["admin", "sales", "finance", "warehouse", "purchase"];
+    if (!allowed.includes(session.role ?? "")) {
+      return NextResponse.json(
+        { error: "You are not allowed to view customers" },
+        { status: 403 },
+      );
+    }
+
     const customers = await getCustomers();
     return NextResponse.json(
       customers.map((customer) => ({

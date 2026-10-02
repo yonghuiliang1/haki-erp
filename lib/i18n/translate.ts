@@ -12,7 +12,7 @@ export type TranslateVars = Record<string, string | number>;
 export type TranslateFn = (text: string, vars?: TranslateVars) => string;
 
 /** Replace {name} placeholders with the provided values. */
-function interpolate(text: string, vars?: TranslateVars): string {
+export function interpolate(text: string, vars?: TranslateVars): string {
   if (!vars) return text;
   let out = text;
   for (const [key, value] of Object.entries(vars)) {

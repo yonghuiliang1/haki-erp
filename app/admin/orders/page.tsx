@@ -15,7 +15,7 @@ export default async function AdminOrdersPage() {
   if (!user) redirect("/login");
 
   const [initialOrders, initialClientOrders, initialStats] = await Promise.all([
-    getOrdersForUser(user.id),
+    getOrdersForUser(user.id, user.role),
     getClientOrdersForProductOwner(user.id),
     getDashboardForAdmin(user.id),
   ]);

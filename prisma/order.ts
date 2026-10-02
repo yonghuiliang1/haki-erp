@@ -230,6 +230,45 @@ export async function createOrder(
 }
 
 /**
+ * Roles that work across every salesperson and therefore see the whole order
+ * book (admin owns the process, finance reconciles it, warehouse ships it,
+ * purchase needs the demand picture).
+ */
+export const COMPANY_WIDE_ORDER_ROLES = [
+  "admin",
+  "finance",
+  "warehouse",
+  "purchase",
+] as const;
+
+/**
+ * Get every order in the company, newest first — company-wide order list.
+ *
+ * @returns Promise<Order[]> - Array of all orders
+ */
+export async function getOrdersForCompany() {
+  return prisma.order.findMany({
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              sku: true,
+              price: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+/**
  * Get Self orders for a store owner (personal /orders list).
  * REQ-0158: userId = owner AND (clientId null OR clientId = owner).
  * Client-buyer orders on the same store are excluded (see /admin/orders merge).
@@ -491,25 +530,15 @@ const clientOrderDetailInclude = {
 } as const;
 
 /**
- * Get order by ID for client.
- * REQ-0214 — own buyer (`clientId`) first; else any order with line items so
- * product/category/supplier recent-order chips open read-only (mutations stay off in UI).
+ * Get order by ID for client — only orders this buyer placed.
+ * Catalog "recent orders" rows are shown read-only (no link) to buyers, so no
+ * cross-buyer order access is needed here.
  */
 export async function getOrderByIdForClient(orderId: string, clientId: string) {
-  const own = await prisma.order.findFirst({
-    where: {
-      id: orderId,
-      clientId,
-    },
-    include: clientOrderDetailInclude,
-  });
-  if (own) return own;
-
-  // Catalog recent-order history rows are clickable for clients — mirror that access.
   return prisma.order.findFirst({
     where: {
       id: orderId,
-      items: { some: {} },
+      clientId,
     },
     include: clientOrderDetailInclude,
   });

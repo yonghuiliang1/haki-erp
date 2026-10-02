@@ -250,12 +250,12 @@ export async function getCategoriesForUser(userId: string): Promise<CategoryForH
  * Includes isGlobalDemo so tables/dialogs can disable edit/duplicate/delete for the demo supplier.
  */
 export async function getSuppliersForUser(userId: string): Promise<(SupplierForHome & { isGlobalDemo?: boolean })[]> {
-  const { getSuppliersForAdminIncludingDemo, getDemoSupplierUserId } = await import("@/prisma/supplier");
+  const { getSuppliersForAdminIncludingDemo, getSupplierAccountUserIds } = await import("@/prisma/supplier");
   const { enrichSuppliersWithListFields, countActiveCatalogProductsForUser } =
     await import("@/lib/server/catalog-list-enrich");
-  const [suppliers, demoUserId, catalogProductTotal] = await Promise.all([
+  const [suppliers, supplierAccountIds, catalogProductTotal] = await Promise.all([
     getSuppliersForAdminIncludingDemo(userId),
-    getDemoSupplierUserId(),
+    getSupplierAccountUserIds(),
     countActiveCatalogProductsForUser(userId),
   ]);
   const base = suppliers.map((s) => ({
@@ -269,7 +269,7 @@ export async function getSuppliersForUser(userId: string): Promise<(SupplierForH
     updatedAt: s.updatedAt?.toISOString() ?? null,
     createdBy: s.createdBy,
     updatedBy: s.updatedBy ?? null,
-    isGlobalDemo: demoUserId != null && s.userId === demoUserId,
+    isGlobalDemo: supplierAccountIds.includes(s.userId),
   }));
   // REQ-0142 — productCount scoped to list viewer catalog (userId)
   const enriched = await enrichSuppliersWithListFields(base, userId);

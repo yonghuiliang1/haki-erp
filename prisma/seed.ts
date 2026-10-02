@@ -262,7 +262,11 @@ async function seedUsers(passwordHash: string, now: Date) {
   return { byRole, byEmail };
 }
 
-async function seedMasterData(adminId: string, now: Date) {
+async function seedMasterData(
+  adminId: string,
+  supplierOwnerUserIds: string[],
+  now: Date,
+) {
   const categoryByName = new Map<string, string>();
   for (const spec of CATEGORIES) {
     const row = await prisma.category.create({
@@ -282,13 +286,16 @@ async function seedMasterData(adminId: string, now: Date) {
   }
 
   const supplierIds: string[] = [];
-  for (const spec of SUPPLIERS) {
+  for (const [index, spec] of SUPPLIERS.entries()) {
+    // The first supplier accounts each own a profile so the supplier portal has
+    // real data; the remaining ones stay admin-owned.
+    const ownerUserId = supplierOwnerUserIds[index] ?? adminId;
     const row = await prisma.supplier.create({
       data: {
         name: spec.name,
         description: spec.description,
         status: true,
-        userId: adminId,
+        userId: ownerUserId,
         createdBy: adminId,
         updatedBy: adminId,
         createdAt: now,
@@ -428,11 +435,12 @@ async function seedOrders(args: {
   adminId: string;
   salesIds: string[];
   customerIds: string[];
+  clientIds: string[];
   productIds: string[];
   warehouseIds: string[];
   now: Date;
 }) {
-  const { adminId, salesIds, customerIds, productIds, warehouseIds, now } = args;
+  const { adminId, salesIds, customerIds, clientIds, productIds, warehouseIds, now } = args;
   const orderIds: string[] = [];
   const performanceRows: Array<{ orderId: string; salesId: string; amount: number; shippedAt: Date; orderDate: Date }> = [];
   const approvalRows: Array<{ orderId: string; action: string; comment: string; at: Date }> = [];
@@ -446,6 +454,11 @@ async function seedOrders(args: {
     const customerIdx = (i * 3) % customerIds.length;
     const customerId = at(customerIds, customerIdx);
     const customer = at(CUSTOMERS, customerIdx);
+    // Every fifth order is placed by a client portal account (buyer view). The
+    // stride is coprime with the salesperson rotation (8), so each salesperson
+    // keeps four of their five orders visible in their own list.
+    const clientId =
+      i % 5 === 0 ? at(clientIds, (i / 5) % clientIds.length) : null;
 
     const itemCount = 1 + ((i * 2) % 3);
     const items = Array.from({ length: itemCount }, (_, k) => {
@@ -476,6 +489,7 @@ async function seedOrders(args: {
       data: {
         orderNumber: `ORD-2026-${String(i + 1).padStart(3, "0")}`,
         userId: salesId,
+        clientId,
         createdBy: salesId,
         customerId,
         status,
@@ -920,7 +934,101 @@ async function seedKnowledgeAndPurchasing(args: {
     },
   ];
 
-  for (const article of articles) {
+  // Chinese counterparts — the UI defaults to Chinese, and retrieval scores
+  // within one language, so Chinese questions need Chinese articles to ground on.
+  const articlesZh: Array<{
+    category: string;
+    question: string;
+    answer: string;
+    keywords: string;
+  }> = [
+    {
+      category: "order",
+      question: "如何创建新的出口订单？",
+      answer:
+        "打开订单列表，选择创建订单。选择关联客户，添加产品与数量，确认收货地址后保存。订单会先保存为草稿；确认无误后把状态改为待处理，等待管理员审批。",
+      keywords: "创建,新建,出口订单,草稿,下单",
+    },
+    {
+      category: "order",
+      question: "为什么我的订单还在草稿状态？",
+      answer:
+        "草稿表示订单还没有提交审批。打开订单并把状态改为待处理，管理员会随后批准或驳回。",
+      keywords: "草稿,提交,待处理,状态,卡住",
+    },
+    {
+      category: "order",
+      question: "谁可以审批订单？",
+      answer:
+        "只有管理员可以批准或驳回待处理的订单。业务员负责提交订单，管理员在订单详情页完成审批，审批记录会保存在订单的审批历史中。",
+      keywords: "审批,批准,权限,管理员,驳回,审核",
+    },
+    {
+      category: "inventory",
+      question: "订单审批通过后库存会怎样？",
+      answer:
+        "审批通过会为每条订单行锁定库存：指定仓库拣货的行锁定在对应仓库，其余行锁定在产品上。可用库存立即下降，现有库存只有在发货后才会扣减。",
+      keywords: "库存,锁定,预留,审批,可用,占用",
+    },
+    {
+      category: "inventory",
+      question: "可用库存是怎么计算的？",
+      answer:
+        "可用库存 = 现有库存 - 锁定量。锁定量来自已审批、等待发货的订单。库存看板会同时展示现有、锁定、可用三个数字。",
+      keywords: "可用,现有,锁定,库存看板,计算",
+    },
+    {
+      category: "inventory",
+      question: "低库存预警是什么意思？",
+      answer:
+        "每个产品都有一个补货点（低库存阈值）。当可用库存降到该值及以下，库存看板会把产品标记为低库存，并自动发送通知，提醒采购及时补货。",
+      keywords: "低库存,预警,阈值,补货,告警",
+    },
+    {
+      category: "purchase",
+      question: "如何对采购单收货？",
+      answer:
+        "打开采购管理，选择供应商和收货仓库、填写明细后创建采购单，然后点击收货。收货会把每行数量加入产品总量，并同步增加到指定仓库；采购单变为已收货，不能重复收货。",
+      keywords: "收货,采购,入库,到货,供应商",
+    },
+    {
+      category: "purchase",
+      question: "采购单可以导出吗？",
+      answer:
+        "可以。每条采购单都有 CSV 导出按钮，会下载明细行（含 SKU、数量、单价和金额），方便发给供应商或财务核对。",
+      keywords: "导出,CSV,下载,采购,明细",
+    },
+    {
+      category: "finance",
+      question: "月度利润是怎么计算的？",
+      answer:
+        "财务页面按月份汇总已审批订单的销售额和已收货采购单的采购成本，利润 = 销售额 - 采购成本。客户排名和商品销量排名来自同一组收入数据。",
+      keywords: "利润,财务,月度,报表,成本",
+    },
+    {
+      category: "finance",
+      question: "为什么业绩归属月份不对？",
+      answer:
+        "订单的实际出货月份可能与业绩归属月份不同（例如 1 月出货归属到 12 月）。在财务页面找到对应记录，使用调整归属设置归属年月并填写理由。管理员和财务角色可以操作。",
+      keywords: "业绩,归属,月份,错误,业务员,提成",
+    },
+    {
+      category: "shipping",
+      question: "如何给订单添加物流单号？",
+      answer:
+        "在订单详情页，可以为已审批且已付款的订单生成物流面单，也可以在物流与跟踪区域手动填写物流单号和承运商。填写后订单状态会变为已发货。",
+      keywords: "物流,跟踪,单号,承运商,面单,发货",
+    },
+    {
+      category: "general",
+      question: "系统支持哪些币种？",
+      answer:
+        "订单和采购单都会记录结算币种——USD、EUR 或 CNY，以及交易时对人民币的汇率，保证历史金额可以复现。",
+      keywords: "币种,汇率,美元,欧元,人民币",
+    },
+  ];
+
+  for (const article of [...articles, ...articlesZh]) {
     await prisma.knowledgeArticle.create({
       data: {
         question: article.question,
@@ -977,7 +1085,7 @@ async function seedKnowledgeAndPurchasing(args: {
     });
   }
 
-  return { articleCount: articles.length, purchaseOrderCount: purchaseSpecs.length };
+  return { articleCount: articles.length + articlesZh.length, purchaseOrderCount: purchaseSpecs.length };
 }
 
 // ---------------------------------------------------------------------------
@@ -999,7 +1107,11 @@ async function main() {
   const salesIds = byRole.get("sales") ?? [];
 
   console.log("   Creating master data (customers, suppliers, products, warehouses)...");
-  const master = await seedMasterData(adminId, now);
+  const supplierOwnerUserIds = [
+    byEmail.get("supplier@haki.com")!,
+    byEmail.get("supplier2@haki.com")!,
+  ];
+  const master = await seedMasterData(adminId, supplierOwnerUserIds, now);
   await seedAllocations(master.productIds, master.warehouseIds, adminId, now);
 
   console.log("   Creating orders, invoices, approvals, performance...");
@@ -1007,6 +1119,7 @@ async function main() {
     adminId,
     salesIds,
     customerIds: master.customerIds,
+    clientIds: [byEmail.get("client@haki.com")!, byEmail.get("client2@haki.com")!],
     productIds: master.productIds,
     warehouseIds: master.warehouseIds,
     now,

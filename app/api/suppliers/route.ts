@@ -9,7 +9,7 @@ import { getSessionFromRequest } from "@/utils/auth";
 import { logger } from "@/lib/logger";
 import { prisma } from "@/prisma/client";
 import { createAuditLog } from "@/prisma/audit-log";
-import { getSuppliersForAdminIncludingDemo, getDemoSupplierUserId } from "@/prisma/supplier";
+import { getSuppliersForAdminIncludingDemo, getSupplierAccountUserIds } from "@/prisma/supplier";
 import {
   createSupplierBodySchema,
   updateSupplierBodySchema,
@@ -42,15 +42,15 @@ export async function GET(request: NextRequest) {
       ? await prisma.supplier.findMany({ where: { userId } })
       : await getSuppliersForAdminIncludingDemo(userId);
 
-    const [demoUserId, catalogProductTotal] = await Promise.all([
-      getDemoSupplierUserId(),
+    const [supplierAccountIds, catalogProductTotal] = await Promise.all([
+      getSupplierAccountUserIds(),
       countActiveCatalogProductsForUser(userId),
     ]);
     const withFlags = suppliers.map((s) => ({
       ...s,
       createdAt: s.createdAt.toISOString(),
       updatedAt: s.updatedAt?.toISOString() ?? null,
-      isGlobalDemo: demoUserId != null && s.userId === demoUserId,
+      isGlobalDemo: supplierAccountIds.includes(s.userId),
     }));
     // REQ-0141/0142 — productCount (viewer-scoped) + linked email for list columns
     const enriched = await enrichSuppliersWithListFields(withFlags, userId);

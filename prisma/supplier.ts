@@ -1,32 +1,30 @@
 import { logger } from "@/lib/logger";
 import { prisma } from "@/prisma/client";
 
-/** Email of the global demo supplier user (test@supplier.com). Used so all admins see Demo Supplier in dropdowns. */
-const DEMO_SUPPLIER_EMAIL = "test@supplier.com";
-
 /**
- * User id of the demo supplier account (test@supplier.com), if it exists.
- * Suppliers linked to this user are shown to all admins as "global" demo options.
+ * User ids of the supplier-role accounts. The supplier entities they own are
+ * shared company data: every internal user sees them in lists and dropdowns,
+ * and each supplier account sees its own through the supplier portal.
  */
-export async function getDemoSupplierUserId(): Promise<string | null> {
-  const user = await prisma.user.findUnique({
-    where: { email: DEMO_SUPPLIER_EMAIL },
+export async function getSupplierAccountUserIds(): Promise<string[]> {
+  const users = await prisma.user.findMany({
+    where: { role: "supplier" },
     select: { id: true },
   });
-  return user?.id ?? null;
+  return users.map((user) => user.id);
 }
 
 /**
- * Fetch suppliers for an admin/user: their own plus the global Demo Supplier (linked to test@supplier.com).
- * So every admin sees at least the demo supplier in product dropdown and suppliers list.
+ * Fetch suppliers for an admin/user: their own plus the ones owned by supplier
+ * accounts, so internal lists and product dropdowns stay complete.
  */
 export async function getSuppliersForAdminIncludingDemo(
   userId: string,
 ): Promise<Awaited<ReturnType<typeof getSuppliersByUser>>> {
-  const demoUserId = await getDemoSupplierUserId();
+  const supplierAccountIds = await getSupplierAccountUserIds();
   const where =
-    demoUserId != null
-      ? { OR: [{ userId }, { userId: demoUserId }] }
+    supplierAccountIds.length > 0
+      ? { OR: [{ userId }, { userId: { in: supplierAccountIds } }] }
       : { userId };
   return prisma.supplier.findMany({
     where,

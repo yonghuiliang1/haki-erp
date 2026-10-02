@@ -6,10 +6,8 @@ import {
 } from "./product-query";
 
 describe("productNotDeletedWhere", () => {
-  it("matches null and unset deletedAt (MongoDB legacy rows)", () => {
-    expect(productNotDeletedWhere).toEqual({
-      OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }],
-    });
+  it("matches rows with null deletedAt (relation-only column)", () => {
+    expect(productNotDeletedWhere).toEqual({ deletedAt: null });
   });
 });
 

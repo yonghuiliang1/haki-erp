@@ -10,6 +10,8 @@ import {
   getOrdersByClientId,
   getOrdersContainingSupplierProducts,
   getOrdersContainingProductOwnerProducts,
+  getOrdersForCompany,
+  COMPANY_WIDE_ORDER_ROLES,
 } from "@/prisma/order";
 import { getInvoicesByOrderIds } from "@/prisma/invoice";
 import { prisma } from "@/prisma/client";
@@ -198,16 +200,25 @@ export type OrderForPage = {
  * Uses the same cache key and transform as GET /api/orders so Redis is shared.
  */
 export async function getOrdersForUser(
-  userId: string
+  userId: string,
+  role?: string | null,
 ): Promise<OrderForPage[]> {
-  const cacheKey = cacheKeys.orders.list({ userId });
+  // Admin / finance / warehouse / purchase see the whole order book.
+  const isCompanyWide = (COMPANY_WIDE_ORDER_ROLES as readonly string[]).includes(
+    role ?? "",
+  );
+  const cacheKey = isCompanyWide
+    ? cacheKeys.orders.list({ scope: "company" })
+    : cacheKeys.orders.list({ userId });
   const cacheReadStartedAt = Date.now();
   const cached = await getCache<OrderForPage[]>(cacheKey);
   if (cached) {
     return cached;
   }
 
-  const orders = await getOrdersByUser(userId);
+  const orders = isCompanyWide
+    ? await getOrdersForCompany()
+    : await getOrdersByUser(userId);
   const [userMap, invoiceLinkMap] = await Promise.all([
     loadPartyUserMap(collectBuyerUserIds(orders)),
     getInvoiceLinkMap(orders.map((o) => o.id)),
